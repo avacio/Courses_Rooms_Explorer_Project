@@ -1,0 +1,19 @@
+{
+    "title": "order key is not in columns",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "courses_avg": 100
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_instructor"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

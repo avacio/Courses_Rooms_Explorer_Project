@@ -1,0 +1,46 @@
+{
+    "title": "regEx",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_id": "*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_title": "*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_uuid": "*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor": "*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept": "*"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor",
+                "courses_title",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_uuid"
+        }
+    },
+    "isQueryValid": true,
+    "result": "ResultTooLarge"
+}

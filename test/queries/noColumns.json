@@ -1,0 +1,17 @@
+{
+    "title": "SELECT dept, avg WHERE avg = 100 -- no shown columns",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "courses_avg": 100
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

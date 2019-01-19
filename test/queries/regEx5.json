@@ -1,0 +1,41 @@
+{
+    "title": "regEx",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "IS": {
+                        "courses_id": "*dd"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_title": "*00s"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_uuid": "*1313"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor": "*andersv"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor",
+                "courses_title",
+                "courses_fail"
+            ],
+            "ORDER": "courses_fail"
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_dept":"bama","courses_id":"508","courses_instructor":"dahl, darren","courses_title":"mrkt research","courses_fail":0},{"courses_dept":"chem","courses_id":"401","courses_instructor":"shapiro, evgeny","courses_title":"prn spectroscopy","courses_fail":0},{"courses_dept":"libr","courses_id":"580","courses_instructor":"broadley, louise","courses_title":"collection mgmt","courses_fail":0},{"courses_dept":"pcth","courses_id":"512","courses_instructor":"","courses_title":"design & bioassy","courses_fail":0},{"courses_dept":"phys","courses_id":"526","courses_instructor":"semenoff, gordon walter","courses_title":"quantum elctrdyn","courses_fail":0},{"courses_dept":"arth","courses_id":"376","courses_instructor":"","courses_title":"northcoast peo","courses_fail":1},{"courses_dept":"comm","courses_id":"370","courses_instructor":"","courses_title":"business finance","courses_fail":11},{"courses_dept":"cpsc","courses_id":"320","courses_instructor":"wolfman, steven","courses_title":"intr alg dsgn&an","courses_fail":12}]
+}

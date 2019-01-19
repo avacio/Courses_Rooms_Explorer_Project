@@ -1,0 +1,19 @@
+{
+    "title": "courses_audit is negative number",
+    "query": {
+        "WHERE": {
+            "LT": {
+                "courses_fail": -12
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

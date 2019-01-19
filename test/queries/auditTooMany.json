@@ -1,0 +1,19 @@
+{
+    "title": "large amount of course audit",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_audit": 100000
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

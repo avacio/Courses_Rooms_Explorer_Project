@@ -1,0 +1,38 @@
+{
+    "title": "input -- decimal number",
+    "query": {
+        "WHERE": {
+            "AND": [{
+            "EQ": {
+                "courses_avg": 0.5
+                }
+            },
+                {"EQ": {
+                    "courses_pass": 5.77
+                }
+                },
+                {"EQ": {
+                    "courses_fail": 3.77
+                }
+                },
+                {"EQ": {
+                    "courses_audit": 10.4
+                }
+                },
+                {"EQ": {
+                    "courses_year": 99.5
+                }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

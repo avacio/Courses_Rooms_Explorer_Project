@@ -1,0 +1,20 @@
+{
+    "title": "key error -- multiple keys",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "courses_instructor": "bob, mr.",
+                "courses_id": 0
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

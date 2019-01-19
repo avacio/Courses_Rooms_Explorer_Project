@@ -1,0 +1,19 @@
+{
+    "title": "SELECT dept, avg WHERE avg = 100 -- called dataset does not exist",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "invalid_avg":100
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "invalid_dept",
+                "invalid_avg"
+            ],
+            "ORDER": "invalid_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

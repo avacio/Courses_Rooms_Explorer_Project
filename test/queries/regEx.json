@@ -1,0 +1,20 @@
+{
+    "title": "regEx prof",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_instructor": "*alexandra*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor"
+            ],
+            "ORDER": "courses_instructor"
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_dept":"libr","courses_id":"516","courses_instructor":"bradley, alexandra"},{"courses_dept":"libr","courses_id":"516","courses_instructor":"bradley, alexandra"},{"courses_dept":"libr","courses_id":"516","courses_instructor":"bradley, alexandra"},{"courses_dept":"libr","courses_id":"516","courses_instructor":"bradley, alexandra"},{"courses_dept":"libr","courses_id":"516","courses_instructor":"bradley, alexandra"},{"courses_dept":"libr","courses_id":"516","courses_instructor":"bradley, alexandra"},{"courses_dept":"libr","courses_id":"516","courses_instructor":"bradley, alexandra"},{"courses_dept":"cpen","courses_id":"331","courses_instructor":"fedorova, alexandra"},{"courses_dept":"port","courses_id":"101","courses_instructor":"henriques, alexandra"},{"courses_dept":"port","courses_id":"102","courses_instructor":"henriques, alexandra"},{"courses_dept":"math","courses_id":"221","courses_instructor":"pettet, alexandra"},{"courses_dept":"math","courses_id":"221","courses_instructor":"pettet, alexandra"},{"courses_dept":"math","courses_id":"221","courses_instructor":"pettet, alexandra"},{"courses_dept":"math","courses_id":"527","courses_instructor":"pettet, alexandra"},{"courses_dept":"math","courses_id":"221","courses_instructor":"pettet, alexandra"},{"courses_dept":"math","courses_id":"220","courses_instructor":"pettet, alexandra"}]
+}

@@ -1,0 +1,41 @@
+{
+    "title": "SELECT from crwr, id=201, sheryda warrener",
+    "query": {
+        "WHERE": {
+            "AND":[
+                {
+                    "IS": {
+                        "courses_dept": "crwr"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id": "201"
+                    }
+                },
+                {
+                    "IS": {
+                       "courses_instructor": "warrener, sheryda"
+                    }
+                }
+                ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_year",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit"
+            ],
+            "ORDER": "courses_pass"
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        { "courses_dept": "crwr", "courses_year": "2015","courses_pass": 95, "courses_fail": 4, "courses_audit": 0},
+        { "courses_dept": "crwr", "courses_year": "2015","courses_pass": 113, "courses_fail": 4, "courses_audit": 2},
+        { "courses_dept": "crwr", "courses_year": "2015","courses_pass": 120, "courses_fail": 7, "courses_audit": 0},
+        { "courses_dept": "crwr", "courses_year": "2016","courses_pass": 127, "courses_fail": 5, "courses_audit": 1}
+    ]
+}

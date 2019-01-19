@@ -1,0 +1,29 @@
+{
+    "title": "69 < courses_avg < 72",
+    "query": {
+        "WHERE": {
+            "AND":[
+                {
+                    "GT": {
+                        "courses_avg": 69
+                    }
+                },
+                {
+                    "LT": {
+                        "courses_avg": 72
+                    }
+                }
+                ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_year",
+                "courses_id"
+            ],
+            "ORDER": "courses_year"
+        }
+    },
+    "isQueryValid": true,
+    "result": "ResultTooLarge"
+}

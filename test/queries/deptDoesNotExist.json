@@ -1,0 +1,19 @@
+{
+    "title": "course dept does not exist",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "me"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

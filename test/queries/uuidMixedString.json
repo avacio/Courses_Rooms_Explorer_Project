@@ -1,0 +1,19 @@
+{
+    "title": "mixed characters in uiid",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_uuid": "a1b2"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

@@ -1,0 +1,46 @@
+{
+    "title": "regEx",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "IS": {
+                        "courses_id": "d*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_title": "11*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_uuid": "2222*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor": "exis*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept": "test*"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor",
+                "courses_title",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_uuid"
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_dept":"busi","courses_id":"294","courses_instructor":"","courses_title":"intr mgmt acct","courses_uuid":"2222"},{"courses_dept":"fmst","courses_id":"316","courses_instructor":"","courses_title":"human sexuality","courses_uuid":"22220"},{"courses_dept":"fmst","courses_id":"316","courses_instructor":"","courses_title":"human sexuality","courses_uuid":"22221"},{"courses_dept":"fmst","courses_id":"316","courses_instructor":"","courses_title":"human sexuality","courses_uuid":"22222"},{"courses_dept":"fmst","courses_id":"316","courses_instructor":"","courses_title":"human sexuality","courses_uuid":"22223"},{"courses_dept":"fmst","courses_id":"316","courses_instructor":"","courses_title":"human sexuality","courses_uuid":"22224"},{"courses_dept":"fmst","courses_id":"316","courses_instructor":"","courses_title":"human sexuality","courses_uuid":"22225"},{"courses_dept":"fmst","courses_id":"440","courses_instructor":"","courses_title":"fam econ issues","courses_uuid":"22228"},{"courses_dept":"fmst","courses_id":"440","courses_instructor":"","courses_title":"fam econ issues","courses_uuid":"22229"},{"courses_dept":"test","courses_id":"100","courses_instructor":"","courses_title":"","courses_uuid":"25945"}]
+}

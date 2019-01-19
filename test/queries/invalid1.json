@@ -1,0 +1,19 @@
+{
+    "title": "columns input error",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "courses_avg": 100
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_test"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

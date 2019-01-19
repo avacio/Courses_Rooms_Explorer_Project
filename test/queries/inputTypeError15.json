@@ -1,0 +1,19 @@
+{
+    "title": "input error -- should be num",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "courses_year": "2002"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

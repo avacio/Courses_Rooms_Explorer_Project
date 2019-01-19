@@ -1,0 +1,19 @@
+{
+    "title": "courses_year is negative number",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "courses_year": -12
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

@@ -1,0 +1,38 @@
+{
+    "title": "input -- negative number",
+    "query": {
+        "WHERE": {
+            "AND": [{
+            "EQ": {
+                "courses_avg": -100
+                }
+            },
+                {"EQ": {
+                    "courses_pass": -5
+                }
+                },
+                {"EQ": {
+                    "courses_fail": -2
+                }
+                },
+                {"EQ": {
+                    "courses_audit": -11
+                }
+                },
+                {"EQ": {
+                    "courses_year": -8
+                }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

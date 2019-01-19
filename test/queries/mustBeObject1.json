@@ -1,0 +1,21 @@
+{
+    "title": "IS must be object",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "EQ": "bob, mr."
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

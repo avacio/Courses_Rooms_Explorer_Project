@@ -1,0 +1,19 @@
+{
+    "title": "regEx DEPT",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "*RW*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "isQueryValid": true,
+    "result":[]}

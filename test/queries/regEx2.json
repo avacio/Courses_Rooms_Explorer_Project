@@ -1,0 +1,41 @@
+{
+    "title": "regEx",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_dept": "*en*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id": "40*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_title": "*"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_uuid": "*2*"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor",
+                "courses_title",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_dept":"cens","courses_id":"404","courses_instructor":"karwowska, bozena;pailer, gaby","courses_title":"gender & nation","courses_uuid":"26642"},{"courses_dept":"cens","courses_id":"404","courses_instructor":"taubeneck, steven","courses_title":"gender & nation","courses_uuid":"61992"},{"courses_dept":"cens","courses_id":"404","courses_instructor":"","courses_title":"gender & nation","courses_uuid":"26643"},{"courses_dept":"cens","courses_id":"404","courses_instructor":"","courses_title":"gender & nation","courses_uuid":"42099"},{"courses_dept":"cens","courses_id":"404","courses_instructor":"karwowska, bozena;pailer, gaby","courses_title":"gender & nation","courses_uuid":"42098"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"","courses_title":"env des 3","courses_uuid":"23117"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"alissa, reem;neumann, oliver","courses_title":"env des 3","courses_uuid":"45852"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"","courses_title":"env des 3","courses_uuid":"20176"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"","courses_title":"env des 3","courses_uuid":"87218"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"satterfield, blair","courses_title":"env desn std iii","courses_uuid":"89203"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"","courses_title":"env des 3","courses_uuid":"30244"},{"courses_dept":"ends","courses_id":"402","courses_instructor":"villagomez, erick","courses_title":"ends design 4","courses_uuid":"20177"},{"courses_dept":"ends","courses_id":"402","courses_instructor":"","courses_title":"ends design 4","courses_uuid":"20178"},{"courses_dept":"ends","courses_id":"402","courses_instructor":"","courses_title":"ends design 4","courses_uuid":"23119"},{"courses_dept":"ends","courses_id":"402","courses_instructor":"","courses_title":"ends design 4","courses_uuid":"23120"},{"courses_dept":"ends","courses_id":"402","courses_instructor":"kellett, ronald","courses_title":"ends design 4","courses_uuid":"26725"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"neumann, oliver","courses_title":"env des 3","courses_uuid":"30243"},{"courses_dept":"ends","courses_id":"402","courses_instructor":"","courses_title":"ends design 4","courses_uuid":"26726"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"","courses_title":"env des 3","courses_uuid":"26724"},{"courses_dept":"ends","courses_id":"402","courses_instructor":"girling, cynthia","courses_title":"ends design 4","courses_uuid":"30245"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"pechet, bill","courses_title":"env des 3","courses_uuid":"26723"},{"courses_dept":"ends","courses_id":"402","courses_instructor":"","courses_title":"ends design 4","courses_uuid":"30246"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"","courses_title":"env des 3","courses_uuid":"23118"},{"courses_dept":"ends","courses_id":"402","courses_instructor":"gates, joanne","courses_title":"ends design 4","courses_uuid":"87219"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"lewis, martin","courses_title":"env des 3","courses_uuid":"20175"},{"courses_dept":"ends","courses_id":"402","courses_instructor":"","courses_title":"ends design 4","courses_uuid":"87220"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"beca, bryan;porter, edward","courses_title":"env des 3","courses_uuid":"87217"},{"courses_dept":"ends","courses_id":"401","courses_instructor":"","courses_title":"env desn std iii","courses_uuid":"89204"},{"courses_dept":"envr","courses_id":"400","courses_instructor":"harris, sara;ivanochko, tara","courses_title":"cmnty pr env sci","courses_uuid":"2683"},{"courses_dept":"envr","courses_id":"400","courses_instructor":"","courses_title":"cmnty pr env sci","courses_uuid":"2684"},{"courses_dept":"envr","courses_id":"400","courses_instructor":"harris, sara;ivanochko, tara","courses_title":"rsrc prj env sci","courses_uuid":"42085"},{"courses_dept":"envr","courses_id":"400","courses_instructor":"","courses_title":"rsrc prj env sci","courses_uuid":"42086"},{"courses_dept":"envr","courses_id":"400","courses_instructor":"","courses_title":"rsrc prj env sci","courses_uuid":"50472"},{"courses_dept":"envr","courses_id":"400","courses_instructor":"harris, sara;ivanochko, tara","courses_title":"cmnty pr env sci","courses_uuid":"60032"}]
+}

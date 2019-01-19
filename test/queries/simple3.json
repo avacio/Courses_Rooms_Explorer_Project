@@ -1,0 +1,23 @@
+{
+    "title": "double not",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "NOT": {
+                    "EQ": {
+                        "courses_audit": 11
+                    }
+                }
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_audit"
+            ],
+            "ORDER": "courses_audit"
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_dept":"cpsc","courses_audit":11},{"courses_dept":"frst","courses_audit":11},{"courses_dept":"frst","courses_audit":11},{"courses_dept":"rhsc","courses_audit":11}]
+}

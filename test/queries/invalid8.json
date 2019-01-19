@@ -1,0 +1,101 @@
+{
+    "title": "all fields, and/or, invalid input type",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "EQ": {
+                        "courses_avg": "1"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor": "steve"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor": "h*i"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_title": "we?ll"
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_pass": "test"
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_fail": "69"
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_audit": "13"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_uuid": 334
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_year": "244"
+                    }
+                },
+                {
+                    "AND": [
+                        {
+                            "NOT": {
+                                "IS": {
+                                    "courses_dept": "mu?sc"
+                                }
+                            }
+                        },
+                        {
+                            "NOT": {
+                                "IS": {
+                                    "courses_dept": "w%er"
+                                }
+                            }
+                        },
+                        {
+                            "NOT": {
+                                "IS": {
+                                    "courses_dept": "?wer"
+                                }
+                            }
+                        },
+                        {
+                            "IS": {
+                                "courses_id": "555"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_year",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_instructor",
+                "courses_uuid",
+                "courses_title",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_audit"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

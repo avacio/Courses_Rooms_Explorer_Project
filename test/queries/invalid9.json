@@ -1,0 +1,81 @@
+{
+    "title": "all fields, and/or, invalid input type",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "EQ": {
+                        "courses_avg": 0
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor": "?"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_instructor": "&*&"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_title": "?"
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_pass": 0.5
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_fail": 0.5
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_audit": 12.6
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_uuid": "444d"
+                    }
+                },
+                {
+                    "EQ": {
+                        "courses_year": "-110"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id": 77
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept": 77
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_year",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_instructor",
+                "courses_uuid",
+                "courses_title",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_audit"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

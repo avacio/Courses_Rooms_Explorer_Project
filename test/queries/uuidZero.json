@@ -1,0 +1,19 @@
+{
+    "title": "negative uiid",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_uuid": "0"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

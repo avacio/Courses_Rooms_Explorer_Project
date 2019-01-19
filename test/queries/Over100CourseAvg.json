@@ -1,0 +1,19 @@
+{
+    "title": "courses_avg input -- over 100",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "courses_avg": 105
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

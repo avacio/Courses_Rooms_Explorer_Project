@@ -1,0 +1,92 @@
+{
+    "title": "all fields, not",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {"NOT":
+                {
+                    "EQ": {
+                        "courses_avg": 79
+                    }
+                }
+                },
+                { "NOT": {
+                    "IS": {
+                        "courses_instructor": ""
+                    }
+                }
+                },
+                { "NOT": {
+                    "IS": {
+                        "courses_instructor": "*ander*"
+                    }
+                }
+                },
+                {
+                    "IS": {
+                        "courses_title": "*Dogs*"
+                    }
+                },
+                { "NOT": {
+                    "EQ": {
+                        "courses_pass": 100
+                    }
+                }
+                },
+                { "NOT": {
+                    "EQ": {
+                        "courses_fail": 0
+                    }
+                }
+                },
+                { "NOT": {
+                    "EQ": {
+                        "courses_audit": 0
+                    }
+                }
+                },
+                { "NOT": {
+                    "IS": {
+                        "courses_uuid": "hey"
+                    }
+                }
+                },
+                { "NOT": {
+                    "EQ": {
+                        "courses_year": 2015
+                    }
+                }
+                },
+                { "NOT": {
+                    "IS": {
+                        "courses_id": "1*"
+                    }
+                }
+                },
+                { "NOT": {
+                    "IS": {
+                        "courses_dept": "c*"
+                    }
+                }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_year",
+                "courses_pass",
+                "courses_fail",
+                "courses_audit",
+                "courses_instructor",
+                "courses_uuid",
+                "courses_title",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_year"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

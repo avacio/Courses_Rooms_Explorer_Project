@@ -1,0 +1,19 @@
+{
+    "title": "courses_year input error -- string instead of number",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_year": ""
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

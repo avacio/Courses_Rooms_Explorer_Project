@@ -1,0 +1,19 @@
+{
+    "title": "courses_year is zero",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "courses_year": 0
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}
