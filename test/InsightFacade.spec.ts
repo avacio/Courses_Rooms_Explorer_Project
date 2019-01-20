@@ -1,9 +1,12 @@
 import { expect } from "chai";
+import * as fs from "fs-extra"; // * = modules
 
 import {
+    InsightDataset,
     InsightDatasetKind,
     InsightError,
-    NotFoundError
+    NotFoundError,
+    ResultTooLargeError
 } from "../src/controller/IInsightFacade";
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
@@ -24,6 +27,16 @@ describe("InsightFacade Add/Remove Dataset", function () {
     // automatically be loaded in the Before All hook.
     const datasetsToLoad: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
+        crwr: "./test/data/crwr.zip",
+        allInvalidJSON: "./test/data/allInvalidJSON.zip",
+        allNotJSON: "./test/data/allNotJSON.zip",
+        lastNotJSON: "./test/data/lastNotJSON.zip",
+        midNotJSON: "./test/data/midNotJSON.zip",
+        nestedFolder: "./test/data/nestedFolder.zip",
+        someInvalidJSON: "./test/data/someInvalidJSON.zip",
+        someNotJSON: "./test/data/someNotJSON.zip",
+        wrongName: "./test/data/wrongName.zip"
+        // crwrNotZipped: "./test/data/crwrNotZipped/" // TODO
     };
 
     let insightFacade: InsightFacade;
@@ -45,18 +58,19 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             expect.fail("", "", `Failed to read one or more datasets. ${JSON.stringify(err)}`);
         }
+    });
+
+    beforeEach(function () {
+        Log.test(`BeforeTest: ${this.currentTest.title}`);
 
         try {
+            fs.removeSync("./data");    // remove from cache as well
             insightFacade = new InsightFacade();
         } catch (err) {
             Log.error(err);
         } finally {
             expect(insightFacade).to.be.instanceOf(InsightFacade);
         }
-    });
-
-    beforeEach(function () {
-        Log.test(`BeforeTest: ${this.currentTest.title}`);
     });
 
     after(function () {
@@ -81,7 +95,374 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     // This is an example of a pending test. Add a callback function to make the test run.
-    it("Should remove the courses dataset");
+    it("Should remove the courses dataset", async function () {
+        const id: string = "courses";
+        let response: string;
+
+        try {
+            await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            response = await insightFacade.removeDataset(id);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal(id);
+        }
+    });
+
+    it("Should add the valid 'crwr' dataset", async function () {
+        const id: string = "crwr";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should remove the crwr dataset", async function () {
+        const id: string = "crwr";
+        let response: string;
+
+        try {
+            await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            response = await insightFacade.removeDataset(id);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to add an invalid dataset -- zip file directory is not named 'courses", async function () {
+        const id: string = "wrongName";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to add an invalid dataset -- zip file does not exist", async function () {
+        const id: string = "invalid";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to add an invalid dataset -- empty string", async function () {
+        const id: string = "";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to add an invalid dataset -- called dataset is not zipped", async function () {
+        const id: string = "crwrNotZipped";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to add an invalid dataset -- no courses are in JSON format", async function () {
+        const id: string = "allNotJSON";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should be able to add dataset -- some courses are not in JSON format, but some are valid", async function () {
+        const id: string = "someNotJSON";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should be able to add a dataset -- all but last course is in JSON format", async function () {
+        const id: string = "lastNotJSON";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should be able to add a dataset -- all but first course is in JSON format", async function () {
+        const id: string = "firstNotJSON";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to add a dataset -- invalid JSON format, not JSON files", async function () {
+        const id: string = "invalidAndNotJSON";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should be able to add a dataset -- some invalid JSON format, rest valid", async function () {
+        const id: string = "someInvalidJSON";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to add a dataset -- all invalid JSON format", async function () {
+        const id: string = "allInvalidJSON";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should be able to add a dataset -- all but middle course is in JSON format", async function () {
+        const id: string = "firstNotJSON";
+        let response: string[];
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to add a dataset with nested folders", async function () {
+        const id: string = "nestedFolder";
+        let response: string[];
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should be able to add the same dataset twice", async function () {
+        const id: string = "crwr";
+        let response: string[];
+
+        // TODO
+        try {
+            await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to remove a dataset that does not exist", async function () {
+        const id: string = "invalid";
+        let response: string;
+
+        try {
+            response = await insightFacade.removeDataset(id);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to remove a dataset that has not yet been added", async function () {
+        const id: string = "courses";
+        let response: string;
+
+        try {
+            response = await insightFacade.removeDataset(id);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should not be able to remove a dataset -- empty string", async function () {
+        const id: string = "";
+        let response: string;
+
+        try {
+            response = await insightFacade.removeDataset(id);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("testing listDatasets() after successful add", async function () {
+        const id: string = "courses";
+        let response: string[];
+        let dataSetsResult: Promise<InsightDataset[]>;
+        let listedData: InsightDataset[];
+        // todo
+        try {
+            dataSetsResult = insightFacade.listDatasets();
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(0);
+            // response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            dataSetsResult = insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(dataSetsResult).to.deep.include([id]);
+        }
+    });
+
+    it("testing listDatasets() after remove", async function () {
+        const id: string = "courses";
+        let response: string[]; // TODO: response necessary?
+        let dataSetsResult: Promise<InsightDataset[]>;
+        let listedData: InsightDataset[];
+
+        try {
+            dataSetsResult = insightFacade.listDatasets();
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(0);
+
+            await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            dataSetsResult = insightFacade.listDatasets();
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(1);
+            expect(dataSetsResult).to.deep.include([id]);
+
+            await insightFacade.removeDataset(id);
+            dataSetsResult = insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(0);
+        }
+    });
+
+    it("testing listDatasets() after successful remove", async function () {
+        const id: string = "courses";
+        let response: string[]; // TODO: response necessary?
+        let dataSetsResult: Promise<InsightDataset[]>;
+        let listedData: InsightDataset[];
+
+        try {
+            dataSetsResult = insightFacade.listDatasets();
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(0);
+
+            await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            dataSetsResult = insightFacade.listDatasets();
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(1);
+            expect(dataSetsResult).to.deep.include([id]);
+
+            await insightFacade.removeDataset(id);
+            dataSetsResult = insightFacade.listDatasets();
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(0);
+
+            await insightFacade.addDataset("crwr", datasets["crwr"], InsightDatasetKind.Courses);
+            dataSetsResult = insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(1);
+        }
+    });
+
+    it("testing listDatasets() after add/remove of the same set twice", async function () {
+        const id: string = "crwr";
+        let response: string[]; // TODO: response necessary?
+        let dataSetsResult: Promise<InsightDataset[]>;
+        let listedData: InsightDataset[];
+
+        try {
+            dataSetsResult = insightFacade.listDatasets();
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(0);
+
+            await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            dataSetsResult = insightFacade.listDatasets();
+            expect(dataSetsResult).to.deep.include([id]);
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(2);
+
+            await insightFacade.removeDataset(id);  // if same id will it remove both, or one set?
+            dataSetsResult = insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            listedData = await Promise.resolve(dataSetsResult);
+            expect(listedData.length).to.deep.equal(1);
+        }
+    });
 });
 
 // This test suite dynamically generates tests from the JSON files in test/queries.
@@ -174,7 +555,14 @@ describe("InsightFacade PerformQuery", () => {
                         if (test.isQueryValid) {
                             expect(response).to.deep.equal(test.result);
                         } else {
-                            expect(response).to.be.instanceOf(InsightError);
+                            switch (test.result) {
+                                case "InsightError":
+                                    expect(response).to.be.instanceOf(InsightError);
+                                    break;
+                                case "ResultTooLarge":
+                                    expect(response).to.be.instanceOf(ResultTooLargeError);
+                                    break;
+                            }
                         }
                     }
                 });
