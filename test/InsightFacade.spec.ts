@@ -79,6 +79,10 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     afterEach(function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
+        Log.test("datapool size: " + insightFacade.getDataPool().size); // TODO TESTING
+        insightFacade.getDataPool().forEach((value: any, key: string) => {
+            Log.test(key + value.toString());
+        });
     });
 
     it("Should add a valid dataset", async function () {
