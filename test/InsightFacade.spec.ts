@@ -79,10 +79,12 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     afterEach(function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
-        Log.test("datapool size: " + insightFacade.getDataPool().size); // TODO TESTING
-        insightFacade.getDataPool().forEach((value: any, key: string) => {
-            Log.test(key + value.toString());
-        });
+        Log.test("map size: " + insightFacade.getMapCount());
+        insightFacade.printKeys();
+        // Log.test("datapool size: " + insightFacade.getDataPool().size); // TODO TESTING
+        // insightFacade.getDataPool().forEach((value: any, key: string) => {
+        //     Log.test(key + value.toString());
+        // });
     });
 
     it("Should add a valid dataset", async function () {
@@ -544,33 +546,33 @@ describe("InsightFacade PerformQuery", () => {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    // Dynamically create and run a test for each query in testQueries
-    it("Should run test queries", function () {
-        describe("Dynamic InsightFacade PerformQuery tests", function () {
-            for (const test of testQueries) {
-                it(`[${test.filename}] ${test.title}`, async function () {
-                    let response: any[];
-
-                    try {
-                        response = await insightFacade.performQuery(test.query);
-                    } catch (err) {
-                        response = err;
-                    } finally {
-                        if (test.isQueryValid) {
-                            expect(response).to.deep.equal(test.result);
-                        } else {
-                            switch (test.result) {
-                                case "InsightError":
-                                    expect(response).to.be.instanceOf(InsightError);
-                                    break;
-                                case "ResultTooLarge":
-                                    expect(response).to.be.instanceOf(ResultTooLargeError);
-                                    break;
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    });
+    // // Dynamically create and run a test for each query in testQueries
+    // it("Should run test queries", function () {
+    //     describe("Dynamic InsightFacade PerformQuery tests", function () {
+    //         for (const test of testQueries) {
+    //             it(`[${test.filename}] ${test.title}`, async function () {
+    //                 let response: any[];
+    //
+    //                 try {
+    //                     response = await insightFacade.performQuery(test.query);
+    //                 } catch (err) {
+    //                     response = err;
+    //                 } finally {
+    //                     if (test.isQueryValid) {
+    //                         expect(response).to.deep.equal(test.result);
+    //                     } else {
+    //                         switch (test.result) {
+    //                             case "InsightError":
+    //                                 expect(response).to.be.instanceOf(InsightError);
+    //                                 break;
+    //                             case "ResultTooLarge":
+    //                                 expect(response).to.be.instanceOf(ResultTooLargeError);
+    //                                 break;
+    //                         }
+    //                     }
+    //                 }
+    //             });
+    //         }
+    //     });
+    // });
 });

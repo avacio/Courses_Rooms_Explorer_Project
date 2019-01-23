@@ -1,10 +1,9 @@
 import Log from "../Util";
 import {IInsightFacade, InsightDataset, InsightDatasetKind} from "./IInsightFacade";
 import {InsightError, NotFoundError} from "./IInsightFacade";
-// import DatasetController from "./DatasetController";
+import DatasetController, {arrayFlat} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
-import {Dataset} from "./Dataset";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -12,56 +11,37 @@ import {Dataset} from "./Dataset";
  *
  */
 
-let dataPool: Map<string, Dataset> = new Map<string, Dataset>(); // OR ANY[] FOR VALUE
-
 export default class InsightFacade implements IInsightFacade {
-    // private datasetController: DatasetController;
+    private datasetController: DatasetController;
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
-        // this.datasetController = new DatasetController();
+        this.datasetController = new DatasetController();
     }
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-        // return Promise.reject("Not implemented.");
-        // async function ()
-
-        // let result: Promise<any[]>;
-        // return new Promise(async function (resolve, reject) {
-        //     try {
-        //        // if (content != null)
-        //        //  new JSZip().loadAsync(content)
-        //        //  let zip = await new JSZip().loadAsync(content, {base64: true});
-        //         // result = this.readZip(zip);
-        //         let result = await this.datasetController.loadData(content);
-        //         this.datasetController.addDataset(id, result);
-        //
-        //         resolve();
-        //     } catch (error) {
-        //         Log.error(error);
-        //         reject("stub");
-        //     }
-        // });
+        let self: InsightFacade = this;
 
         return new Promise(async function (resolve, reject) {
-            // const self = this;
-            // try {
-            //     let zip = new JSZip();
-            //     await zip.loadAsync(content, {base64: true});
-            //     let promises = await InsightFacade.readZip(zip);
-            //
-            //     await self.datasetController.addDataset(id, promises);
-            //     resolve();
-            // } catch (error) {
-            //     Log.error(error);
-            //     reject("stub");
-            // }
+            try {
+               // if (content != null)
+                let zip = await new JSZip().loadAsync(content, {base64: true});
 
-            // TRYING WITH DATASET CLASS
-            let newDataset = new Dataset(id, content, kind);
-            // let parsed = await newDataset.read();
-            await newDataset.read();
-            dataPool.set(id, newDataset);
+                // await InsightFacade.readZip(zip).then((allData) => {
+                await InsightFacade.readZip(zip).then(async function (allData) {
+
+                    // Log.trace("AFTER READZIP " + allData.length.toString());
+                    self.datasetController.addDataset(id, allData);
+                    Log.trace("AFTER ds add " + allData.length.toString());
+
+                    Log.trace("ENTRY COUNT: " + self.datasetController.entryCount().toString());
+
+                    return resolve();
+                });
+            } catch (error) {
+                Log.error(error);
+                return reject({body: {error: "stub"}});
+            }
         });
     }
 
@@ -88,9 +68,38 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     // FOR TESTING
-    public getDataPool(): Map<string, Dataset> {
-        return dataPool;
+    // public static getDataPool(): Map<string, Dataset> {
+    //     return dataPool;
+    // }
+
+    public getMapCount(): number {
+        return this.datasetController.entryCount();
     }
+
+    public printKeys() {
+        this.datasetController.printAllKeys();
+    }
+
+    private static readZip(zip: JSZip): Promise<any[]> { // TODO
+        const files: Array<Promise<any[]>> = [];
+        zip.forEach((path: string, file: JSZipObject) => {
+            if (file.dir) { return; }
+
+            files.push(file.async("text").then((data) => {
+                return JSON.parse(data).result.map(InsightFacade.makeEntry).filter((i: any) => i !== null);
+            }));
+        });
+        // return Promise.all(files); // TODO
+        // Log.trace("FILESLENGTH " + files.length.toString());
+        return Promise.all(files).then(arrayFlat); // TODO
+    }
+
+    // private arrayFlat(d: any[][]): any[] {
+    //     return d.reduce((result, i) => {
+    //         result.push(i);
+    //         return result;
+    //     }, []);
+    // }
 
     // private static readZip(zip: JSZip): Promise<any[]> { // TODO
     //     const files: Array<Promise<any[]>> = [];
@@ -108,8 +117,12 @@ export default class InsightFacade implements IInsightFacade {
 
     private static makeEntry(e: any): any {
         // CHECK VALID TYPE
-        // if (!isStringObject(e.Subject) ||
-        //     (!isStringObject(e.Course) && !isNumberObject(e.Course))
+        // if (!isString(e.Subject)
+        //     // || (!isStringObject(e.Course) && !isNumberObject(e.Course))
+        // ) { return null; }
+        if (typeof e.Subject !== "string") { return null; }
+
+        // Log.trace("MAKE NON-NULL ENTRY");
         return {
             courses_dept: e.Subject,
             courses_id: e.Course,
