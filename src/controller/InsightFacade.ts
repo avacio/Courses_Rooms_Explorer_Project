@@ -24,7 +24,7 @@ export default class InsightFacade implements IInsightFacade {
 
         return new Promise(async function (resolve, reject) {
             try {
-               // if (content != null)
+                // if (content != null)
                 let zip = await new JSZip().loadAsync(content, {base64: true});
 
                 // await InsightFacade.readZip(zip).then((allData) => {
@@ -49,7 +49,7 @@ export default class InsightFacade implements IInsightFacade {
         return Promise.reject("Not implemented.");
     }
 
-    public performQuery(query: any): Promise <any[]> {
+    public performQuery(query: any): Promise<any[]> {
         return Promise.reject("Not implemented.");
     }
 
@@ -68,10 +68,6 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     // FOR TESTING
-    // public static getDataPool(): Map<string, Dataset> {
-    //     return dataPool;
-    // }
-
     public getMapCount(): number {
         return this.datasetController.entryCount();
     }
@@ -83,7 +79,9 @@ export default class InsightFacade implements IInsightFacade {
     private static readZip(zip: JSZip): Promise<any[]> { // TODO
         const files: Array<Promise<any[]>> = [];
         zip.forEach((path: string, file: JSZipObject) => {
-            if (file.dir) { return; }
+            if (file.dir) {
+                return;
+            }
 
             files.push(file.async("text").then((data) => {
                 return JSON.parse(data).result.map(InsightFacade.makeEntry).filter((i: any) => i !== null);
@@ -94,33 +92,14 @@ export default class InsightFacade implements IInsightFacade {
         return Promise.all(files).then(arrayFlat); // TODO
     }
 
-    // private arrayFlat(d: any[][]): any[] {
-    //     return d.reduce((result, i) => {
-    //         result.push(i);
-    //         return result;
-    //     }, []);
-    // }
-
-    // private static readZip(zip: JSZip): Promise<any[]> { // TODO
-    //     const files: Array<Promise<any[]>> = [];
-    //     // TODO
-    //
-    //     zip.forEach((path: string, file: JSZipObject) => {
-    //         if (file.dir) { return; }
-    //
-    //         files.push(file.async("text").then((data) => {
-    //             return JSON.parse(data).result.map(InsightFacade.makeEntry);
-    //         }));
-    //     });
-    //     return Promise.all(files);
-    // }
-
     private static makeEntry(e: any): any {
         // CHECK VALID TYPE
         // if (!isString(e.Subject)
         //     // || (!isStringObject(e.Course) && !isNumberObject(e.Course))
         // ) { return null; }
-        if (typeof e.Subject !== "string") { return null; }
+        if (typeof e.Subject !== "string") {
+            return null;
+        }
 
         // Log.trace("MAKE NON-NULL ENTRY");
         return {
@@ -136,24 +115,10 @@ export default class InsightFacade implements IInsightFacade {
             courses_year: e.Year    // TODO
         };
     }
+}
     // ============
     // Helper Functions
 
-    ///////// load
-
-    // public parseZip(zip: JSZip): Promise<any[]> {
-    //     const files: Promise<any[]>[] = [];
-    //
-    //     // zip.forEach(((path: string, file: JSZip) => {
-    //     //     if (file.dir == true) {return;}
-    //     //
-    //     //     let f: any[] = [];
-    //     //     f = await JSON.parse(data).res
-    //     // }))
-    //
-    //     const f = await JSON.parse(f).result.map(createCourseEntry)
-    // }
-}
 // const courseKeys: {
 //             courses_dept: "string",
 //             courses_id: "string",
@@ -166,11 +131,3 @@ export default class InsightFacade implements IInsightFacade {
 //             courses_uuid: "string",
 //             courses_year: "number"
 // };
-
-// function addDatasetHelper(id: string, dataArray: any[]) {
-//     try {
-//         let d: Dataset = {id, datas}
-//     } catch (error) {
-//         Log.error(error);
-//     }
-// }

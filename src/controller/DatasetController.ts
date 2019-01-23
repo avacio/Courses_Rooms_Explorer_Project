@@ -1,11 +1,5 @@
 import Log from "../Util";
-import * as JSzip from "jszip";
-import * as JSZip from "jszip";
-import {types} from "util";
 import {InsightDataset, InsightDatasetKind} from "./IInsightFacade";
-import {forEachComment} from "tslint";
-// import isStringObject = module
-// import isNumberObject = module
 
 /**
  * Helper class to help parse and control datasets
@@ -124,28 +118,6 @@ export default class DatasetController {
     //     // const f = await JSON.parse(f).result.map(createCourseEntry)
     // }
     //
-    //
-    //
-    // public makeCourseEntry(e: any): any {
-    //     e.filter((item: any) => item !== null);
-    //
-    //     // CHECK VALID TYPE
-    //     // if (!isStringObject(e.Subject) ||
-    //     //     (!isStringObject(e.Course) && !isNumberObject(e.Course))
-    //     return {
-    //         courses_dept: e.Subject,
-    //         courses_id: e.Course,
-    //         courses_avg: e.Avg,
-    //         courses_instructor: e.Professor,
-    //         courses_title: e.Title,
-    //         courses_pass: e.Pass,
-    //         courses_fail: e.Fail,
-    //         courses_audit: e.Audit,
-    //         courses_uuid: e.id,
-    //         courses_year: e.Year    // TODO
-    //     };
-    // }
-
     ///// TODO: Add cache stuff
 } //// TODO: parsing
 //
