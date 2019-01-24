@@ -1,6 +1,6 @@
 export default class QueryController {
     constructor(
-        public OPTIONS: QueryOptions
+        public OPTIONS: IQueryOptions
     ) {}
 
     public isValidQuery(q: any): boolean {
@@ -22,7 +22,7 @@ export default class QueryController {
 
 }
 
-interface QueryOptions {
+interface IQueryOptions {
     COLUMNS: string[];
     ORDER?: string; // ORDER IS NOT NECESSARY IN A QUERY
 }
