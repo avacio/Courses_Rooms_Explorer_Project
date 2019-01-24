@@ -1,6 +1,5 @@
 import Log from "../Util";
-import {IInsightFacade, InsightDataset, InsightDatasetKind} from "./IInsightFacade";
-import {InsightError, NotFoundError} from "./IInsightFacade";
+import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
 import DatasetController, {arrayFlat} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
@@ -21,18 +20,18 @@ export default class InsightFacade implements IInsightFacade {
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let self: InsightFacade = this;
-
+        // Log.trace("addDataset kind: " + kind.toString());
         return new Promise(async function (resolve, reject) {
             try {
-                // if (content != null)
+                if (content == null || kind == null ||
+                    ((kind !== InsightDatasetKind.Courses) && (kind !== InsightDatasetKind.Rooms))) {
+                    return reject([id]); }
                 let zip = await new JSZip().loadAsync(content, {base64: true});
 
-                // await InsightFacade.readZip(zip).then((allData) => {
                 await InsightFacade.readZip(id, zip).then(async function (allData) {
-
-                    // Log.trace("AFTER READZIP " + allData.length.toString());
-                    self.datasetController.addDataset(id, allData);
-                    // Log.trace("AFTER ds add " + allData.length.toString());
+                    if (allData !== null && allData.length !== 0) {
+                    self.datasetController.addDataset(id, allData); }
+                    // Log.trace("allData " + allData);
                     // Log.trace("ENTRY COUNT: " + self.datasetController.entryCount().toString());
 
                     return resolve([id]);
@@ -47,13 +46,13 @@ export default class InsightFacade implements IInsightFacade {
     public removeDataset(id: string): Promise<string> {
         // return Promise.reject("Not implemented.");
         let self: InsightFacade = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(async function (resolve, reject) {
             try {
                 if (self.datasetController.containsDataset(id)) {
                     self.datasetController.removeDataset(id);
                 }
                 // self.datasetController.removeDataset(id);
-                return resolve();
+                return resolve(id);
             } catch (error) {
                 Log.error(error);
                 if (!self.datasetController.containsDataset(id)) {
@@ -113,7 +112,7 @@ export default class InsightFacade implements IInsightFacade {
         //     // || (!isStringObject(e.Course) && !isNumberObject(e.Course))
         // ) { return null; }
 
-        if (typeof e.Subject !== "string" || typeof e.Course !== "string"
+        if (e === null || typeof e.Subject !== "string" || typeof e.Course !== "string"
         || typeof e.Avg !== "number" || typeof e.Professor !== "string"
         || typeof e.Title !== "string" || typeof e.Pass !== "number"
         || typeof e.Fail !== "number" || typeof e.Audit !== "number"

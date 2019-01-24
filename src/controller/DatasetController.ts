@@ -13,13 +13,20 @@ import * as fs from "fs";
 //     numRows: number;
 // }
 
-const path = __dirname + "/data.json";
+// const path = __dirname + "/data.json";
+// const path = __dirname + "/data.json";
+// const fs = require("fs");
+// const path = __dirname + "/../../data/data.json";
+const path = __dirname + "/../../data/";
+// const path = path.join(__dirname, "..", "..", "data/data.json");
 export default class DatasetController {
     private data: Map<string, any[]>;
 
     constructor(private cache = false) {
         Log.trace("DatasetController constuctor");
+        // Log.trace("path   " + path);
         this.data = new Map<string, any[]>(this.checkCache());
+        // this.data = new Map<string, any[]>();
     }
 
     private checkCache() {
@@ -39,7 +46,8 @@ export default class DatasetController {
         if (id != null) {
             this.data.set(id, content);
 
-            if (this.cache) { this.writeToCache(); }
+            this.writeToCache();
+            // if (this.cache) { this.writeToCache(); }
             return true;
         }
         return false;
@@ -84,49 +92,16 @@ export default class DatasetController {
             entries.push([key, value]);
         });
         // fs.writeFileSync( __dirname + "/" + id + ".json", JSON.stringify(entries)); // TODO
-        fs.writeFileSync( path, JSON.stringify(entries)); // TODO
+        // fs.writeFileSync( path, JSON.stringify(entries)); // TODO
+        if (!fs.existsSync(path)) {
+            fs.mkdirSync(path);
+            fs.writeFileSync(path + "/data.json", JSON.stringify(entries)); // TODO
+            Log.trace("WRITE TO CACHE!!! " + path);
+            // Log.trace("EXISTSPATH: " + fs.existsSync(path));
+
+        }
     }
 
-    // public listDatasets(): Promise<InsightDataset[]> {
-    //     return this.data.get(id);
-    // }
-
-    // ///////// load
-    // public loadData(file: string): Promise<any[]> {
-    //     return new Promise(async function (resolve, reject) {
-    //
-    //         let zip = new JSzip();
-    //         let d: string[] = []; // TODO
-    //
-    //         try {
-    //         // const z = await zip.loadAsync(file, {base64: true});
-    //         // // for (const i in z) {
-    //         // //     this.addDataset(JSON.parse())
-    //         // // }
-    //             let promises: any[] = [];
-    //             zip.loadAsync(file, {base64: true}).then( async function (f: any) {
-    //             f.forEach(async function (fName: any, fileZ: any) {
-    //                 if (f.dir) {return; } else {
-    //                     Log.trace(fName);
-    //                     // promises.push(zip.file(fName).async("string"))
-    //                     let content: string = await zip.file(fName).async("text"); // TODO
-    //                     const parsed = await JSON.stringify(JSON.parse(content));
-    //                     promises.push(parsed);
-    //                 }
-    //             });
-    //             // const p = await Promise.all(promises);
-    //             // await resolve(promises);
-    //             Promise.all(promises).then(function (response: any) {
-    //                     resolve(promises);
-    //                 });
-    //             }
-    //         );
-    //     } catch (error) {
-    //         Log.error(error);
-    //         reject();
-    //     }
-    //     });
-    // }
     ///// TODO: Add cache stuff
 }
 //
