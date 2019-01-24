@@ -1,5 +1,6 @@
 import Log from "../Util";
 import {InsightDataset, InsightDatasetKind} from "./IInsightFacade";
+import * as fs from "fs";
 
 /**
  * Helper class to help parse and control datasets
@@ -12,13 +13,23 @@ import {InsightDataset, InsightDatasetKind} from "./IInsightFacade";
 //     numRows: number;
 // }
 
-// DEPRECATED, NOT BEING USED
+const path = __dirname + "/data.json";
 export default class DatasetController {
     private data: Map<string, any[]>;
 
-    constructor() {
+    constructor(private cache = false) {
         Log.trace("DatasetController constuctor");
-        this.data = new Map<string, any[]>();
+        this.data = new Map<string, any[]>(this.checkCache());
+    }
+
+    private checkCache() {
+        if (this.cache && fs.existsSync(path)) {
+            return JSON.parse(fs.readFileSync(path).toString());
+        } else { return []; }
+    }
+
+    public clearCache() {
+        if (fs.existsSync(path)) { fs.unlinkSync(path); }
     }
 
     // returns false if id is null
@@ -27,6 +38,8 @@ export default class DatasetController {
         Log.trace("add ds in dc.ts : " + id);
         if (id != null) {
             this.data.set(id, content);
+
+            if (this.cache) { this.writeToCache(); }
             return true;
         }
         return false;
@@ -61,6 +74,17 @@ export default class DatasetController {
         // });
 
         for (let key of Array.from( this.data.keys()) ) { Log.trace("PRINTKEYS: " + key); }
+    }
+
+    // private writeToCache(id: string) {
+    private writeToCache() {
+        const entries: any[] = [];
+
+        this.data.forEach(async function (value, key) { // needs to be async or no?
+            entries.push([key, value]);
+        });
+        // fs.writeFileSync( __dirname + "/" + id + ".json", JSON.stringify(entries)); // TODO
+        fs.writeFileSync( path, JSON.stringify(entries)); // TODO
     }
 
     // public listDatasets(): Promise<InsightDataset[]> {
@@ -103,23 +127,8 @@ export default class DatasetController {
     //     }
     //     });
     // }
-
-    // public parseZip(zip: JSZip): Promise<any[]> {
-    //     const files: Promise<any[]>[] = [];
-    //
-    //     zip.forEach(((path: string, f: JSzip) => {
-    //         if (f.dir == true) {return;}
-    //
-    //         // let f: any[] = [];
-    //         // f = await JSON.parse(data).res
-    //         files.push(f.async('string'))
-    //     }));
-    //
-    //     // const f = await JSON.parse(f).result.map(createCourseEntry)
-    // }
-    //
     ///// TODO: Add cache stuff
-} //// TODO: parsing
+}
 //
 
 export function arrayFlat(d: any[][]): any[] {
