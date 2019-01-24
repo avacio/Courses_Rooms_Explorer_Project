@@ -46,7 +46,23 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public removeDataset(id: string): Promise<string> {
-        return Promise.reject("Not implemented.");
+        // return Promise.reject("Not implemented.");
+        let self: InsightFacade = this;
+        return new Promise(function (resolve, reject) {
+            try {
+                if (self.datasetController.containsDataset(id)) {
+                    self.datasetController.removeDataset(id);
+                }
+                // self.datasetController.removeDataset(id);
+                return resolve();
+            } catch (error) {
+                Log.error(error);
+                if (!self.datasetController.containsDataset(id)) {
+                    return reject (new NotFoundError ("dataset not found"));
+                }
+                return reject (new InsightError ("invalid"));
+            }
+        });
     }
 
     public performQuery(query: any): Promise<any[]> {
