@@ -64,7 +64,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Log.test(`BeforeTest: ${this.currentTest.title}`);
 
         try {
-            fs.removeSync("./data");    // remove from cache as well
+            fs.removeSync("./data");    // remove from cache as well TODO
             insightFacade = new InsightFacade();
         } catch (err) {
             Log.error(err);
