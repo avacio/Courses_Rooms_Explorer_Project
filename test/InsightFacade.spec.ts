@@ -44,6 +44,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     before(async function () {
         Log.test(`Before: ${this.test.parent.title}`);
+        fs.removeSync("./data");    // remove from cache as well TODO
 
         try {
             const loadDatasetPromises: Array<Promise<Buffer>> = [];
@@ -64,7 +65,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Log.test(`BeforeTest: ${this.currentTest.title}`);
 
         try {
-            fs.removeSync("./data");    // remove from cache as well TODO
+            // fs.removeSync("./data");    // remove from cache as well TODO
             insightFacade = new InsightFacade();
         } catch (err) {
             Log.error(err);

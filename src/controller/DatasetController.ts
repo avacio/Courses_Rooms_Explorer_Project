@@ -43,10 +43,10 @@ export default class DatasetController {
     public addDataset(id: string, content: any[]): boolean {
         // if (this.data.containsDataset(id)) {
         Log.trace("add ds in dc.ts : " + id);
-        if (id != null) {
+        if (id != null && content != null) {
             this.data.set(id, content);
 
-            this.writeToCache();
+            this.writeToCache(id);
             // if (this.cache) { this.writeToCache(); }
             return true;
         }
@@ -84,8 +84,8 @@ export default class DatasetController {
         for (let key of Array.from( this.data.keys()) ) { Log.trace("PRINTKEYS: " + key); }
     }
 
-    // private writeToCache(id: string) {
-    private writeToCache() {
+    private writeToCache(id: string) {
+    // private writeToCache() {
         const entries: any[] = [];
 
         this.data.forEach(async function (value, key) { // needs to be async or no?
@@ -95,11 +95,13 @@ export default class DatasetController {
         // fs.writeFileSync( path, JSON.stringify(entries)); // TODO
         if (!fs.existsSync(path)) {
             fs.mkdirSync(path);
-            fs.writeFileSync(path + "/data.json", JSON.stringify(entries)); // TODO
-            Log.trace("WRITE TO CACHE!!! " + path);
+            //// fs.writeFileSync(path + "/data.json", JSON.stringify(entries)); // TODO
+            // fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(entries)); // TODO
+            // Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
             // Log.trace("EXISTSPATH: " + fs.existsSync(path));
-
         }
+        fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(entries)); // TODO
+        Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
     }
 
     ///// TODO: Add cache stuff
@@ -111,4 +113,24 @@ export function arrayFlat(d: any[][]): any[] {
         result.push(i);
         return result;
     }, []);
+}
+
+export function isJson(j: any): boolean {
+    // try {
+    //     JSON.parse(str);
+    // } catch (error) {
+    //     return false;
+    // }
+    // return true;
+
+    if (typeof j !== "string") { j = JSON.stringify((j)); }
+    try {
+        j = JSON.parse(j);
+    } catch (error) {
+        Log.error("ERROR CAUGHT");
+        return false;
+    }
+    // Log.trace("typeof str " + (typeof j).toString());
+    // Log.trace("typeof str === \"object\": " + (typeof j === "object").toString());
+    return typeof j === "object" && j !== null;
 }
