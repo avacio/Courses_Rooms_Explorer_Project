@@ -42,8 +42,9 @@ export default class DatasetController {
     // returns false if id is null
     public addDataset(id: string, content: any[]): boolean {
         // if (this.data.containsDataset(id)) {
-        Log.trace("add ds in dc.ts : " + id);
+        // Log.trace("add ds in dc.ts : " + id);
         if (id != null && content != null) {
+        // if (id != null && content != null && !this.containsDataset(id)) {
             this.data.set(id, content);
 
             this.writeToCache(id);
@@ -103,10 +104,7 @@ export default class DatasetController {
         fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(entries)); // TODO
         Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
     }
-
-    ///// TODO: Add cache stuff
 }
-//
 
 export function arrayFlat(d: any[][]): any[] {
     return d.reduce((result, i) => {
@@ -115,14 +113,7 @@ export function arrayFlat(d: any[][]): any[] {
     }, []);
 }
 
-export function isJson(j: any): boolean {
-    // try {
-    //     JSON.parse(str);
-    // } catch (error) {
-    //     return false;
-    // }
-    // return true;
-
+export function isJson(j: any): boolean { // TODO does not differentiate between .txt and .json
     if (typeof j !== "string") { j = JSON.stringify((j)); }
     try {
         j = JSON.parse(j);
