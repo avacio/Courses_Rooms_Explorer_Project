@@ -102,6 +102,8 @@ export default class InsightFacade implements IInsightFacade {
                 if (!QueryController.isValidQuery(query)) {
                     return reject (new InsightError ("Query is invalid."));
                 }
+                return reject (new InsightError ("STUB REJECT"));
+
             } catch (error) {
                 return reject (new InsightError ("invalid"));
             }
