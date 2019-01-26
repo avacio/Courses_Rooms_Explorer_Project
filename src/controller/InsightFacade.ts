@@ -27,13 +27,18 @@ export default class InsightFacade implements IInsightFacade {
             try {
                 // Log.trace("is content json " + isJson(content).toString());
                 if (self.datasetController.containsDataset(id)) { // already contains, then reject
-                    return reject("ID ALREADY ADDED BEFORE" + id);
+                    // throw new InsightError("ID ALREADY ADDED BEFORE" + id);
+                    return reject(new InsightError("ID ALREADY ADDED BEFORE" + id));
+                    // return reject([id]);
                 } // already contains, then reject
                 if (content == null || kind == null || content === "" ||
                     ((kind !== InsightDatasetKind.Courses) && (kind !== InsightDatasetKind.Rooms))) {
-                    Log.trace("INVALID, REJECTED ADDDATASET: " + id);
-                    return reject(new NotFoundError ("INVALID, REJECTED ADDDATASET, content null: " + id));
+                    return reject(new InsightError ("INVALID, REJECTED ADDDATASET, content null: " + id));
                     // return Promise.reject ([id]);
+                }
+                if (content.substring(0, 4) !== "UEsD") {
+                    return reject(new InsightError("INPUT dataset is not a zip: " + id));
+                    // return reject([id]);
                 }
                 let zip = await new JSZip().loadAsync(content, {base64: true});
 
@@ -44,7 +49,9 @@ export default class InsightFacade implements IInsightFacade {
                         self.datasetController.addDataset(id, allData);
                         return resolve([id]);
                     } else {
-                        return reject(new NotFoundError ("REJECTED addDataset, allData insignificant: " + id));
+                        throw new InsightError ("REJECTED addDataset, allData insignificant: " + id);
+
+                        // return reject(new InsightError ("REJECTED addDataset, allData insignificant: " + id));
                         // return Promise.reject ([id]);
                     }
                     // Log.trace("allData " + allData);
@@ -69,7 +76,8 @@ export default class InsightFacade implements IInsightFacade {
                 // Log.trace("INVALID, REJECTED ADDDATASET: " + id);
                 // Log.error(error);
                 // return reject([id]);
-                return Promise.reject (new NotFoundError ("Caught error, REJECTED AddDataset: " + id));
+                return reject (new InsightError (error.message));
+                // return Promise.reject (new InsightError ("REJECTED AddDataset " + error.message + id));
             }
         });
     }
@@ -188,9 +196,9 @@ export default class InsightFacade implements IInsightFacade {
                 // Log.trace("FILESLENGTH " + files.length.toString());
                 return Promise.all(files).then(arrayFlat); // TODO
             } catch (error) {
-                // return; // TODO
+                return; // TODO
                 // return Promise.reject(new InsightError("READZIP ERROR"));
-                return null;
+                // return null;
             }
         // });
     }

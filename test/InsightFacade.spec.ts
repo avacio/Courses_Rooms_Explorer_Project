@@ -154,7 +154,9 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            // expect(response).to.deep.equal(new InsightError("REJECTED addDataset,
+            // allData insignificant: wrongName"));
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -167,7 +169,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            // expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -180,7 +183,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            // expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -194,7 +198,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -207,7 +211,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -220,7 +224,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -272,7 +276,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -298,7 +302,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -322,7 +326,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -337,7 +341,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal(new InsightError());
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -350,7 +354,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(NotFoundError);
         }
     });
 
