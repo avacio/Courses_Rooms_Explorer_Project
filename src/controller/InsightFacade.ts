@@ -1,44 +1,83 @@
 import Log from "../Util";
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
-import DatasetController, {arrayFlat} from "./DatasetController";
+import DatasetController, {arrayFlat, isJson} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
+import QueryController from "./QueryController";
 
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
  *
  */
-
 export default class InsightFacade implements IInsightFacade {
     private datasetController: DatasetController;
+    private queryController: QueryController;
 
     constructor(cache = false) {
         Log.trace("InsightFacadeImpl::init()");
         this.datasetController = new DatasetController(cache);
+        this.queryController = new QueryController();
     }
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let self: InsightFacade = this;
-        // Log.trace("addDataset kind: " + kind.toString());
+
         return new Promise(async function (resolve, reject) {
             try {
-                if (content == null || kind == null ||
+                // Log.trace("is content json " + isJson(content).toString());
+                if (self.datasetController.containsDataset(id)) { // already contains, then reject
+                    // throw new InsightError("ID ALREADY ADDED BEFORE" + id);
+                    return reject(new InsightError("ID ALREADY ADDED BEFORE" + id));
+                    // return reject([id]);
+                } // already contains, then reject
+                if (content == null || kind == null || content === "" ||
                     ((kind !== InsightDatasetKind.Courses) && (kind !== InsightDatasetKind.Rooms))) {
-                    return reject([id]); }
+                    return reject(new InsightError ("INVALID, REJECTED ADDDATASET, content null: " + id));
+                    // return Promise.reject ([id]);
+                }
+                if (content.substring(0, 4) !== "UEsD") {
+                    return reject(new InsightError("INPUT dataset is not a zip: " + id));
+                    // return reject([id]);
+                }
                 let zip = await new JSZip().loadAsync(content, {base64: true});
 
+                // Log.trace(content);
                 await InsightFacade.readZip(id, zip).then(async function (allData) {
                     if (allData !== null && allData.length !== 0) {
-                    self.datasetController.addDataset(id, allData); }
+                        Log.trace("VALID, ADDED ADDDATASET: " + id);
+                        self.datasetController.addDataset(id, allData);
+                        return resolve([id]);
+                    } else {
+                        throw new InsightError ("REJECTED addDataset, allData insignificant: " + id);
+
+                        // return reject(new InsightError ("REJECTED addDataset, allData insignificant: " + id));
+                        // return Promise.reject ([id]);
+                    }
                     // Log.trace("allData " + allData);
                     // Log.trace("ENTRY COUNT: " + self.datasetController.entryCount().toString());
 
-                    return resolve([id]);
+                    // return resolve([id]);
                 });
+                ///////////
+
+                // let results = await InsightFacade.readZip(id, zip);
+                // await results.then(async function (allData) {
+                //     if (allData !== null && allData.length !== 0) {
+                //         self.datasetController.addDataset(id, allData);
+                //         return resolve([id]);
+                //     } else { return reject([id]); }
+                //     // Log.trace("allData " + allData);
+                //     // Log.trace("ENTRY COUNT: " + self.datasetController.entryCount().toString());
+                //
+                //     // return resolve([id]);
+                // });
             } catch (error) {
-                Log.error(error);
-                return reject([id]);
+                // Log.trace("INVALID, REJECTED ADDDATASET: " + id);
+                // Log.error(error);
+                // return reject([id]);
+                return reject (new InsightError (error.message));
+                // return Promise.reject (new InsightError ("REJECTED AddDataset " + error.message + id));
             }
         });
     }
@@ -64,8 +103,20 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public performQuery(query: any): Promise<any[]> {
-        // return Promise.reject("Not implemented.");
-        return Promise.reject (new InsightError ("invalid"));
+        // return Promise.reject (new InsightError ("invalid"));
+        return new Promise(function (resolve, reject) {
+            // const queryResult = QueryController.parseQuery(query);
+            try {
+                if (!QueryController.isValidQuery(query)) {
+                    return reject (new InsightError ("Query is invalid."));
+                }
+                return reject (new InsightError ("STUB REJECT"));
+
+            } catch (error) {
+                return reject (new InsightError ("invalid"));
+            }
+
+        });
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
@@ -93,18 +144,63 @@ export default class InsightFacade implements IInsightFacade {
 
     private static readZip(id: string, zip: JSZip): Promise<any[]> { // TODO
         const files: Array<Promise<any[]>> = [];
-        zip.forEach((path: string, file: JSZipObject) => {
-            if (file.dir) {
-                return;
-            }
+        // let validNum: number = 0;
+        // return new Promise(function (resolve, reject) {
+        try {
+                // Log.trace("READZIP ZIP NAME: " + zip.);
 
-            files.push(file.async("text").then((data) => {
-                return JSON.parse(data).result.map(InsightFacade.makeEntry).filter((i: any) => i !== null);
-            }));
-        });
-        // return Promise.all(files); // TODO
-        // Log.trace("FILESLENGTH " + files.length.toString());
-        return Promise.all(files).then(arrayFlat); // TODO
+                // zip.forEach((path: string, file: JSZipObject) => {
+                zip.folder("courses").forEach((path: string, file: JSZipObject) => {
+                    // zip.folder(/courses/).forEach((path: string, file: JSZipObject) => {
+
+                    // Log.trace("FILE PATH: " + path);
+                    // Log.trace("FILEp" + file.name);
+                    // if (file.dir) {
+                    // if (file.dir || !file.name.includes(".json")
+                    // ) {
+                    //     return;
+                    // }
+                    // if (file.name !== "courses") {
+                    //     Log.trace("TEST: " + (file.name !== "courses").toString());
+                    //     Log.trace("TEST DIR NAME: " + (file.name).toString());
+                    //         // return Promise.reject([]);
+                    //     Log.trace("courses NAME FOLDER");
+                    //     isInvalidAdd = true;
+                    //     return;
+                    // }
+
+                    if (file.dir) {
+                        // stop nested folders?
+                        return;
+                    }
+                    // file.
+
+                    // if (!file.name.endsWith(".json")) {
+                    //     Log.trace("NOT JSON NOT JSON");
+                    //     return;
+                    // }
+
+                    files.push(file.async("text").then((data) => {
+                        // files.push(file.async("base64").then((data) => {
+                        if (!isJson(data)) {
+                            Log.error("IS NOT JSON");
+                            // return null;
+                            return;
+                        }
+                        // validNum++;
+                        // Log.trace(validNum.toString());
+                        return JSON.parse(data).result.map(InsightFacade.makeEntry).filter((i: any) => i !== null);
+                    }));
+                });
+                // return Promise.all(files); // TODO
+                // Log.trace("FILESLENGTH " + files.length.toString());
+                return Promise.all(files).then(arrayFlat); // TODO
+            } catch (error) {
+                return; // TODO
+                // return Promise.reject(new InsightError("READZIP ERROR"));
+                // return null;
+            }
+        // });
     }
 
     private static makeEntry(e: any): any {
@@ -120,7 +216,8 @@ export default class InsightFacade implements IInsightFacade {
         // || typeof e.id !== "string"
         // || typeof e.Year !== "number"
         ) {
-            return null;
+            // return null;
+            return; // TODO
         }
 
         // Log.trace("MAKE NON-NULL ENTRY" + e.Subject + e.Course + typeof e.id);

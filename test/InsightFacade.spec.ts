@@ -35,8 +35,10 @@ describe("InsightFacade Add/Remove Dataset", function () {
         nestedFolder: "./test/data/nestedFolder.zip",
         someInvalidJSON: "./test/data/someInvalidJSON.zip",
         someNotJSON: "./test/data/someNotJSON.zip",
-        wrongName: "./test/data/wrongName.zip"
-        // crwrNotZipped: "./test/data/crwrNotZipped/" // TODO
+        wrongName: "./test/data/wrongName.zip",
+        // crwrNotZipped: "./test/data/crwrNotZipped/", // TODO
+        // unzipped: "./test/data/unzipped/" // TODO
+        // unzipped: "./test/data/unzipped.zip" // TODO
     };
 
     let insightFacade: InsightFacade;
@@ -44,6 +46,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     before(async function () {
         Log.test(`Before: ${this.test.parent.title}`);
+        fs.removeSync("./data");    // remove from cache as well TODO
 
         try {
             const loadDatasetPromises: Array<Promise<Buffer>> = [];
@@ -64,7 +67,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Log.test(`BeforeTest: ${this.currentTest.title}`);
 
         try {
-            fs.removeSync("./data");    // remove from cache as well TODO
+            // fs.removeSync("./data");    // remove from cache as well TODO
             insightFacade = new InsightFacade();
         } catch (err) {
             Log.error(err);
@@ -151,7 +154,9 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            // expect(response).to.deep.equal(new InsightError("REJECTED addDataset,
+            // allData insignificant: wrongName"));
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -164,7 +169,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            // expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -177,12 +183,27 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            // expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
     it("Should not be able to add an invalid dataset -- called dataset is not zipped", async function () {
         const id: string = "crwrNotZipped";
+        let response: string[];
+        // const id: string = fs.readFileSync("./test/data/crwrNotZipped").toString("base64");
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("Should not be able to add dataset -- called dataset is not zipped, no subdirectory", async function () {
+        const id: string = "unzipped";
         let response: string[];
 
         try {
@@ -190,7 +211,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -203,7 +224,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -255,7 +276,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -281,7 +302,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -305,11 +326,11 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
-    it("Should be able to add the same dataset twice", async function () {
+    it("Should not be able to add the same dataset twice", async function () {
         const id: string = "crwr";
         let response: string[];
 
@@ -320,7 +341,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -333,7 +354,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(NotFoundError);
         }
     });
 
