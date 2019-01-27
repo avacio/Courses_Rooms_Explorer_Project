@@ -42,11 +42,19 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 let zip = await new JSZip().loadAsync(content, {base64: true});
 
+                // zip = await zip.filter(function (relativePath, file) {
+                //     Log.trace(file.name);
+                //     return true;
+                // });
+
                 // Log.trace(content);
                 await InsightFacade.readZip(id, zip).then(async function (allData) {
                     if (allData !== null && allData.length !== 0) {
                         Log.trace("VALID, ADDED ADDDATASET: " + id);
+                        // allData = arrayFlat(allData);
+                        // Log.trace(allData.toString());
                         self.datasetController.addDataset(id, allData);
+                        // self.datasetController.addDataset(id, allData.filter((i: any) => i !== null));
                         return resolve([id]);
                     } else {
                         throw new InsightError ("REJECTED addDataset, allData insignificant: " + id);
@@ -73,7 +81,7 @@ export default class InsightFacade implements IInsightFacade {
                 //     // return resolve([id]);
                 // });
             } catch (error) {
-                // Log.trace("INVALID, REJECTED ADDDATASET: " + id);
+                Log.trace("INVALID, REJECTED ADDDATASET: " + id);
                 // Log.error(error);
                 // return reject([id]);
                 return reject (new InsightError (error.message));
@@ -171,33 +179,56 @@ export default class InsightFacade implements IInsightFacade {
 
                     if (file.dir) {
                         // stop nested folders?
-                        return;
+                        // Log.trace("FILE.DIR IS TRUE");
+                        throw new InsightError("INVALID nested folder");
+                        // return;
                     }
                     // file.
 
-                    // if (!file.name.endsWith(".json")) {
-                    //     Log.trace("NOT JSON NOT JSON");
-                    //     return;
-                    // }
+                    // Log.trace(file.name);
+                    if (!file.name.endsWith(".json")) {
+                        // Log.trace("NOT JSON NOT JSON");
+                        throw new InsightError("not JSON input");
+                        // return;
+                    }
 
                     files.push(file.async("text").then((data) => {
                         // files.push(file.async("base64").then((data) => {
                         if (!isJson(data)) {
-                            Log.error("IS NOT JSON");
+                            throw new InsightError("not JSON input IN ASYNC");
                             // return null;
-                            return;
+                            // return;
                         }
-                        // validNum++;
-                        // Log.trace(validNum.toString());
-                        return JSON.parse(data).result.map(InsightFacade.makeEntry).filter((i: any) => i !== null);
+
+                        // Log.trace("DATA " + data);
+                        return JSON.parse(data).result.map(InsightFacade.makeEntry).filter(
+                            // (i: any) => i !== null && i !== []);
+                            (i: any) =>
+                                i !== null);
                     }));
+
+                    // const f: any = file.async("text").then((data) => {
+                    //     // files.push(file.async("base64").then((data) => {
+                    //     if (!isJson(data)) {
+                    //         Log.error("IS NOT JSON");
+                    //         // return null;
+                    //         return;
+                    //     }
+                    //     // validNum++;
+                    //     // Log.trace(validNum.toString());
+                    //     // if (f === null) { Log.trace("NULL F");
+                    //     //                   // throw new InsightError("NULL F");
+                    //     // }
+                    //     files.push(f);
+                    //     return JSON.parse(data).result.map(InsightFacade.makeEntry).filter((i: any) => i !== null);
+                    // });
                 });
                 // return Promise.all(files); // TODO
                 // Log.trace("FILESLENGTH " + files.length.toString());
                 return Promise.all(files).then(arrayFlat); // TODO
             } catch (error) {
-                return; // TODO
-                // return Promise.reject(new InsightError("READZIP ERROR"));
+                // return; // TODO
+                return Promise.reject(new InsightError("READZIP " + error.message));
                 // return null;
             }
         // });
@@ -216,8 +247,8 @@ export default class InsightFacade implements IInsightFacade {
         // || typeof e.id !== "string"
         // || typeof e.Year !== "number"
         ) {
-            // return null;
-            return; // TODO
+            return null;
+            // return; // TODO
         }
 
         // Log.trace("MAKE NON-NULL ENTRY" + e.Subject + e.Course + typeof e.id);

@@ -241,7 +241,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    it("Should be able to add a dataset -- all but last course is in JSON format", async function () {
+    it("Should not be able to add a dataset -- mix no valid course sect, last not JSON format", async function () {
         const id: string = "lastNotJSON";
         let response: string[];
 
@@ -250,7 +250,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            // expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(InsightError);
         }
     });
 
