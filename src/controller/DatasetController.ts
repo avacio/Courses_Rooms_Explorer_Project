@@ -89,23 +89,6 @@ export default class DatasetController {
         for (let key of Array.from( this.data.keys()) ) { Log.trace("PRINTKEYS: " + key); }
     }
 
-    // public listDatasets(): void {
-    //     // var datasets[] = [];
-    //     // let datasets: string[] = new Array(5000);
-    //     // for (let i = 0; i < datasets.length, i++) {}
-    //     // for (let x of Array.from(this.data)) {
-    //     // }
-    //     // for (let x of Array.from( this.data.keys))
-    //     //
-    //     // for (let id = 0; x < this.entryCount(); x++) {
-    //     //     // this.getDataset(x);
-    //     // }
-    //     // let Datasets: InsightDataset[] = [];
-    //     // let Datasets: string[];
-    //     // for (let key of Array.from( this.data.keys())) {Datasets.push(key); }
-    //     // Datasets.push()
-    // }
-
     public setDatasetKind(kind: InsightDatasetKind) {
         this.kind = kind;
     }
