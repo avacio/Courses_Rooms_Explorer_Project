@@ -113,7 +113,7 @@ export function arrayFlat(d: any[][]): any[] {
     }, []);
 }
 
-export function isJson(j: any): boolean { // TODO does not differentiate between .txt and .json
+export function isJson(j: any): boolean { // TODO MIGHT NOT BE USED
     if (typeof j !== "string") { j = JSON.stringify((j)); }
     try {
         j = JSON.parse(j);
