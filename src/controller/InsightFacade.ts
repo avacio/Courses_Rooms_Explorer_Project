@@ -33,6 +33,7 @@ export default class InsightFacade implements IInsightFacade {
                     self.datasetController.addDataset(id, allData); }
                     // Log.trace("allData " + allData);
                     // Log.trace("ENTRY COUNT: " + self.datasetController.entryCount().toString());
+                    self.datasetController.setDatasetKind(kind);
 
                     return resolve([id]);
                 });
@@ -71,10 +72,28 @@ export default class InsightFacade implements IInsightFacade {
     public listDatasets(): Promise<InsightDataset[]> {
         // return Promise.reject("Not implemented.");
         const self = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(async function (resolve, reject) {
             try {
-                // self.datasetController.listDatasets();
-                resolve();
+                // let Datasets: InsightDataset[] = [];
+                let Datasets: any[] = [];
+                //
+                // await self.datasetController.listDatasets();
+                // for (let info in Array.from(self.datasetController.Datasets))
+                //
+                for (let key in Array.from(self.datasetController.data.keys())) {
+                    if (self.datasetController.containsDataset(key)) {
+                        // Datasets.push(self.datasetController.getDataset(key));
+                        let type: string;
+                        let rows: string;
+                        type = self.datasetController.getDatasetKind(key).toString();
+                        rows = self.datasetController.getNumRows(key).toString();
+                        Log.trace("id: " + key + "type: " + type + "number of rows: " + rows );
+                        // Console.log("id: " + key + "type: " + type + "number of rows: " + rows );
+                        Datasets.push(self.datasetController.getDataset(key));
+                        // InsightDataset.numRows;
+                    }
+                }
+                resolve(Datasets);
             } catch (error) {
                 Log.error(error);
                 reject("stub listdatasets");

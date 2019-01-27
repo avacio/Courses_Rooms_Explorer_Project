@@ -20,13 +20,17 @@ import * as fs from "fs";
 const path = __dirname + "/../../data/";
 // const path = path.join(__dirname, "..", "..", "data/data.json");
 export default class DatasetController {
-    private data: Map<string, any[]>;
+    public data: Map<string, any[]>;
+    public kind: InsightDatasetKind;
+    public numRows: number;
 
     constructor(private cache = false) {
         Log.trace("DatasetController constuctor");
         // Log.trace("path   " + path);
         this.data = new Map<string, any[]>(this.checkCache());
         // this.data = new Map<string, any[]>();
+        // this.kind = undefined;
+        // this.numRows = 0;
     }
 
     private checkCache() {
@@ -58,6 +62,7 @@ export default class DatasetController {
         // if (this.data.containsDataset(id)) {
         if (id != null) {
             this.data.delete(id);
+            fs.unlinkSync(__dirname + "/../../data/" + id);
             return true;
         }
         return false;
@@ -82,6 +87,39 @@ export default class DatasetController {
         // });
 
         for (let key of Array.from( this.data.keys()) ) { Log.trace("PRINTKEYS: " + key); }
+    }
+
+    // public listDatasets(): void {
+    //     // var datasets[] = [];
+    //     // let datasets: string[] = new Array(5000);
+    //     // for (let i = 0; i < datasets.length, i++) {}
+    //     // for (let x of Array.from(this.data)) {
+    //     // }
+    //     // for (let x of Array.from( this.data.keys))
+    //     //
+    //     // for (let id = 0; x < this.entryCount(); x++) {
+    //     //     // this.getDataset(x);
+    //     // }
+    //     // let Datasets: InsightDataset[] = [];
+    //     // let Datasets: string[];
+    //     // for (let key of Array.from( this.data.keys())) {Datasets.push(key); }
+    //     // Datasets.push()
+    // }
+
+    public setDatasetKind(kind: InsightDatasetKind) {
+        this.kind = kind;
+    }
+
+    public setNumRows(numRows: number) {
+        this.numRows = numRows;
+    }
+
+    public getDatasetKind(id: string): InsightDatasetKind {
+        return this.kind;
+    }
+
+    public getNumRows(id: string): number {
+        return this.numRows;
     }
 
     // private writeToCache(id: string) {
