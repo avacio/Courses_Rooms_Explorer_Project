@@ -1,4 +1,6 @@
 import Query from "./Query";
+import {InsightDataset} from "./IInsightFacade";
+import DatasetController from "./DatasetController";
 
 export class QueryResult {
     constructor(query: Query, dataset: string) {
@@ -31,10 +33,40 @@ export default class QueryController {
         return true;
     }
 
+    public isValidfield(key: string): boolean {
+        let str = key.split("_");
+        let field = str[1];
+        if (field === "avg" || field === "pass" || field === "fail"
+            || field === "audit" || field === "year" || field === "dept"
+            || field === "id" || field === "instructor"
+            || field === "title" || field === "uuid" ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // public isComp(skey: string, input: string, data: any[]): any[] {
+    //     let str = skey.split("_");
+    //     let ds = str[0];
+    //     let sfield = str[1];
+    //     if (this.isValidfield(sfield)) {
+    //         if (sfield === "dept") {
+    //
+    //         }
+    //     }
+    // }
+
+    // public getField(field: string): string {
+    //     if (field === )
+    // }
+
     // assume query is valid
     public parseQuery(q: any): QueryResult {
         const query = new Query(q.WHERE, q.OPTIONS);
         // TODO
+        // let Object = JSON.parse(q);
+        // Log.trace()
         return new QueryResult(null, ""); // STUB
     }
 }
