@@ -12,13 +12,7 @@ import * as fs from "fs";
 //     kind: InsightDatasetKind;
 //     numRows: number;
 // }
-
-// const path = __dirname + "/data.json";
-// const path = __dirname + "/data.json";
-// const fs = require("fs");
-// const path = __dirname + "/../../data/data.json";
 const path = __dirname + "/../../data/";
-// const path = path.join(__dirname, "..", "..", "data/data.json");
 export default class DatasetController {
     private data: Map<string, any[]>;
 
@@ -88,7 +82,6 @@ export default class DatasetController {
     private writeToCache(id: string) {
     // private writeToCache() {
         const entries: any[] = [];
-
         this.data.forEach(async function (value, key) { // needs to be async or no?
             entries.push([key, value]);
         });
@@ -101,6 +94,7 @@ export default class DatasetController {
             // Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
             // Log.trace("EXISTSPATH: " + fs.existsSync(path));
         }
+        // fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(arrayFlat(entries))); // TODO
         fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(entries)); // TODO
         Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
     }
@@ -113,15 +107,31 @@ export function arrayFlat(d: any[][]): any[] {
     }, []);
 }
 
-export function isJson(j: any): boolean { // TODO MIGHT NOT BE USED
+export function checkParsed(j: any): any { // TODO: being used?
     if (typeof j !== "string") { j = JSON.stringify((j)); }
     try {
         j = JSON.parse(j);
     } catch (error) {
         Log.error("ERROR CAUGHT");
-        return false;
+        return null;
     }
-    // Log.trace("typeof str " + (typeof j).toString());
-    // Log.trace("typeof str === \"object\": " + (typeof j === "object").toString());
-    return typeof j === "object" && j !== null;
+    // Log.trace(JSON.stringify(j));
+    // Log.trace(j.Subject);
+
+    // if (j === undefined || j.Subject === undefined || j.Course === undefined
+    //     || j.Avg === undefined || j.Professor === undefined
+    //     || j.Title === undefined || j.Pass === undefined
+    //     || j.Fail === undefined || j.Audit === undefined
+    // || j.id === undefined
+    // || j.Year === undefined
+    // ) {
+    // Log.trace(j.result);
+    // if (j === null || j === undefined || typeof j !== "object" || j.result === undefined || j.result === null
+    // if (j == null || typeof j !== "object" || j.result == null || j.result === []
+    if (j && j.result
+    ) {
+        return j;
+    }
+    Log.trace("null returned");
+    return null;
 }

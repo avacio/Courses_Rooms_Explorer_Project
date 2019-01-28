@@ -1,6 +1,6 @@
 import Log from "../Util";
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
-import DatasetController, {arrayFlat, isJson} from "./DatasetController";
+import DatasetController, {arrayFlat, checkParsed} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import QueryController from "./QueryController";
@@ -13,13 +13,11 @@ import QueryController from "./QueryController";
 export default class InsightFacade implements IInsightFacade {
     private datasetController: DatasetController;
     private queryController: QueryController;
-    // private meetsMinValidity: boolean;
 
     constructor(cache = false) {
         Log.trace("InsightFacadeImpl::init()");
         this.datasetController = new DatasetController(cache);
         this.queryController = new QueryController();
-        // this.meetsMinValidity = false;
     }
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
@@ -27,7 +25,7 @@ export default class InsightFacade implements IInsightFacade {
 
         return new Promise(async function (resolve, reject) {
             try {
-                // Log.trace("is content json " + isJson(content).toString());
+                // Log.trace("is content json " + checkParsed(content).toString());
                 if (self.datasetController.containsDataset(id)) { // already contains, then reject
                     // throw new InsightError("ID ALREADY ADDED BEFORE" + id);
                     return reject(new InsightError("ID ALREADY ADDED BEFORE" + id));
@@ -54,9 +52,7 @@ export default class InsightFacade implements IInsightFacade {
                     if (allData !== null && allData.length !== 0) {
                         Log.trace("VALID, ADDED ADDDATASET: " + id);
                         // allData = arrayFlat(allData);
-                        // Log.trace(allData.toString());
                         self.datasetController.addDataset(id, allData);
-                        // self.meetsMinValidity = false; // TODO
                         // self.datasetController.addDataset(id, allData.filter((i: any) => i !== null));
                         return resolve([id]);
                     } else {
@@ -84,7 +80,7 @@ export default class InsightFacade implements IInsightFacade {
                 //     // return resolve([id]);
                 // });
             } catch (error) {
-                Log.trace("INVALID, REJECTED ADDDATASET: " + id);
+                // Log.trace("INVALID, REJECTED ADDDATASET: " + id);
                 // Log.error(error);
                 // return reject([id]);
                 return reject (new InsightError (error.message));
@@ -121,8 +117,7 @@ export default class InsightFacade implements IInsightFacade {
                 if (!QueryController.isValidQuery(query)) {
                     return reject (new InsightError ("Query is invalid."));
                 }
-                return reject (new InsightError ("STUB REJECT"));
-
+                return reject (new InsightError ("invalid"));
             } catch (error) {
                 return reject (new InsightError ("invalid"));
             }
@@ -154,67 +149,78 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     private static readZip(id: string, zip: JSZip): Promise<any[]> { // TODO
-        const files: Array<Promise<any[]>> = [];
-        // let meetsMinValidity: boolean = false;
+        let files: Array<Promise<any[]>> = [];
         // let validNum: number = 0;
-        // let self: InsightFacade = this;
         // return new Promise(function (resolve, reject) {
         try {
                 // Log.trace("READZIP ZIP NAME: " + zip.);
-
-                zip.folder("courses").forEach((path: string, file: JSZipObject) => {
+                // RETURNING WILL NOT STOP FOREACH EXECUTION
+                zip.folder("courses").forEach(function (path: string, file: JSZipObject) {
+                    let compromised: boolean = false;
+                    // let f: Promise<any[]> = null;
+                    let fff: Promise<any>; // Promise<void>
                     if (file.dir) {
                         // stop nested folders?
                         // Log.trace("FILE.DIR IS TRUE");
                         throw new InsightError("INVALID nested folder");
                         // return;
                     }
+                    // file.
+
+                    // Log.trace(file.name);
                     if (!file.name.endsWith(".json")) {
                         // Log.trace("NOT JSON NOT JSON");
                         // throw new InsightError("not JSON input");
-                        return;
+                        compromised = true;
                     }
-                    // meetsMinValidity = true;
-                    files.push(file.async("text").then(function (data) {
-                        // meetsMinValidity = true;
-
-                        // files.push(file.async("base64").then((data) => {
-                        if (!isJson(data)) {
-                            // throw new InsightError("not JSON input IN ASYNC");
-                            // return null;
-                            Log.trace("NOT ISJSON");
-                            return;
+                    if (!compromised) {
+                        fff = file.async("text").then(function (data) {
+                            let parsed = checkParsed(data);
+                            Log.trace(parsed);
+                            if (parsed != null) {
+                                return parsed.result.map(InsightFacade.makeEntry).filter(
+                                // parsed.result.map(InsightFacade.makeEntry).filter(
+                                    (i: any) => i != null && i !== []);
+                                //     (i: any) =>
+                                //         i !== null && i !== undefined); // && i !== undefined
+                                // }
+                                // return j.result.map(InsightFacade.makeEntry).filter(
+                            } else { compromised = true;
+                                     return null;
+                            }
                         }
-                        // self.meetsMinValidity = true;
-                        // Log.trace(meetsMinValidity.toString());
-                        // Log.trace("DATA " + data);
-                        // return JSON.parse(data).result.map(InsightFacade.makeEntry).filter(
-                        return JSON.parse(data).result.map(InsightFacade.makeEntry).filter(
-                            // (i: any) => i !== null && i !== []);
-                            (i: any) =>
-                                i !== null);
-                    }));
+                        // ).then((result) => {
+                        //         if (!compromised) {
+                        //             Log.trace("pushed");
+                        //             files.push(fff);
+                        //         }
+                        //     }
+                        );
+                        // if (fff != null) { files.push(fff); }
+                        if (!compromised && fff != null) {
+                            Log.trace("pushed");
+                            files.push(fff); }
+                    }
+                    // if (!compromised) {
+                    //     Log.trace("valid file");
+                    //     // Log.trace(f.toString());
+                    //     files.push(f);
+                    // }
                 });
-                // Log.trace(self.meetsMinValidity.toString());
-
-                // if (!self.meetsMinValidity) {
-                //     Log.trace("DOESNT MEET MIN VALIDITY");
-                //     return Promise.reject(new InsightError("does not mean min validity")); }
-                return Promise.all(files).then(arrayFlat); // TODO
-            } catch (error) {
+                files = files.filter((i: any) => i != null && i !== {} && i !== []);
+                // Log.trace("FILES COUNT " + files.length);
+                return Promise.all(files).then(arrayFlat); // TODO not really working?
+    }   catch (error) {
                 // return; // TODO
                 return Promise.reject(new InsightError("READZIP " + error.message));
                 // return null;
             }
-        // });
     }
 
     private static makeEntry(e: any): any {
         // CHECK VALID TYPE
-        // if (!isString(e.Subject)
-        //     // || (!isStringObject(e.Course) && !isNumberObject(e.Course))
-        // ) { return null; }
 
+        // Log.trace(e.Subject);
         if (e === null || typeof e.Subject !== "string" || typeof e.Course !== "string"
         || typeof e.Avg !== "number" || typeof e.Professor !== "string"
         || typeof e.Title !== "string" || typeof e.Pass !== "number"
@@ -222,6 +228,7 @@ export default class InsightFacade implements IInsightFacade {
         // || typeof e.id !== "string"
         // || typeof e.Year !== "number"
         ) {
+            Log.trace("null returned");
             return null;
             // return; // TODO
         }
