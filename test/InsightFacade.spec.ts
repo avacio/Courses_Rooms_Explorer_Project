@@ -142,7 +142,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.deep.equal(id);
         }
     });
 
@@ -369,7 +369,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(NotFoundError);
         }
     });
 
@@ -382,7 +382,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.deep.equal([id]);
+            // expect(response).to.deep.equal([id]);
+            expect(response).to.be.instanceOf(NotFoundError);
         }
     });
 
@@ -570,32 +571,32 @@ describe("InsightFacade PerformQuery", () => {
     });
 
     // // Dynamically create and run a test for each query in testQueries
-    // it("Should run test queries", function () {
-    //     describe("Dynamic InsightFacade PerformQuery tests", function () {
-    //         for (const test of testQueries) {
-    //             it(`[${test.filename}] ${test.title}`, async function () {
-    //                 let response: any[];
-    //
-    //                 try {
-    //                     response = await insightFacade.performQuery(test.query);
-    //                 } catch (err) {
-    //                     response = err;
-    //                 } finally {
-    //                     if (test.isQueryValid) {
-    //                         expect(response).to.deep.equal(test.result);
-    //                     } else {
-    //                         switch (test.result) {
-    //                             case "InsightError":
-    //                                 expect(response).to.be.instanceOf(InsightError);
-    //                                 break;
-    //                             case "ResultTooLarge":
-    //                                 expect(response).to.be.instanceOf(ResultTooLargeError);
-    //                                 break;
-    //                         }
-    //                     }
-    //                 }
-    //             });
-    //         }
-    //     });
-    // });
+    it("Should run test queries", function () {
+        describe("Dynamic InsightFacade PerformQuery tests", function () {
+            for (const test of testQueries) {
+                it(`[${test.filename}] ${test.title}`, async function () {
+                    let response: any[];
+
+                    try {
+                        response = await insightFacade.performQuery(test.query);
+                    } catch (err) {
+                        response = err;
+                    } finally {
+                        if (test.isQueryValid) {
+                            expect(response).to.deep.equal(test.result);
+                        } else {
+                            switch (test.result) {
+                                case "InsightError":
+                                    expect(response).to.be.instanceOf(InsightError);
+                                    break;
+                                case "ResultTooLarge":
+                                    expect(response).to.be.instanceOf(ResultTooLargeError);
+                                    break;
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    });
 });

@@ -1,6 +1,6 @@
 import Log from "../Util";
 import {InsightDataset, InsightDatasetKind} from "./IInsightFacade";
-import * as fs from "fs";
+import * as fs from "fs-extra"; // * = modules
 
 /**
  * Helper class to help parse and control datasets
@@ -48,11 +48,12 @@ export default class DatasetController {
         return false;
     }
 
-    // returns false if id is null
     public removeDataset(id: string): boolean {
         // if (this.data.containsDataset(id)) {
         if (id != null) {
             this.data.delete(id);
+            fs.removeSync(path + "/" + id + ".json");    // remove from cache as well TODO
+
             return true;
         }
         return false;

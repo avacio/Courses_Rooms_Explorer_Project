@@ -83,21 +83,21 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public removeDataset(id: string): Promise<string> {
-        // return Promise.reject("Not implemented.");
         let self: InsightFacade = this;
         return new Promise(async function (resolve, reject) {
             try {
                 if (self.datasetController.containsDataset(id)) {
                     self.datasetController.removeDataset(id);
+                    return resolve(id);
                 }
                 // self.datasetController.removeDataset(id);
-                return resolve(id);
+                return reject (new NotFoundError (id));
             } catch (error) {
                 Log.error(error);
-                if (!self.datasetController.containsDataset(id)) {
-                    return reject (new NotFoundError ("dataset not found"));
-                }
-                return reject (new InsightError ("invalid"));
+                // if (!self.datasetController.containsDataset(id)) {
+                //     return reject (new NotFoundError ("dataset not found"));
+                // }
+                return reject (new InsightError (id));
             }
         });
     }
@@ -108,9 +108,9 @@ export default class InsightFacade implements IInsightFacade {
             // const queryResult = QueryController.parseQuery(query);
             try {
                 if (!QueryController.isValidQuery(query)) {
-                    return reject (new InsightError ("Query is invalid."));
+                    return reject (new InsightError ("invalid"));
                 }
-                return reject (new InsightError ("STUB REJECT"));
+                return reject (new InsightError ("invalid"));
 
             } catch (error) {
                 return reject (new InsightError ("invalid"));
@@ -148,7 +148,7 @@ export default class InsightFacade implements IInsightFacade {
         // return new Promise(function (resolve, reject) {
         try {
                 zip.folder("courses").forEach((path: string, file: JSZipObject) => {
-                    if (file.dir) { throw new InsightError("INVALID nested folder"); }
+                    // if (file.dir) { throw new InsightError("INVALID nested folder"); } // TODO in specs?
                     if (file.name.endsWith(".json")) {
                         files.push(file.async("text").then(async (data) => {
                             // files.push(file.async("base64").then((data) => {
