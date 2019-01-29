@@ -209,21 +209,25 @@ export default class InsightFacade implements IInsightFacade {
             return null;
             // return; // TODO
         }
-
+        // Log.trace(parseInt(e.Fail, 10).toString());
         // Log.trace("MAKE NON-NULL ENTRY" + e.Subject + e.Course + typeof e.id);
+        try {
         return {
-            courses_dept: e.Subject,
-            courses_id: e.Course,
-            courses_avg: e.Avg,
-            courses_instructor: e.Professor,
-            courses_title: e.Title,
-            courses_pass: e.Pass,
-            courses_fail: e.Fail,
-            courses_audit: e.Audit,
+            courses_dept: e.Subject.toString(),
+            courses_id: e.Course.toString(),
+            courses_avg: parseFloat(e.Avg),
+            courses_instructor: e.Professor.toString(),
+            courses_title: e.Title.toString(),
+            courses_pass: parseInt(e.Pass, 10),
+            courses_fail: parseInt(e.Fail, 10),
+            courses_audit: parseInt(e.Audit, 10),
             courses_uuid: e.id.toString(), // number in JSON
             // courses_year: e.Year    // TODO
             courses_year: ((e.Section === "overall") ? 1900 : parseInt(e.Year, 10))    // TODO string in JSON
         };
+        } catch (error) {
+            return null;
+        }
     }
 }
     // ============
