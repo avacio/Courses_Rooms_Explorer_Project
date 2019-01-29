@@ -15,12 +15,13 @@ import * as fs from "fs-extra"; // * = modules
 const path = __dirname + "/../../data/";
 export default class DatasetController {
     private data: Map<string, any[]>;
+    private insightData: Map<string, InsightDataset>;
 
     constructor(private cache = false) {
         Log.trace("DatasetController constuctor");
         // Log.trace("path   " + path);
         this.data = new Map<string, any[]>(this.checkCache());
-        // this.data = new Map<string, any[]>();
+        this.insightData = new Map<string, InsightDataset>();
     }
 
     private checkCache() {
@@ -34,12 +35,14 @@ export default class DatasetController {
     }
 
     // returns false if id is null
-    public addDataset(id: string, content: any[]): boolean {
+    public addDataset(id: string, content: any[], kind: InsightDatasetKind): boolean {
         // if (this.data.containsDataset(id)) {
         // Log.trace("add ds in dc.ts : " + id);
         if (id != null && content != null) {
         // if (id != null && content != null && !this.containsDataset(id)) {
+            Log.trace("CONTENT LENGTH " + content.length.toString());
             this.data.set(id, content);
+            this.insightData.set(id, {id, kind, numRows: content.length});
 
             this.writeToCache(id);
             // if (this.cache) { this.writeToCache(); }
@@ -52,6 +55,7 @@ export default class DatasetController {
         // if (this.data.containsDataset(id)) {
         if (id != null) {
             this.data.delete(id);
+            this.insightData.delete(id);
             fs.removeSync(path + "/" + id + ".json");    // remove from cache as well TODO
 
             return true;
@@ -63,7 +67,10 @@ export default class DatasetController {
         return this.data.has(id);
     }
 
-    public getDataset(id: string): any[] {
+    public getDatasetContent(id: string): any[] {
+        // if (this.data.get({id, kind: InsightDatasetKind.Courses || InsightDatasetKind.Rooms, numRows: 0}) == null) {
+        //     Log.trace("GETTING NULL"); }
+        // return this.data.get({id, kind: InsightDatasetKind.Courses || InsightDatasetKind.Rooms, numRows: 0});
         return this.data.get(id);
     }
 
@@ -95,6 +102,21 @@ export default class DatasetController {
         // fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(arrayFlat(entries))); // TODO
         fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(entries)); // TODO
         Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
+    }
+
+    public getNumRows(id: string): number {
+        return this.getDatasetContent(id).length;
+    }
+
+    public listDatasets(): InsightDataset[] {
+        let list: InsightDataset[] = [];
+        for (let v of Array.from( this.insightData.values()) ) { // ONLY CALCULATES NUMROWS IN LISTDATASETS
+            // list.push({id: key.id, kind: key.kind, numRows: this.getNumRows(key.id)});
+            // Log.trace("id  kind  numRows  " + key.id + key.kind.toString() + this.getNumRows(key.id).toString());
+            list.push(v);
+        }
+            // list.push({key.id, }); }
+        return list;
     }
 }
 
@@ -128,7 +150,8 @@ export function checkParsed(j: any): any { // TODO: being used?
     // if (j === null || j === undefined || typeof j !== "object" || j.result === undefined || j.result === null
     // if (j == null || typeof j !== "object" || j.result == null || j.result === []
     // Log.trace(j.result.toString());
-    if (j && j.result && j.result.toString() !== ""
+    if (j && j.result
+        && j.result.toString() !== ""
     ) {
         return j;
     }

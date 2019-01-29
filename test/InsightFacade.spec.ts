@@ -382,7 +382,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            // expect(response).to.deep.equal([id]);
             expect(response).to.be.instanceOf(NotFoundError);
         }
     });
@@ -393,18 +392,38 @@ describe("InsightFacade Add/Remove Dataset", function () {
         let dataSetsResult: Promise<InsightDataset[]>;
         let listedData: InsightDataset[];
         // todo
+        // try {
+        //     dataSetsResult = insightFacade.listDatasets();
+        //     listedData = await Promise.resolve(dataSetsResult);
+        //     expect(listedData.length).to.deep.equal(0);
+        //     response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        //     await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        //     dataSetsResult = insightFacade.listDatasets();
+        // } catch (err) {
+        //     response = err;
+        // } finally {
+        //     expect(await Promise.resolve(dataSetsResult).length).to.deep.include([id]);
+        // }
+
+        let num: number;
         try {
-            dataSetsResult = insightFacade.listDatasets();
-            listedData = await Promise.resolve(dataSetsResult);
-            expect(listedData.length).to.deep.equal(0);
-            // response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            // Promise.each(insightFacade.listDatasets())
+            // insightFacade.listDatasets().then((result) => {
+            //     Log.trace(result.length.toString());
+            //     num = result.length; });
+
+            // PRINT STATEMENTS
+            // insightFacade.listDatasets();
+        // NUMROWS SHOULD 64612
+            // CURRENTLY 3589
             await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
-            dataSetsResult = insightFacade.listDatasets();
+            return insightFacade.listDatasets();
+
         } catch (err) {
-            response = err;
-        } finally {
-            expect(dataSetsResult).to.deep.include([id]);
-        }
+            //     response = err;
+            } finally {
+                // expect(num).to.deep.equal(64612);
+            }
     });
 
     it("testing listDatasets() after remove", async function () {

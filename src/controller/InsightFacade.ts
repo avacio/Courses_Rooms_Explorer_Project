@@ -46,7 +46,7 @@ export default class InsightFacade implements IInsightFacade {
                 await InsightFacade.readZip(id, zip).then(async function (allData) {
                     if (allData !== null && allData.length !== 0) {
                         Log.trace("VALID, ADDED ADDDATASET: " + id);
-                        self.datasetController.addDataset(id, allData);
+                        self.datasetController.addDataset(id, allData, kind);
                         return resolve([id]);
                     } else {
                         throw new InsightError ("REJECTED addDataset, allData insignificant: " + id);
@@ -122,14 +122,13 @@ export default class InsightFacade implements IInsightFacade {
     public listDatasets(): Promise<InsightDataset[]> {
         // return Promise.reject("Not implemented.");
         const self = this;
-        return new Promise(function (resolve, reject) {
-            try {
-                // self.datasetController.listDatasets();
-                resolve();
-            } catch (error) {
-                Log.error(error);
-                reject("stub listdatasets");
-            }
+        return new Promise(function (resolve) {
+            // try {
+                resolve(self.datasetController.listDatasets());
+            // } catch (error) {
+            //     Log.error(error);
+            //     reject("stub listdatasets");
+            // }
         });
     }
 
@@ -193,17 +192,18 @@ export default class InsightFacade implements IInsightFacade {
         // ) { return null; }
         // if (e.Subject === "") {e.Subject = "TEST"; }
         // Log.trace(e.Subject);
-        if (e == null || e.Subject == null || e.Course == null
+        if (e == null
+            || e.Subject == null || e.Course == null
             || e.Avg == null || e.Professor == null
             || e.Title == null || e.Pass == null
             || e.Fail == null || e.Audit == null
-        || e.id == null
-        || e.Year == null || typeof e.Subject !== "string" || typeof e.Course !== "string"
-        || typeof e.Avg !== "number" || typeof e.Professor !== "string"
-        || typeof e.Title !== "string" || typeof e.Pass !== "number"
-        || typeof e.Fail !== "number" || typeof e.Audit !== "number"
-        // || typeof e.id !== "string"
-        // || typeof e.Year !== "number"
+        || e.id == null || e.Year == null
+        //     || typeof e.Subject !== "string" || typeof e.Course !== "string"
+        // || typeof e.Avg !== "number" || typeof e.Professor !== "string"
+        // || typeof e.Title !== "string" || typeof e.Pass !== "number"
+        // || typeof e.Fail !== "number" || typeof e.Audit !== "number"
+     //   // || typeof e.id !== "string"
+     //   // || typeof e.Year !== "number"
         ) {
             Log.trace("null returned");
             return null;
