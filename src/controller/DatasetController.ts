@@ -83,16 +83,13 @@ export default class DatasetController {
     // private writeToCache() {
         const entries: any[] = [];
         this.data.forEach(async function (value, key) { // needs to be async or no?
-            entries.push([key, value]);
+            // entries.push([key, value]);
+            entries.push(value);
         });
         // fs.writeFileSync( __dirname + "/" + id + ".json", JSON.stringify(entries)); // TODO
         // fs.writeFileSync( path, JSON.stringify(entries)); // TODO
         if (!fs.existsSync(path)) {
             fs.mkdirSync(path);
-            //// fs.writeFileSync(path + "/data.json", JSON.stringify(entries)); // TODO
-            // fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(entries)); // TODO
-            // Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
-            // Log.trace("EXISTSPATH: " + fs.existsSync(path));
         }
         // fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(arrayFlat(entries))); // TODO
         fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(entries)); // TODO
@@ -103,6 +100,7 @@ export default class DatasetController {
 export function arrayFlat(d: any[][]): any[] {
     return d.reduce((result, i) => {
         result.push(i);
+        // Log.trace("array FLAT");
         return result;
     }, []);
 }

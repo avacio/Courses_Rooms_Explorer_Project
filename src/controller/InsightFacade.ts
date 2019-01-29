@@ -148,80 +148,49 @@ export default class InsightFacade implements IInsightFacade {
         this.datasetController.printAllKeys();
     }
 
-    private static readZip(id: string, zip: JSZip): Promise<any[]> { // TODO
-        let files: Array<Promise<any[]>> = [];
+    private static async readZip(id: string, zip: JSZip): Promise<any[]> { // TODO
+        let checks: Array<Promise<any>> = [];
+        let promises: Array<Promise<any>> = [];
+        let processed: boolean = false;
+        let validEntries: any[] = [];
         // let validNum: number = 0;
         // return new Promise(function (resolve, reject) {
-        try {
-                // Log.trace("READZIP ZIP NAME: " + zip.);
-                // RETURNING WILL NOT STOP FOREACH EXECUTION
-                zip.folder("courses").forEach(function (path: string, file: JSZipObject) {
-                    let compromised: boolean = false;
-                    // let f: Promise<any[]> = null;
-                    let fff: Promise<any>; // Promise<void>
-                    if (file.dir) {
-                        // stop nested folders?
-                        // Log.trace("FILE.DIR IS TRUE");
-                        throw new InsightError("INVALID nested folder");
-                        // return;
-                    }
-                    // file.
+        let process: Promise<any> =
+        new Promise((resolve, reject) => {
+        zip.folder("courses").forEach(function (path: string, file: JSZipObject) {
+                let check1 = (file.dir) ? Promise.reject("Nested folder") : Promise.resolve();
+                let check2 = (!file.name.endsWith(".json")) ? Promise.reject("Not JSON") : Promise.resolve();
 
-                    // Log.trace(file.name);
-                    if (!file.name.endsWith(".json")) {
-                        // Log.trace("NOT JSON NOT JSON");
-                        // throw new InsightError("not JSON input");
-                        compromised = true;
+                let check3 = Promise.all([check1, check2]).then(() => {
+                    try {
+                        file.async("text").then((data) => {
+                            promises.push(JSON.parse(data).result.map(InsightFacade.makeEntry).filter(
+                                (i: any) => i !== null));
+                            // promises.push(JSON.parse(data).result.map(InsightFacade.makeEntry));
+                            // Log.trace(promises.length.toString());
+                        });
+                    } catch (error) { Log.trace("error reading JSON");
                     }
-                    if (!compromised) {
-                        fff = file.async("text").then(function (data) {
-                            let parsed = checkParsed(data);
-                            Log.trace(parsed);
-                            if (parsed != null) {
-                                return parsed.result.map(InsightFacade.makeEntry).filter(
-                                // parsed.result.map(InsightFacade.makeEntry).filter(
-                                    (i: any) => i != null && i !== []);
-                                //     (i: any) =>
-                                //         i !== null && i !== undefined); // && i !== undefined
-                                // }
-                                // return j.result.map(InsightFacade.makeEntry).filter(
-                            } else { compromised = true;
-                                     return null;
-                            }
-                        }
-                        // ).then((result) => {
-                        //         if (!compromised) {
-                        //             Log.trace("pushed");
-                        //             files.push(fff);
-                        //         }
-                        //     }
-                        );
-                        // if (fff != null) { files.push(fff); }
-                        if (!compromised && fff != null) {
-                            Log.trace("pushed");
-                            files.push(fff); }
-                    }
-                    // if (!compromised) {
-                    //     Log.trace("valid file");
-                    //     // Log.trace(f.toString());
-                    //     files.push(f);
-                    // }
-                });
-                files = files.filter((i: any) => i != null && i !== {} && i !== []);
-                // Log.trace("FILES COUNT " + files.length);
-                return Promise.all(files).then(arrayFlat); // TODO not really working?
-    }   catch (error) {
-                // return; // TODO
-                return Promise.reject(new InsightError("READZIP " + error.message));
-                // return null;
-            }
+                }).catch(() => Log.trace("not JSON or nested"));
+            });
+        // processed = true;
+        // resolve();
+        });
+        // promises.push(process);
+                    // .catch(() =>
+        // while ()
+        // return Promise.all(promises).then(arrayFlat);
+        // await process;
+        Log.trace("RETURNED promises " + promises.length.toString());
+        // return Promise.all(promises).then(arrayFlat);
+        return process.then(() => Promise.all(promises).then(arrayFlat));
     }
 
     private static makeEntry(e: any): any {
         // CHECK VALID TYPE
 
         // Log.trace(e.Subject);
-        if (e === null || typeof e.Subject !== "string" || typeof e.Course !== "string"
+        if (e == null || typeof e.Subject !== "string" || typeof e.Course !== "string"
         || typeof e.Avg !== "number" || typeof e.Professor !== "string"
         || typeof e.Title !== "string" || typeof e.Pass !== "number"
         || typeof e.Fail !== "number" || typeof e.Audit !== "number"
@@ -233,7 +202,7 @@ export default class InsightFacade implements IInsightFacade {
             // return; // TODO
         }
 
-        // Log.trace("MAKE NON-NULL ENTRY" + e.Subject + e.Course + typeof e.id);
+        Log.trace("MAKE NON-NULL ENTRY" + e.Subject + e.Course + typeof e.id);
         return {
             courses_dept: e.Subject,
             courses_id: e.Course,
