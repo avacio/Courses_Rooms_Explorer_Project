@@ -126,10 +126,11 @@ export function checkParsed(j: any): any { // TODO: being used?
     // Log.trace(j.result);
     // if (j === null || j === undefined || typeof j !== "object" || j.result === undefined || j.result === null
     // if (j == null || typeof j !== "object" || j.result == null || j.result === []
-    if (j && j.result
+    // Log.trace(j.result.toString());
+    if (j && j.result && j.result.toString() !== ""
     ) {
         return j;
     }
-    Log.trace("null returned");
+    // Log.trace("null returned");
     return null;
 }

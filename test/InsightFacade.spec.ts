@@ -31,6 +31,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         allInvalidJSON: "./test/data/allInvalidJSON.zip",
         allNotJSON: "./test/data/allNotJSON.zip",
         lastNotJSON: "./test/data/lastNotJSON.zip",
+        firstNotJSON: "./test/data/firstNotJSON.zip",
         midNotJSON: "./test/data/midNotJSON.zip",
         nestedFolder: "./test/data/nestedFolder.zip",
         someInvalidJSON: "./test/data/someInvalidJSON.zip",

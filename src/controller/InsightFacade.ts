@@ -25,7 +25,7 @@ export default class InsightFacade implements IInsightFacade {
 
         return new Promise(async function (resolve, reject) {
             try {
-                // Log.trace("is content json " + checkParsed(content).toString());
+                // Log.trace("is content json " + isJson(content).toString());
                 if (self.datasetController.containsDataset(id)) { // already contains, then reject
                     // throw new InsightError("ID ALREADY ADDED BEFORE" + id);
                     return reject(new InsightError("ID ALREADY ADDED BEFORE" + id));
@@ -42,18 +42,11 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 let zip = await new JSZip().loadAsync(content, {base64: true});
 
-                // zip = await zip.filter(function (relativePath, file) {
-                //     Log.trace(file.name);
-                //     return true;
-                // });
-
                 // Log.trace(content);
                 await InsightFacade.readZip(id, zip).then(async function (allData) {
                     if (allData !== null && allData.length !== 0) {
                         Log.trace("VALID, ADDED ADDDATASET: " + id);
-                        // allData = arrayFlat(allData);
                         self.datasetController.addDataset(id, allData);
-                        // self.datasetController.addDataset(id, allData.filter((i: any) => i !== null));
                         return resolve([id]);
                     } else {
                         throw new InsightError ("REJECTED addDataset, allData insignificant: " + id);
@@ -117,7 +110,8 @@ export default class InsightFacade implements IInsightFacade {
                 if (!QueryController.isValidQuery(query)) {
                     return reject (new InsightError ("Query is invalid."));
                 }
-                return reject (new InsightError ("invalid"));
+                return reject (new InsightError ("STUB REJECT"));
+
             } catch (error) {
                 return reject (new InsightError ("invalid"));
             }
@@ -148,49 +142,63 @@ export default class InsightFacade implements IInsightFacade {
         this.datasetController.printAllKeys();
     }
 
-    private static async readZip(id: string, zip: JSZip): Promise<any[]> { // TODO
-        let checks: Array<Promise<any>> = [];
-        let promises: Array<Promise<any>> = [];
-        let processed: boolean = false;
-        let validEntries: any[] = [];
+    private static readZip(id: string, zip: JSZip): Promise<any[]> { // TODO
+        const files: Array<Promise<any[]>> = [];
         // let validNum: number = 0;
         // return new Promise(function (resolve, reject) {
-        let process: Promise<any> =
-        new Promise((resolve, reject) => {
-        zip.folder("courses").forEach(function (path: string, file: JSZipObject) {
-                let check1 = (file.dir) ? Promise.reject("Nested folder") : Promise.resolve();
-                let check2 = (!file.name.endsWith(".json")) ? Promise.reject("Not JSON") : Promise.resolve();
+        try {
+                zip.folder("courses").forEach((path: string, file: JSZipObject) => {
+                    if (file.dir) { throw new InsightError("INVALID nested folder"); }
+                    if (file.name.endsWith(".json")) {
+                        files.push(file.async("text").then(async (data) => {
+                            // files.push(file.async("base64").then((data) => {
+                            // validNum++;
+                            // Log.trace(typeof JSON.parse(data).result.map(InsightFacade.makeEntry).filter((i: any) =>
+                            //     i !== null));
+                            // return JSON.parse(data).result.map(InsightFacade.makeEntry).filter((i: any) =>
+                            //     i !== null);
+                            // return checkParsed(data).result.map(InsightFacade.makeEntry).filter((i: any) =>
+                            //     i !== null);
+                            // let parsed = checkParsed(data);
+                            // return await parsed.result.map(InsightFacade.makeEntry).filter((i: any) =>
+                            //     i !== null);
+                            // let parsed = new Promise((resolve, reject) => {
+                            //     if (checkParsed(data) == null) {reject();}
+                            //     else {resolve(); }///     / }).then(() => {return checkParsed(data).
+                            //     then(result.map(InsightFacade.makeEntry).filter((i: any) =>
+                            //     i !== null)); }).catch(() => { return [null]; });
+                            // await parsed;
 
-                let check3 = Promise.all([check1, check2]).then(() => {
-                    try {
-                        file.async("text").then((data) => {
-                            promises.push(JSON.parse(data).result.map(InsightFacade.makeEntry).filter(
-                                (i: any) => i !== null));
-                            // promises.push(JSON.parse(data).result.map(InsightFacade.makeEntry));
-                            // Log.trace(promises.length.toString());
-                        });
-                    } catch (error) { Log.trace("error reading JSON");
+                            let parsed = checkParsed(data);
+                            return (await parsed === null) ? null :
+                                parsed.result.map(InsightFacade.makeEntry).filter((i: any) => i !== null);
+                        }));
                     }
-                }).catch(() => Log.trace("not JSON or nested"));
-            });
-        // processed = true;
-        // resolve();
-        });
-        // promises.push(process);
-                    // .catch(() =>
-        // while ()
-        // return Promise.all(promises).then(arrayFlat);
-        // await process;
-        Log.trace("RETURNED promises " + promises.length.toString());
-        // return Promise.all(promises).then(arrayFlat);
-        return process.then(() => Promise.all(promises).then(arrayFlat));
+                });
+                // return Promise.all(files); // TODO
+                // Log.trace("FILESLENGTH " + files.length.toString()); // TODO && typeof i === "object")
+                return Promise.all(files).then(arrayFlat).then((f) => f.filter((i: any) => i !== null));
+            } catch (error) {
+                return; // TODO
+                // return Promise.reject(new InsightError("READZIP ERROR"));
+                // return null;
+            }
+        // });
     }
 
     private static makeEntry(e: any): any {
         // CHECK VALID TYPE
-
+        // if (!isString(e.Subject)
+        //     // || (!isStringObject(e.Course) && !isNumberObject(e.Course))
+        // ) { return null; }
+        // if (e.Subject === "") {e.Subject = "TEST"; }
         // Log.trace(e.Subject);
-        if (e == null || typeof e.Subject !== "string" || typeof e.Course !== "string"
+        if (e == null || e.Subject == null || e.Course == null
+            || e.Avg == null || e.Professor == null
+            || e.Title == null || e.Pass == null
+            || e.Fail == null || e.Audit == null
+        || e.id == null
+        || e.Year == null || typeof e.Subject !== "string" || typeof e.Course !== "string"
         || typeof e.Avg !== "number" || typeof e.Professor !== "string"
         || typeof e.Title !== "string" || typeof e.Pass !== "number"
         || typeof e.Fail !== "number" || typeof e.Audit !== "number"
@@ -202,7 +210,7 @@ export default class InsightFacade implements IInsightFacade {
             // return; // TODO
         }
 
-        Log.trace("MAKE NON-NULL ENTRY" + e.Subject + e.Course + typeof e.id);
+        // Log.trace("MAKE NON-NULL ENTRY" + e.Subject + e.Course + typeof e.id);
         return {
             courses_dept: e.Subject,
             courses_id: e.Course,
