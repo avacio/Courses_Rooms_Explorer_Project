@@ -4,6 +4,7 @@ import DatasetController, {arrayFlat, isJson} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import QueryController from "./QueryController";
+import Query from "./Query";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -47,6 +48,7 @@ export default class InsightFacade implements IInsightFacade {
                     if (allData !== null && allData.length !== 0) {
                         Log.trace("VALID, ADDED ADDDATASET: " + id);
                         self.datasetController.addDataset(id, allData);
+                        self.datasetController.setDatasetKind(kind);
                         return resolve([id]);
                     } else {
                         throw new InsightError ("REJECTED addDataset, allData insignificant: " + id);
@@ -103,15 +105,17 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    public performQuery(query: any): Promise<any[]> {
+    public performQuery(query: Query): Promise<any[]> {
         // return Promise.reject (new InsightError ("invalid"));
         return new Promise(function (resolve, reject) {
+            let self: InsightFacade = this;
             // const queryResult = QueryController.parseQuery(query);
             try {
                 if (!QueryController.isValidQuery(query)) {
                     return reject (new InsightError ("Query is invalid."));
                 }
-                return reject (new InsightError ("STUB REJECT"));
+                // return reject (new InsightError ("STUB REJECT"));
+                self.queryController.parseQuery(query);
 
             } catch (error) {
                 return reject (new InsightError ("invalid"));
@@ -136,11 +140,13 @@ export default class InsightFacade implements IInsightFacade {
                         // Datasets.push(self.datasetController.getDataset(key));
                         let type: string;
                         let rows: string;
+                        let info: string;
                         type = self.datasetController.getDatasetKind(key).toString();
                         rows = self.datasetController.getNumRows(key).toString();
                         Log.trace("id: " + key + "type: " + type + "number of rows: " + rows );
-                        // Console.log("id: " + key + "type: " + type + "number of rows: " + rows );
-                        Datasets.push(self.datasetController.getDataset(key));
+                        info = ("id: " + key + "type: " + type + "number of rows: " + rows);
+                        Datasets.push(info);
+                        // Datasets.push(self.datasetController.getDataset(key));
                         // InsightDataset.numRows;
                     }
                 }
