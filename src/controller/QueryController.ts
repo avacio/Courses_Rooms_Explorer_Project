@@ -123,8 +123,9 @@ export default class QueryController {
                     // Object.values(obj)
                     if (obj.Subject !== input) {
                         this.data.pull(item);
-                        return this.data; // stub
+                        // return this.data; // stub
                     }
+                    return this.data;
                 }
             }
         }
