@@ -78,6 +78,11 @@ export default class DatasetController {
         return this.data.size;
     }
 
+    public getAllDataKeys(): string[] {
+        let r = [];
+        for (let key of Array.from( this.data.keys()) ) { r.push(key); }
+        return r;
+    }
     public printAllKeys() {
         // return this.data.keys();
         // this.data.forEach((value: boolean, key: string) => {

@@ -47,7 +47,7 @@ export default class InsightFacade implements IInsightFacade {
                     if (allData !== null && allData.length !== 0) {
                         Log.trace("VALID, ADDED ADDDATASET: " + id);
                         self.datasetController.addDataset(id, allData, kind);
-                        return resolve([id]);
+                        return resolve(self.datasetController.getAllDataKeys());
                     } else {
                         throw new InsightError ("REJECTED addDataset, allData insignificant: " + id);
 
