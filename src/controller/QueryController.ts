@@ -1,4 +1,4 @@
-import Query from "./Query";
+import Query, {Filter} from "./Query";
 import {InsightDataset} from "./IInsightFacade";
 import DatasetController from "./DatasetController";
 import InsightFacade from "./InsightFacade";
@@ -77,18 +77,18 @@ export default class QueryController {
     }
 
     public handleWHERE (q: any): any {
-        let obj = JSON.parse(q);
-        if (obj.WHERE === {}) {
+        // let obj = JSON.parse(q);
+        if (q.WHERE === {}) { // maybe move this if to parseQuery
             // if WHERE is empty return all entries in dataset
             return this.datasetController.getDataset(this.id);
         }
         // get first filter
-        let filter = Object.keys(obj)[0];
+        let filter = Object.keys(q)[0];
         if (filter === "IS") {
             // is comp w skey and input
-            return this.handleIS(Object.keys(filter)[0], Object.keys(filter)[1]);
+            return this.handleIS(Object.keys(filter)[0], Object.values(filter)[0]);
         } else if (filter === "NOT") {
-            return this.handleNOT();
+            return this.handleNOT(Object.values(filter)[0]);
         } else if (filter === "AND") {
             return this.handleAND();
         } else if (filter === "OR") {
@@ -109,24 +109,28 @@ export default class QueryController {
 
     public handleIS(skey: string, input: string ): any[] {
         let str = skey.split("_");
-        let id = str[0];
+        // let id = str[0];
         let sfield = str[1];
-        let data = this.datasetController.getDataset(id);
+        // let data = this.datasetController.getDataset(this.id);
         if (this.isValidfield(sfield)) {
             if (sfield === "dept") {
                 // search data for sfield matching dept
                 // return array of json's that match
                 // data.forEach(function (item)){}
-                for (let item in data) {
+                for (let item in this.data) {
                     // if (item.contains())
-                    return data; // stub
-                    // TODO
+                    let obj = JSON.parse(item);
+                    // Object.values(obj)
+                    if (obj.Subject !== input) {
+                        this.data.pull(item);
+                        return this.data; // stub
+                    }
                 }
             }
         }
     }
 
-    public handleNOT (): any {
+    public handleNOT (filter: any): any {
         return this.data;
     }
 
