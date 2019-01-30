@@ -19,7 +19,6 @@ export default class DatasetController {
 
     constructor(private cache = false) {
         Log.trace("DatasetController constuctor");
-        // Log.trace("path   " + path);
         this.data = new Map<string, any[]>(this.checkCache());
         this.insightData = new Map<string, InsightDataset>();
     }
@@ -36,16 +35,12 @@ export default class DatasetController {
 
     // returns false if id is null
     public addDataset(id: string, content: any[], kind: InsightDatasetKind): boolean {
-        // if (this.data.containsDataset(id)) {
-        // Log.trace("add ds in dc.ts : " + id);
         if (id != null && content != null) {
-        // if (id != null && content != null && !this.containsDataset(id)) {
             Log.trace("CONTENT LENGTH " + content.length.toString());
             this.data.set(id, content);
             this.insightData.set(id, {id, kind, numRows: content.length});
 
             this.writeToCache(id);
-            // if (this.cache) { this.writeToCache(); }
             return true;
         }
         return false;
@@ -67,13 +62,6 @@ export default class DatasetController {
         return this.data.has(id);
     }
 
-    public getDatasetContent(id: string): any[] {
-        // if (this.data.get({id, kind: InsightDatasetKind.Courses || InsightDatasetKind.Rooms, numRows: 0}) == null) {
-        //     Log.trace("GETTING NULL"); }
-        // return this.data.get({id, kind: InsightDatasetKind.Courses || InsightDatasetKind.Rooms, numRows: 0});
-        return this.data.get(id);
-    }
-
     public entryCount(): number {
         return this.data.size;
     }
@@ -84,27 +72,17 @@ export default class DatasetController {
         return r;
     }
     public printAllKeys() {
-        // return this.data.keys();
-        // this.data.forEach((value: boolean, key: string) => {
-        //     Log.trace(key);
-        // });
-
         for (let key of Array.from( this.data.keys()) ) { Log.trace("PRINTKEYS: " + key); }
     }
 
     private writeToCache(id: string) {
-    // private writeToCache() {
         const entries: any[] = [];
         this.data.forEach(async function (value, key) { // needs to be async or no?
-            // entries.push([key, value]);
             entries.push(value);
         });
-        // fs.writeFileSync( __dirname + "/" + id + ".json", JSON.stringify(entries)); // TODO
-        // fs.writeFileSync( path, JSON.stringify(entries)); // TODO
         if (!fs.existsSync(path)) {
             fs.mkdirSync(path);
         }
-        // fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(arrayFlat(entries))); // TODO
         fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(entries)); // TODO
         Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
     }
@@ -112,11 +90,8 @@ export default class DatasetController {
     public listDatasets(): InsightDataset[] {
         let list: InsightDataset[] = [];
         for (let v of Array.from( this.insightData.values()) ) {
-            // list.push({id: key.id, kind: key.kind, numRows: this.getNumRows(key.id)});
-            // Log.trace("id  kind  numRows  " + key.id + key.kind.toString() + this.getNumRows(key.id).toString());
             list.push(v);
         }
-            // list.push({key.id, }); }
         Log.trace("IN DS LIST LENGTH " + list.length.toString());
         return list;
     }
@@ -130,25 +105,6 @@ export function checkParsed(j: any): any { // TODO: being used?
         Log.error("ERROR CAUGHT");
         return null;
     }
-    // Log.trace(JSON.stringify(j));
-    // Log.trace(j.Subject);
-
-    // if (j === undefined || j.Subject === undefined || j.Course === undefined
-    //     || j.Avg === undefined || j.Professor === undefined
-    //     || j.Title === undefined || j.Pass === undefined
-    //     || j.Fail === undefined || j.Audit === undefined
-    // || j.id === undefined
-    // || j.Year === undefined
-    // ) {
-    // Log.trace(j.result);
-    // if (j === null || j === undefined || typeof j !== "object" || j.result === undefined || j.result === null
-    // if (j == null || typeof j !== "object" || j.result == null || j.result === []
-    // Log.trace(j.result.toString());
-    if (j && j.result
-        && j.result.toString() !== ""
-    ) {
-    return j;
-    }
-    // Log.trace("null returned");
+    if (j && j.result && j.result.toString() !== "") { return j; }
     return null;
 }
