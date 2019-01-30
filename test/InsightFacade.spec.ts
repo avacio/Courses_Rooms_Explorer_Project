@@ -225,7 +225,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            expect(response).to.be.instanceOf(InsightError);
+            // expect(response).to.be.instanceOf(InsightError);
+            expect(response).to.deep.equal(id);
         }
     });
 
@@ -251,8 +252,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         } catch (err) {
             response = err;
         } finally {
-            // expect(response).to.deep.equal([id]);
-            expect(response).to.be.instanceOf(InsightError);
+            expect(response).to.deep.equal([id]);
+            // expect(response).to.be.instanceOf(InsightError);
         }
     });
 
@@ -386,6 +387,29 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
+    it("testing listDatasets() after single successful add", async function () {
+        const id: string = "courses";
+        let response: string[];
+        let dataSetsResult: Promise<InsightDataset[]>;
+        let listedData: InsightDataset[];
+        try {
+            expect(await insightFacade.listDatasets()).to.deep.equal([]);
+            // response = await insightFacade.listDatasets();
+            // listedData = await Promise.resolve(dataSetsResult);
+            // expect(listedData.length).to.deep.equal(0);
+            await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            // await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            // dataSetsResult = insightFacade.listDatasets();
+            // response = await insightFacade.listDatasets();
+        } catch (err) {
+            response = err;
+        } finally {
+            // expect(await Promise.resolve(dataSetsResult).length).to.deep.include([id]);
+            // listedData = await Promise.resolve(dataSetsResult);
+            expect(insightFacade.listDatasets()).to.deep.equal({id, kind: InsightDatasetKind.Courses, numRows: 64612});
+        }
+    });
+
     it("testing listDatasets() after successful add", async function () {
         const id: string = "courses";
         let response: string[];
@@ -436,10 +460,13 @@ describe("InsightFacade Add/Remove Dataset", function () {
             dataSetsResult = insightFacade.listDatasets();
             listedData = await Promise.resolve(dataSetsResult);
             expect(listedData.length).to.deep.equal(0);
-
             await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+
             dataSetsResult = insightFacade.listDatasets();
+
             listedData = await Promise.resolve(dataSetsResult);
+            Log.trace("made it here");
+
             expect(listedData.length).to.deep.equal(1);
             expect(dataSetsResult).to.deep.include([id]);
 
@@ -477,6 +504,23 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
             await insightFacade.addDataset("crwr", datasets["crwr"], InsightDatasetKind.Courses);
             dataSetsResult = insightFacade.listDatasets();
+            // dataSetsResult = insightFacade.listDatasets();
+            // listedData = Promise.resolve(dataSetsResult);
+            // expect(listedData.length).to.deep.equal(0);
+            //
+            // await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+            // dataSetsResult = insightFacade.listDatasets();
+            // listedData = await Promise.resolve(dataSetsResult);
+            // expect(listedData.length).to.deep.equal(1);
+            // expect(dataSetsResult).to.deep.include([id]);
+            //
+            // await insightFacade.removeDataset(id);
+            // dataSetsResult = insightFacade.listDatasets();
+            // listedData = await Promise.resolve(dataSetsResult);
+            // expect(listedData.length).to.deep.equal(0);
+            //
+            // await insightFacade.addDataset("crwr", datasets["crwr"], InsightDatasetKind.Courses);
+            // dataSetsResult = insightFacade.listDatasets();
         } catch (err) {
             response = err;
         } finally {

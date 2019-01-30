@@ -109,28 +109,17 @@ export default class DatasetController {
         Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
     }
 
-    public getNumRows(id: string): number {
-        return this.getDatasetContent(id).length;
-    }
-
     public listDatasets(): InsightDataset[] {
         let list: InsightDataset[] = [];
-        for (let v of Array.from( this.insightData.values()) ) { // ONLY CALCULATES NUMROWS IN LISTDATASETS
+        for (let v of Array.from( this.insightData.values()) ) {
             // list.push({id: key.id, kind: key.kind, numRows: this.getNumRows(key.id)});
             // Log.trace("id  kind  numRows  " + key.id + key.kind.toString() + this.getNumRows(key.id).toString());
             list.push(v);
         }
             // list.push({key.id, }); }
+        Log.trace("IN DS LIST LENGTH " + list.length.toString());
         return list;
     }
-}
-
-export function arrayFlat(d: any[][]): any[] {
-    return d.reduce((result, i) => {
-        result.push(i);
-        // Log.trace("array FLAT");
-        return result;
-    }, []);
 }
 
 export function checkParsed(j: any): any { // TODO: being used?
@@ -158,7 +147,7 @@ export function checkParsed(j: any): any { // TODO: being used?
     if (j && j.result
         && j.result.toString() !== ""
     ) {
-        return j;
+    return j;
     }
     // Log.trace("null returned");
     return null;

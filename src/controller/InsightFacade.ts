@@ -1,6 +1,6 @@
 import Log from "../Util";
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
-import DatasetController, {arrayFlat, checkParsed} from "./DatasetController";
+import DatasetController, {checkParsed} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import QueryController from "./QueryController";
@@ -22,43 +22,45 @@ export default class InsightFacade implements IInsightFacade {
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let self: InsightFacade = this;
-
         return new Promise(async function (resolve, reject) {
             try {
                 // Log.trace("is content json " + isJson(content).toString());
                 if (self.datasetController.containsDataset(id)) { // already contains, then reject
-                    // throw new InsightError("ID ALREADY ADDED BEFORE" + id);
                     return reject(new InsightError("ID ALREADY ADDED BEFORE" + id));
-                    // return reject([id]);
-                } // already contains, then reject
-                if (content == null || kind == null || content === "" ||
+                }
+                if (content == null || kind == null || content === "" || id === "" || id == null ||
                     ((kind !== InsightDatasetKind.Courses) && (kind !== InsightDatasetKind.Rooms))) {
                     return reject(new InsightError ("INVALID, REJECTED ADDDATASET, content null: " + id));
-                    // return Promise.reject ([id]);
                 }
                 if (content.substring(0, 4) !== "UEsD") {
                     return reject(new InsightError("INPUT dataset is not a zip: " + id));
                     // return reject([id]);
                 }
-                let zip = await new JSZip().loadAsync(content, {base64: true});
+                // let zip = await new JSZip().loadAsync(content, {base64: true});
+
+                await new JSZip().loadAsync(content, {base64: true})
+                    .then((zip) => InsightFacade.readZip(id, zip).then(function (allData) {
+                        // allData = allData.filter((i: any) => i !== null && i !== {});
+                        if (allData !== null && allData.length !== 0) {
+                                Log.trace("VALID, ADDED ADDDATASET: " + id);
+                                // Log.trace(allData.length.toString());
+                                self.datasetController.addDataset(id, [].concat.apply([], allData), kind);
+                                return resolve(self.datasetController.getAllDataKeys());
+                            } else {
+                                return reject(new InsightError ("REJECTED addDataset, allData insignificant: " + id));
+                            }}));
 
                 // Log.trace(content);
-                await InsightFacade.readZip(id, zip).then(async function (allData) {
-                    if (allData !== null && allData.length !== 0) {
-                        Log.trace("VALID, ADDED ADDDATASET: " + id);
-                        self.datasetController.addDataset(id, allData, kind);
-                        return resolve(self.datasetController.getAllDataKeys());
-                    } else {
-                        throw new InsightError ("REJECTED addDataset, allData insignificant: " + id);
-
-                        // return reject(new InsightError ("REJECTED addDataset, allData insignificant: " + id));
-                        // return Promise.reject ([id]);
-                    }
-                    // Log.trace("allData " + allData);
-                    // Log.trace("ENTRY COUNT: " + self.datasetController.entryCount().toString());
-
-                    // return resolve([id]);
-                });
+                // await InsightFacade.readZip(id, zip).then(function (allData) {
+                //     if (allData !== null && allData.length !== 0) {
+                //         Log.trace("VALID, ADDED ADDDATASET: " + id);
+                //         Log.trace(allData.length.toString());
+                //         self.datasetController.addDataset(id, allData, kind);
+                //         return resolve(self.datasetController.getAllDataKeys());
+                //     } else {
+                //         throw new InsightError ("REJECTED addDataset, allData insignificant: " + id);
+                //     }
+                // });
                 ///////////
 
                 // let results = await InsightFacade.readZip(id, zip);
@@ -124,7 +126,8 @@ export default class InsightFacade implements IInsightFacade {
         const self = this;
         return new Promise(function (resolve) {
             // try {
-                resolve(self.datasetController.listDatasets());
+            // Log.trace(self.datasetController.listDatasets().length.toString());
+            resolve(self.datasetController.listDatasets());
             // } catch (error) {
             //     Log.error(error);
             //     reject("stub listdatasets");
@@ -143,89 +146,122 @@ export default class InsightFacade implements IInsightFacade {
 
     private static readZip(id: string, zip: JSZip): Promise<any[]> { // TODO
         const files: Array<Promise<any[]>> = [];
-        // let validNum: number = 0;
         // return new Promise(function (resolve, reject) {
         try {
-                zip.folder("courses").forEach((path: string, file: JSZipObject) => {
-                    // if (file.dir) { throw new InsightError("INVALID nested folder"); } // TODO in specs?
-                    if (file.name.endsWith(".json")) {
-                        files.push(file.async("text").then(async (data) => {
-                            // files.push(file.async("base64").then((data) => {
-                            // validNum++;
-                            // Log.trace(typeof JSON.parse(data).result.map(InsightFacade.makeEntry).filter((i: any) =>
-                            //     i !== null));
-                            // return JSON.parse(data).result.map(InsightFacade.makeEntry).filter((i: any) =>
-                            //     i !== null);
-                            // return checkParsed(data).result.map(InsightFacade.makeEntry).filter((i: any) =>
-                            //     i !== null);
-                            // let parsed = checkParsed(data);
-                            // return await parsed.result.map(InsightFacade.makeEntry).filter((i: any) =>
-                            //     i !== null);
-                            // let parsed = new Promise((resolve, reject) => {
-                            //     if (checkParsed(data) == null) {reject();}
-                            //     else {resolve(); }///     / }).then(() => {return checkParsed(data).
-                            //     then(result.map(InsightFacade.makeEntry).filter((i: any) =>
-                            //     i !== null)); }).catch(() => { return [null]; });
-                            // await parsed;
+                // zip.folder("courses").forEach((path: string, file: JSZipObject) => {
+                //     // if (file.dir) { throw new InsightError("INVALID nested folder"); } // TODO in specs?
+                //     if (file.name.endsWith(".json")) {
+                //         files.push(file.async("text").then(async (data) => {
+                //             let parsed = checkParsed(data);
+                //             return (await parsed === null) ? null :
+                //                 parsed.result.map(InsightFacade.makeEntry).filter((i: any) => i !== null);
+                //         }));
+                //     }
+                // });
+                // // Log.trace("FILESLENGTH " + files.length.toString()); // TODO && typeof i === "object")
+                // return Promise.all(files).then(arrayFlat).then((f) => f.filter((i: any) => i !== null));
 
+            zip.folder("courses").forEach((path: string, file: JSZipObject) => {
+                // if (file.dir) { throw new InsightError("INVALID nested folder"); } // TODO in specs?
+                // if (file.name.endsWith(".json")) { // FILES DON'T HAVE TO BE JSON, JUST IN JSON FORMAT
+                    files.push(file.async("text").then( (data) => {
+                        // let parsed = checkParsed(data);
+                        // return (await parsed === null) ? null :
+                        try {
                             let parsed = checkParsed(data);
-                            return (await parsed === null) ? null :
-                                parsed.result.map(InsightFacade.makeEntry).filter((i: any) => i !== null);
-                        }));
-                    }
-                });
-                // return Promise.all(files); // TODO
-                // Log.trace("FILESLENGTH " + files.length.toString()); // TODO && typeof i === "object")
-                return Promise.all(files).then(arrayFlat).then((f) => f.filter((i: any) => i !== null));
-            } catch (error) {
-                return; // TODO
+                            return (parsed == null) ? null :
+                                parsed.result.map((val: any) => InsightFacade.makeEntry(val, id));
+                        } catch (error) {
+                            Log.trace("JSON reading error");
+                            return null;
+                        }
+                        // .filter((i: any) => i !== null)
+                    }));
+                // }
+            });
+            // Log.trace("FILESLENGTH " + files.length.toString()); // TODO && typeof i === "object")
+            // return Promise.all(files).then(arrayFlat);
+            // Log.trace("FILES NUM " + files.filter((i: any) => i !== null ).length.toString());
+            return Promise.all(files).then((f) => f.filter((i: any) => i !== null ));
+        } catch (error) {
+                Log.trace("CAUGHT ERROR READZIP");
+                // return; // TODO
                 // return Promise.reject(new InsightError("READZIP ERROR"));
-                // return null;
+                return null;
             }
         // });
     }
 
-    private static makeEntry(e: any): any {
+    private static makeEntry(e: any, id: string): any {
         // CHECK VALID TYPE
         // if (!isString(e.Subject)
         //     // || (!isStringObject(e.Course) && !isNumberObject(e.Course))
         // ) { return null; }
         // if (e.Subject === "") {e.Subject = "TEST"; }
         // Log.trace(e.Subject);
-        if (e == null
-            || e.Subject == null || e.Course == null
-            || e.Avg == null || e.Professor == null
-            || e.Title == null || e.Pass == null
-            || e.Fail == null || e.Audit == null
-        || e.id == null || e.Year == null
-        //     || typeof e.Subject !== "string" || typeof e.Course !== "string"
-        // || typeof e.Avg !== "number" || typeof e.Professor !== "string"
-        // || typeof e.Title !== "string" || typeof e.Pass !== "number"
-        // || typeof e.Fail !== "number" || typeof e.Audit !== "number"
-     //   // || typeof e.id !== "string"
-     //   // || typeof e.Year !== "number"
-        ) {
-            Log.trace("null returned");
-            return null;
-            // return; // TODO
-        }
+     //    if (e == null
+     //        || e.Subject == null || e.Course == null
+     //        || e.Avg == null || e.Professor == null
+     //        || e.Title == null || e.Pass == null
+     //        || e.Fail == null || e.Audit == null
+     //    || e.id == null || e.Year == null
+     //    //     || typeof e.Subject !== "string" || typeof e.Course !== "string"
+     //    // || typeof e.Avg !== "number" || typeof e.Professor !== "string"
+     //    // || typeof e.Title !== "string" || typeof e.Pass !== "number"
+     //    // || typeof e.Fail !== "number" || typeof e.Audit !== "number"
+     // //   // || typeof e.id !== "string"
+     // //   // || typeof e.Year !== "number"
+     //    ) {
+     //        Log.trace("null returned");
+     //        return null;
+     //        // return; // TODO
+     //    }
         // Log.trace(parseInt(e.Fail, 10).toString());
         // Log.trace("MAKE NON-NULL ENTRY" + e.Subject + e.Course + typeof e.id);
         try {
-        return {
-            courses_dept: e.Subject.toString(),
-            courses_id: e.Course.toString(),
-            courses_avg: parseFloat(e.Avg),
-            courses_instructor: e.Professor.toString(),
-            courses_title: e.Title.toString(),
-            courses_pass: parseInt(e.Pass, 10),
-            courses_fail: parseInt(e.Fail, 10),
-            courses_audit: parseInt(e.Audit, 10),
-            courses_uuid: e.id.toString(), // number in JSON
-            // courses_year: e.Year    // TODO
-            courses_year: ((e.Section === "overall") ? 1900 : parseInt(e.Year, 10))    // TODO string in JSON
-        };
+        // return {
+        //     courses_dept: e.Subject.toString(),
+        //     courses_id: e.Course.toString(),
+        //     courses_avg: parseFloat(e.Avg),
+        //     courses_instructor: e.Professor.toString(),
+        //     courses_title: e.Title.toString(),
+        //     courses_pass: parseInt(e.Pass, 10),
+        //     courses_fail: parseInt(e.Fail, 10),
+        //     courses_audit: parseInt(e.Audit, 10),
+        //     courses_uuid: e.id.toString(), // number in JSON
+        //     // courses_year: e.Year    // TODO
+        //     courses_year: ((e.Section === "overall") ? 1900 : parseInt(e.Year, 10))    // TODO string in JSON
+        // };
+
+            // [id + "_dept"] : e.Subject,
+            //     courses_id: (typeof e.Course !== "string") ? e.Course.toString() : e.Course,
+            //     courses_avg: (typeof e.Avg !== "number") ? parseFloat(e.Avg) : e.Avg,
+            //     courses_instructor: e.Professor,
+            //     courses_title: e.Title,
+            //     courses_pass: (typeof e.Pass !== "number") ? parseInt(e.Pass, 10) : e.Pass,
+            //     courses_fail: (typeof e.Fail !== "number") ? parseInt(e.Fail, 10) : e.Fail,
+            //     courses_audit: (typeof e.Audit !== "number") ? parseInt(e.Audit, 10) : e.Audit,
+            //     courses_uuid: (typeof e.id !== "string") ? e.id.toString() : e.id, // number in JSON
+            //     courses_year: (e.Section && e.Section === "overall") ? 1900 :
+            //     ((typeof e.Year !== "number") ? parseInt(e.Year, 10) : e.Year)
+
+            // return {
+            let entry: any = {};
+            entry[id + "_dept"] = e.Subject;
+            entry[id + "_id"] = (typeof e.Course !== "string") ? e.Course.toString() : e.Course;
+            entry[id + "_avg"] = (typeof e.Avg !== "number") ? parseFloat(e.Avg) : e.Avg;
+            entry[id + "_instructor"] = e.Professor;
+            entry[id + "_title"] = e.Title;
+            entry[id + "_pass"] = (typeof e.Pass !== "number") ? parseInt(e.Pass, 10) : e.Pass;
+            entry[id + "_fail"] = (typeof e.Fail !== "number") ? parseInt(e.Fail, 10) : e.Fail;
+            entry[id + "_audit"] = (typeof e.Audit !== "number") ? parseInt(e.Audit, 10) : e.Audit;
+            entry[id + "_uuid"] = (typeof e.id !== "string") ? e.id.toString() : e.id;
+            entry[id + "_year"] = (e.Section && e.Section === "overall") ? 1900 :
+                    ((typeof e.Year !== "number") ? parseInt(e.Year, 10) : e.Year);
+            // };
+            return entry;
         } catch (error) {
+            Log.error(error.message);
             return null;
         }
     }
