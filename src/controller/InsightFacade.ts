@@ -97,7 +97,7 @@ export default class InsightFacade implements IInsightFacade {
                 // if (!self.datasetController.containsDataset(id)) {
                 //     return reject (new NotFoundError ("dataset not found"));
                 // }
-                return reject (new InsightError (id));
+                return reject (new InsightError (error.message));
             }
         });
     }
