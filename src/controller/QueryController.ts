@@ -88,14 +88,16 @@ export default class QueryController {
         // return new Promise(function (reso))
         try {
             this.data = this.datasetController.getDataset(this.id); // all data entries for id
-            let filteredWHERE = this.handleWHERE(obj.WHERE); // filter data
-            let processedData = this.handleOPTIONS(filteredWHERE); // process Options
+            let filtered = this.handleWHERE(obj.WHERE); // filter data
+            // let processedData = this.handleOPTIONS(filteredWHERE); // process Options
             let query = new Query(obj.WHERE, obj.OPTIONS); // original query // do we need this?
-            // return new QueryResult(query, processedData); // return
-            // return new QueryResult(null, ""); // STUB
 
-            if (obj.OPTIONS.ORDER) { this.data = sortResults(this.data, obj.OPTIONS.ORDER); }
-            return organizeResults(this.data, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
+            if (obj.OPTIONS.ORDER) {
+                // filtered formerly this.data
+                let sorted = sortResults(filtered, obj.OPTIONS.ORDER);
+                return organizeResults(sorted, obj.OPTIONS.COLUMNS);
+            }
+            return organizeResults(filtered, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
         } catch (error) {
             if (error.message === "RTL") { throw new ResultTooLargeError("RTL");
             } else { throw new InsightError("parse query problem"); }
@@ -114,12 +116,13 @@ export default class QueryController {
         }
         let data: any[] = [];
         let filter = Object.keys(q)[0];
+        Log.trace("filter: " + filter);
 
-        // for (let i = 0;
         if (filter === "IS") {
             // is comp w skey and input
             data.push(this.handleIS(Object.keys(filter)[0], Object.values(filter)[0]));
-
+            // Log.trace("skey:" + Object.keys(filter)[0]);
+            // Log.trace("input:" + Object.values(filter)[0]);
         } else if (filter === "NOT") {
             data.push(this.handleNOT(Object.values(filter)));
         } else if (filter === "AND") {
@@ -145,7 +148,7 @@ export default class QueryController {
         let str = skey.split("_");
         let sfield = str[1];
 
-        let filteredData: any[] = [];
+        let data: any[] = [];
         if (QueryController.isValidStringField(sfield)) {
 // =======
 //         // let data = this.datasetController.getDataset(this.id);
@@ -158,13 +161,13 @@ export default class QueryController {
                 let obj = JSON.parse(item);
                 if (sfield === "dept") {
                     if (obj.Subject === input) {
-                        Log.trace("yoyooyoyoyo");
-                        filteredData.push(item);
+                        Log.trace("Subject:" + obj);
+                        data.push(item);
                     }
-                    return filteredData;
+                    return data;
                 }
                 if (sfield === "id") {
-                    return filteredData; // stub
+                    return data; // stub
                 }
             }
         }

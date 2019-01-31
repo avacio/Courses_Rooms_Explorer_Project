@@ -127,7 +127,7 @@ export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {
 }
 
 // assumes that only relevant queried sections are in data field
-export function sortResults(data: any[], order: string) {
+export function sortResults(data: any[], order: string): any {
     // increasing order
     const before = -1;
     const after = -before;
