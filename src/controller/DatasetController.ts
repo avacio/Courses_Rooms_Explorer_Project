@@ -47,7 +47,6 @@ export default class DatasetController {
     }
 
     public removeDataset(id: string): boolean {
-        // if (this.data.containsDataset(id)) {
         if (id != null) {
             this.data.delete(id);
             this.insightData.delete(id);
@@ -61,12 +60,12 @@ export default class DatasetController {
         return this.data.get(id);
     }
 
-    public containsDataset(id: string): boolean {
-        return this.data.has(id);
+    public getNumRows(id: string): number {
+        return this.insightData.get(id).numRows;
     }
 
-    public entryCount(): number {
-        return this.data.size;
+    public containsDataset(id: string): boolean {
+        return this.data.has(id);
     }
 
     public getAllDataKeys(): string[] {
@@ -98,6 +97,8 @@ export default class DatasetController {
         return list;
     }
 }
+//////////////////
+// HELPER
 
 export function checkParsed(j: any): any { // TODO: being used?
     if (typeof j !== "string") { j = JSON.stringify((j)); }
@@ -109,4 +110,38 @@ export function checkParsed(j: any): any { // TODO: being used?
     }
     if (j && j.result && j.result.toString() !== "") { return j; }
     return null;
+}
+
+// will put data in relevant columns
+export function organizeResults(data: any[], columns: string[]): any[] {
+    return data.map((i: any) => filterObjectFields(i, columns));
+}
+
+// makes one line with given column keys
+export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {[key: string]: any} {
+    const filtered: {[key: string]: any} = {};
+    for (let k of keys) {
+        filtered[k] = obj[k];
+    }
+    return filtered;
+}
+
+// assumes that only relevant queried sections are in data field
+export function sortResults(data: any[], order: string) {
+    // increasing order
+    const before = -1;
+    const after = -before;
+    if (order !== "") {
+        data.sort((i1: any, i2: any) => {
+            let val1 = i1[order];
+            let val2 = i2[order];
+
+            if (val1 < val2) {
+                return before;
+            } else if (val1 > val2) {
+                return after;
+            }
+            return 0;
+        });
+    }
 }

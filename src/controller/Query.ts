@@ -1,3 +1,4 @@
+/// MIGHT NOT BE USED
 export default class Query {
     constructor(
         public WHERE: Filter, // TODO
