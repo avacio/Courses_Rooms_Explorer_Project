@@ -6,7 +6,7 @@ export default class Query {
 
 }
 
-enum Filter { IS, NOT, EQ, LT, GT, AND, OR }
+export enum Filter { IS, NOT, EQ, LT, GT, AND, OR }
 
 interface IQueryOptions {
     COLUMNS: string[];

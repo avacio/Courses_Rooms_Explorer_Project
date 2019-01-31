@@ -95,7 +95,6 @@ export default class DatasetController {
         for (let v of Array.from( this.insightData.values()) ) {
             list.push(v);
         }
-        Log.trace("IN DS LIST LENGTH " + list.length.toString());
         return list;
     }
 }
