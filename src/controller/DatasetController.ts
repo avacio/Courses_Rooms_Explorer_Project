@@ -47,7 +47,6 @@ export default class DatasetController {
     }
 
     public removeDataset(id: string): boolean {
-        // if (this.data.containsDataset(id)) {
         if (id != null) {
             this.data.delete(id);
             this.insightData.delete(id);
@@ -59,6 +58,10 @@ export default class DatasetController {
 
     public getDataset(id: string): any[] {
         return this.data.get(id);
+    }
+
+    public getNumRows(id: string): number {
+        return this.insightData.get(id).numRows;
     }
 
     public containsDataset(id: string): boolean {
