@@ -1,5 +1,12 @@
 import Log from "../Util";
-import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
+import {
+    IInsightFacade,
+    InsightDataset,
+    InsightDatasetKind,
+    InsightError,
+    NotFoundError,
+    ResultTooLargeError
+} from "./IInsightFacade";
 import DatasetController, {checkParsed} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
@@ -12,13 +19,13 @@ import Query from "./Query";
  *
  */
 export default class InsightFacade implements IInsightFacade {
-    private datasetController: DatasetController;
-    private queryController: QueryController;
+    protected datasetController: DatasetController;
+    protected queryController: QueryController;
 
     constructor(cache = false) {
         Log.trace("InsightFacadeImpl::init()");
         this.datasetController = new DatasetController(cache);
-        this.queryController = new QueryController();
+        this.queryController = new QueryController(this.datasetController);
     }
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
@@ -70,21 +77,25 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public performQuery(query: Query): Promise<any[]> {
-        // return Promise.reject (new InsightError ("invalid"));
+        let self: InsightFacade = this;
         return new Promise(function (resolve, reject) {
-            let self: InsightFacade = this;
             // const queryResult = QueryController.parseQuery(query);
             try {
-                if (!QueryController.isValidQuery(query)) {
-                    return reject (new InsightError ("invalid"));
+                if (!self.queryController.isValidQuery(query)) {
+                    return reject (new InsightError ("invalid query"));
                 }
-                // return reject (new InsightError ("STUB REJECT"));
-                self.queryController.parseQuery(query);
+                if (!self.datasetController.containsDataset(self.queryController.getQueryID())) {
+                    return reject (new InsightError ("dataset has not been added"));
+                }
+                let results: any[] = self.queryController.parseQuery(query);
+                if (results.length > 5000) { reject (new ResultTooLargeError()); }
 
+                return resolve(results); // stub
             } catch (error) {
-                return reject (new InsightError ("invalid"));
+                if (error.message === "RTL") { reject (new ResultTooLargeError());
+                } else { reject (new InsightError ("performQuery error")); }
+                // reject (new ResultTooLargeError());
             }
-
         });
     }
 
@@ -93,15 +104,6 @@ export default class InsightFacade implements IInsightFacade {
         return new Promise(function (resolve) {
             resolve(self.datasetController.listDatasets());
         });
-    }
-
-    // FOR TESTING
-    public getMapCount(): number {
-        return this.datasetController.entryCount();
-    }
-
-    public printKeys() {
-        this.datasetController.printAllKeys();
     }
 
     private static readZip(id: string, zip: JSZip): Promise<any[]> { // TODO
