@@ -68,10 +68,6 @@ export default class DatasetController {
         return this.data.has(id);
     }
 
-    public entryCount(): number {
-        return this.data.size;
-    }
-
     public getAllDataKeys(): string[] {
         let r = [];
         for (let key of Array.from( this.data.keys()) ) { r.push(key); }

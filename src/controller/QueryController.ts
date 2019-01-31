@@ -1,5 +1,5 @@
 import Query, {Filter} from "./Query";
-import {InsightDataset, InsightError} from "./IInsightFacade";
+import {InsightDataset, InsightError, ResultTooLargeError} from "./IInsightFacade";
 import DatasetController from "./DatasetController";
 import InsightFacade from "./InsightFacade";
 import Log from "../Util";
@@ -16,11 +16,16 @@ export default class QueryController {
     private id: string;
     private data: any;
     private datasetController: DatasetController;
+    // private columns: string[]; // necessary?
+    // private order: string;
 
     constructor(datasetController: DatasetController) {
     // constructor() {
         this.id = "";
         this.datasetController = datasetController;
+        this.data = null;
+        // this.columns = [];
+        // this.order = "";
         // this.datasetController = new DatasetController(); // shouldn't create new
     }
 
@@ -43,9 +48,11 @@ export default class QueryController {
             return false;
         }
 
+        // this.columns = []; // clears from past queries
         Log.trace("COLUMNS LENGTH " + opts.COLUMNS.length.toString());
         let idKey: string = "";
         for (let col of opts.COLUMNS) {
+            // this.columns.push(col);
             if (col.indexOf("_") !== -1) {
                 let k: string = col.split("_")[0];
                 if (idKey === "") {
@@ -56,6 +63,9 @@ export default class QueryController {
             }
         }
         this.id = idKey;
+
+        // if (opts.ORDER) { this.order = opts.ORDER;
+        // } else { this.order = ""; }
         Log.trace("ID TO PARSE: " + this.id);
         return true;
     }
@@ -83,10 +93,11 @@ export default class QueryController {
 
     // assume query is valid
     // public parseQuery(obj: any): QueryResult {
-    public parseQuery(obj: any): QueryResult {
+    public parseQuery(obj: any): QueryResult | any {
         // let self: QueryController = this;
         // const query = new Query(q.WHERE, q.OPTIONS);
         // TODO
+        // return new Promise(function (reso))
         try {
             // if (typeof q !== "string") { q = JSON.stringify((q)); }
             // let obj = JSON.parse(q); // create JSON objects
@@ -94,25 +105,31 @@ export default class QueryController {
             // Log.trace(JSON.stringify(obj.WHERE));
             // this.id = this.getID(obj); // set id (not checking for multiple id's yet which would be error)
             // added to checkValid! checks for multiple
-            // this.data = this.datasetController.getDataset(this.id); // all data entries for id
+            // this.qOptions = q.OPTIONS;
+            this.data = this.datasetController.getDataset(this.id); // all data entries for id
             let filteredWHERE = this.handleWHERE(obj.WHERE); // filter data
             let processedData = this.handleOPTIONS(filteredWHERE); // process Options
-            let query = new Query(obj.WHERE, obj.OPTIONS); // original query
-            return new QueryResult(query, processedData); // return
+            let query = new Query(obj.WHERE, obj.OPTIONS); // original query // do we need this?
+            // return new QueryResult(query, processedData); // return
             // return new QueryResult(null, ""); // STUB
+
+            if (obj.OPTIONS.ORDER) { this.sortResults(obj.OPTIONS.ORDER); }
+            return this.organizeResults(obj.OPTIONS.COLUMNS); // the sorted, rendered array!
         } catch (error) {
-            throw new InsightError("parse query problem");
+            if (error.message === "RTL") { throw new ResultTooLargeError("RTL");
+            } else { throw new InsightError("parse query problem"); }
         }
     }
 
     public handleWHERE (q: any): any {
-        // Log.trace(q.WHERE.toString());
-        if (q.WHERE === {}) { // maybe move this if to parseQuery
-            // if WHERE is empty return all entries in dataset
-            // return this.datasetController.getDataset(this.id);
-            return; // stub: need to filter and sort by columns
-            // maybe do this in another function called from InsightFacade?
-            //      or else will throw InsightError instead of ResultTooLargeError
+        // Log.trace(JSON.stringify(q.WHERE));
+        // Log.trace(q.keys().length.toString());
+        // Log.trace(Object.keys(q).length.toString());
+        let wEntryNum: number = Object.keys(q).length;
+        // if (q.WHERE === {}) { // maybe move this if to parseQuery
+        if (wEntryNum === 0) { // maybe move this if to parseQuery
+            Log.trace("empty where");
+            if (this.data.length > 5000) { throw new ResultTooLargeError("RTL"); }
         }
         // map((val: any) => InsightFacade.makeEntry(val, id))
 
@@ -142,9 +159,8 @@ export default class QueryController {
         // Log.trace(q);
         let filter = Object.keys(q)[0];
 
-        // for (let filter in q)
+        // for (let i = 0;
         if (filter === "IS") {
-            // is comp w skey and input
             return this.handleIS(Object.keys(filter)[0], Object.values(filter)[0]);
         } else if (filter === "NOT") {
             return this.handleNOT(Object.values(filter)[0]);
@@ -207,7 +223,15 @@ export default class QueryController {
     }
 
     public handleGT (): any {
-        return this.data;
+        // return this.data;
+        let self: QueryController = this;
+        return new Promise(function (resolve, reject) {
+            try {
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     public handleEQ (): any {
@@ -226,5 +250,39 @@ export default class QueryController {
 
     public getQueryID(): string {
         return this.id;
+    }
+
+    // assumes that only relevant queried sections are in data field
+    public sortResults(order: string) {
+        // increasing order
+        const before = -1;
+        const after = -before;
+        if (order !== "") {
+            this.data.sort((i1: any, i2: any) => {
+                let val1 = i1[order];
+                let val2 = i2[order];
+
+                if (val1 < val2) {
+                    return before;
+                } else if (val1 > val2) {
+                    return after;
+                }
+                return 0;
+            });
+        }
+    }
+
+    // will put data in relevant columns
+    public organizeResults(columns: string[]): any[] {
+        return this.data.map((i: any) => QueryController.filterObjectFields(i, columns));
+    }
+
+    // makes one line with given column keys
+    private static filterObjectFields(obj: {[key: string]: any}, keys: string[]): {[key: string]: any} {
+        const filtered: {[key: string]: any} = {};
+        for (let k of keys) {
+            filtered[k] = obj[k];
+        }
+        return filtered;
     }
 }

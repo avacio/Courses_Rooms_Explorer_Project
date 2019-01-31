@@ -1,5 +1,12 @@
 import Log from "../Util";
-import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
+import {
+    IInsightFacade,
+    InsightDataset,
+    InsightDatasetKind,
+    InsightError,
+    NotFoundError,
+    ResultTooLargeError
+} from "./IInsightFacade";
 import DatasetController, {checkParsed} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
@@ -80,10 +87,14 @@ export default class InsightFacade implements IInsightFacade {
                 if (!self.datasetController.containsDataset(self.queryController.getQueryID())) {
                     return reject (new InsightError ("dataset has not been added"));
                 }
-                self.queryController.parseQuery(query);
-                return []; // stub
+                let results: any[] = self.queryController.parseQuery(query);
+                if (results.length > 5000) { reject (new ResultTooLargeError()); }
+
+                return resolve(results); // stub
             } catch (error) {
-                return reject (new InsightError(error.message));
+                if (error.message === "RTL") { reject (new ResultTooLargeError());
+                } else { reject (new InsightError ("performQuery error")); }
+                // reject (new ResultTooLargeError());
             }
         });
     }
