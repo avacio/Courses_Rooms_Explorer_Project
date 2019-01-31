@@ -1,7 +1,8 @@
-import Query, {Filter} from "./Query";
+// import Query, {Filter} from "./Query";
 import {InsightDataset} from "./IInsightFacade";
 import DatasetController from "./DatasetController";
 import InsightFacade from "./InsightFacade";
+import Query from "./Query";
 
 export class QueryResult {
     constructor(query: Query, dataset: string) {
@@ -41,13 +42,18 @@ export default class QueryController {
         return true;
     }
 
-    public static isValidField(key: string): boolean {
+    private static isValidStringField(key: string): boolean {
+        let str = key.split("_");
+        let field = str[1];
+        return field === "dept" || field === "id" || field === "instructor"
+            || field === "title" || field === "uuid";
+    }
+
+    private static isValidMathField(key: string): boolean {
         let str = key.split("_");
         let field = str[1];
         return field === "avg" || field === "pass" || field === "fail"
-            || field === "audit" || field === "year" || field === "dept"
-            || field === "id" || field === "instructor"
-            || field === "title" || field === "uuid";
+            || field === "audit" || field === "year";
     }
 
     // assume query is valid
@@ -72,25 +78,26 @@ export default class QueryController {
             // if WHERE is empty return all entries in dataset
             return this.datasetController.getDataset(this.id);
         }
+        let data: any[] = [];
         // get first filter
         let filter = Object.keys(q)[0];
         if (filter === "IS") {
             // is comp w skey and input
-            this.handleIS(Object.keys(filter)[0], Object.values(filter)[0]);
+            data.push(this.handleIS(Object.keys(filter)[0], Object.values(filter)[0]));
         } else if (filter === "NOT") {
-            this.handleNOT(Object.values(filter));
+            data.push(this.handleNOT(Object.values(filter)));
         } else if (filter === "AND") {
-            this.handleAND(Object.values(filter));
+            data.push(this.handleAND(Object.values(filter)));
         } else if (filter === "OR") {
-            this.handleOR();
+            data.push(this.handleOR(Object.values(filter)));
         } else if (filter === "LT") {
-            this.handleLT();
+            data.push(this.handleLT(Object.keys(filter)[0], +Object.values(filter)[0]));
         } else if (filter === "GT") {
-            this.handleGT();
+            data.push(this.handleGT(Object.keys(filter)[0], +Object.values(filter)[0]));
         } else if (filter === "EQ") {
-            this.handleEQ();
+            data.push(this.handleEQ(Object.keys(filter)[0], +Object.values(filter)[0]));
         }
-        return this.data;
+        return data;
     }
 
     public handleOPTIONS (q: any): any {
@@ -102,7 +109,7 @@ export default class QueryController {
         let str = skey.split("_");
         let sfield = str[1];
         let filteredData: any[] = [];
-        if (QueryController.isValidField(sfield)) {
+        if (QueryController.isValidStringField(sfield)) {
                 // search data for sfield matching dept
                 // return array of json's that match
             for (let item in this.data) {
@@ -149,7 +156,6 @@ export default class QueryController {
     private static intersect (data: any[]): any[] {
         let x: any[] = data[0];
         let rsf: any[] = [];
-        // arrays might be different legnth... ok
         for (let i = 1; i < data.length; i++) {
             rsf = QueryController.handleIntersect(x, data[i]);
             x = rsf;
@@ -159,7 +165,6 @@ export default class QueryController {
 
     private static handleIntersect(x: any[], rsf: any[]): any[] {
         let z: any[] = [];
-        // for (let i = 0; i < x.length; i++)
         for (let i of x) {
             if (rsf.includes(i, 0)) {
                 z.push(i);
@@ -168,19 +173,43 @@ export default class QueryController {
         return z;
     }
 
-    public handleOR (): any {
+    public handleOR (filters: any): any {
+        // return this.data;
+        let data: any[] = [];
+        for (let filter of filters) {
+            data.push(this.handleWHERE(filter));
+        }
+        return QueryController.union(data);
+    }
+
+    private static union(data: any[]): any[] {
+        let x: any[] = data[0];
+        let rsf: any[] = [];
+        for (let i = 1; i < data.length; i++) {
+            rsf = QueryController.handleUnion(x, data[i]);
+            x = rsf;
+        }
+        return x;
+    }
+
+    private static handleUnion (x: any[], rsf: any[]): any[] {
+        for (let i of x ) {
+            if (!rsf.includes(i, 0)) {
+                rsf.push(i);
+            }
+        }
+        return rsf;
+    }
+
+    public handleLT (mkey: string, num: number): any {
         return this.data;
     }
 
-    public handleLT (): any {
+    public handleGT (mkey: string, num: number): any {
         return this.data;
     }
 
-    public handleGT (): any {
-        return this.data;
-    }
-
-    public handleEQ (): any {
+    public handleEQ (mkey: string, num: number): any {
         return this.data;
     }
 
