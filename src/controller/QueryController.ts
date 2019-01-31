@@ -3,6 +3,7 @@ import {InsightDataset} from "./IInsightFacade";
 import DatasetController from "./DatasetController";
 import InsightFacade from "./InsightFacade";
 import Query from "./Query";
+import Log from "../Util";
 
 export class QueryResult {
     constructor(query: Query, dataset: string) {
@@ -116,9 +117,13 @@ export default class QueryController {
                 let obj = JSON.parse(item);
                 if (sfield === "dept") {
                     if (obj.Subject === input) {
+                        Log.trace("yoyooyoyoyo");
                         filteredData.push(item);
                     }
                     return filteredData;
+                }
+                if (sfield === "id") {
+                    return filteredData; // stub
                 }
             }
         }
