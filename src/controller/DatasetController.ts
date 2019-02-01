@@ -114,7 +114,7 @@ export function checkParsed(j: any): any { // TODO: being used?
 
 // will put data in relevant columns
 export function organizeResults(data: any[], columns: string[]): any[] {
-    return data.map((i: any) => filterObjectFields(i, columns));
+    return [].slice.call(data).map((i: any) => filterObjectFields(i, columns));
 }
 
 // makes one line with given column keys
@@ -132,7 +132,8 @@ export function sortResults(data: any[], order: string): any {
     const before = -1;
     const after = -before;
     if (order !== "") {
-        data.sort((i1: any, i2: any) => {
+        // data.sort((i1: any, i2: any) => {
+        [].slice.call(data).sort((i1: any, i2: any) => {
             let val1 = i1[order];
             let val2 = i2[order];
 

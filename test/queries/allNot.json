@@ -87,6 +87,6 @@
             "ORDER": "courses_year"
         }
     },
-    "isQueryValid": true,
+    "isQueryValid": false,
     "result": "ResultTooLarge"
 }

@@ -88,12 +88,14 @@ export default class InsightFacade implements IInsightFacade {
                     return reject (new InsightError ("dataset has not been added"));
                 }
                 let results: any[] = self.queryController.parseQuery(query);
+                Log.trace("RESULTS LENGTH " + results.length.toString());
                 if (results.length > 5000) { reject (new ResultTooLargeError()); }
+                Log.trace(JSON.stringify(results));
 
-                return resolve(results); // stub
+                return resolve(results);
             } catch (error) {
                 if (error.message === "RTL") { reject (new ResultTooLargeError());
-                } else { reject (new InsightError ("performQuery error")); }
+                } else { reject (new InsightError ("performQuery error: " + error.message)); }
                 // reject (new ResultTooLargeError());
             }
         });
