@@ -55,20 +55,6 @@ export default class QueryController {
         return true;
     }
 
-    private static isValidStringField(key: string): boolean {
-        let str = key.split("_");
-        let field = str[1];
-        return field === "dept" || field === "id" || field === "instructor"
-            || field === "title" || field === "uuid";
-    }
-
-    private static isValidMathField(key: string): boolean {
-        let str = key.split("_");
-        let field = str[1];
-        return field === "avg" || field === "pass" || field === "fail"
-            || field === "audit" || field === "year";
-    }
-
     // assume query is valid
     public parseQuery(obj: any): QueryResult | any {
         try {
@@ -167,10 +153,10 @@ export default class QueryController {
     public handleNOT (filters: any): any {
         try {
             let data: any[] = [];
-            let nextFilterData: any[] = [];
-            for (let filter of filters) { // does this handle double not idkk???
-                nextFilterData.push(this.handleWHERE(filter)); // recursively go into query adding to next filter data
-            }
+            let nextFilter = Object.keys(filters)[0];
+            // Log.trace("next filter: " + nextFilter);
+            // let nextFilterData: any[] = this.getNextFilterData(filters[nextFilter]);
+            let nextFilterData = this.handleWHERE(filters[nextFilter]);
             for (let i of filters) {
                 if (!nextFilterData.includes(i, 0)) {
                     data.push(i); // if the filtered data is not in the array containing all data add it to new array
