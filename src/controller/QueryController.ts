@@ -1,7 +1,5 @@
-// import Query, {Filter} from "./Query";
 import {InsightDataset, InsightError, ResultTooLargeError} from "./IInsightFacade";
 import DatasetController, {organizeResults, sortResults} from "./DatasetController";
-import InsightFacade from "./InsightFacade";
 import Query from "./Query";
 import Log from "../Util";
 
@@ -17,17 +15,11 @@ export default class QueryController {
     private id: string;
     private data: any;
     private datasetController: DatasetController;
-    // private columns: string[]; // necessary?
-    // private order: string;
 
     constructor(datasetController: DatasetController) {
-    // constructor() {
         this.id = "";
         this.datasetController = datasetController;
         this.data = null;
-        // this.columns = [];
-        // this.order = "";
-        // this.datasetController = new DatasetController(); // shouldn't create new
     }
 
     public isValidQuery(q: any): boolean {
@@ -44,8 +36,6 @@ export default class QueryController {
             || opts.COLUMNS.some((e: any) => typeof e !== "string")) {
             return false;
         }
-
-        // this.columns = []; // clears from past queries
         Log.trace("COLUMNS LENGTH " + opts.COLUMNS.length.toString());
         let idKey: string = "";
         for (let col of opts.COLUMNS) {
@@ -80,18 +70,12 @@ export default class QueryController {
     }
 
     // assume query is valid
-    // public parseQuery(obj: any): QueryResult {
     public parseQuery(obj: any): QueryResult | any {
-        // let self: QueryController = this;
-        // const query = new Query(q.WHERE, q.OPTIONS);
-        // TODO
-        // return new Promise(function (reso))
         try {
             this.data = this.datasetController.getDataset(this.id); // all data entries for id
             let filtered = this.handleWHERE(obj.WHERE); // filter data
             // let processedData = this.handleOPTIONS(filteredWHERE); // process Options
             let query = new Query(obj.WHERE, obj.OPTIONS); // original query // do we need this?
-
             if (obj.OPTIONS.ORDER) {
                 // filtered formerly this.data
                 let sorted = sortResults(filtered, obj.OPTIONS.ORDER);
@@ -105,85 +89,63 @@ export default class QueryController {
     }
 
     public handleWHERE (q: any): any {
-        // Log.trace(JSON.stringify(q.WHERE));
-        // Log.trace(q.keys().length.toString());
-        // Log.trace(Object.keys(q).length.toString());
         let wEntryNum: number = Object.keys(q).length;
-        // if (q.WHERE === {}) { // maybe move this if to parseQuery
         if (wEntryNum === 0) { // maybe move this if to parseQuery
             Log.trace("empty where");
             if (this.data.length > 5000) { throw new ResultTooLargeError("RTL"); }
         }
         let data: any[] = [];
+        // first (outer) filter
         let filter = Object.keys(q)[0];
         Log.trace("filter: " + filter);
-
         if (filter === "IS") {
-            // is comp w skey and input
-            data.push(this.handleIS(Object.keys(filter)[0], Object.values(filter)[0]));
-            // Log.trace("skey:" + Object.keys(filter)[0]);
-            // Log.trace("input:" + Object.values(filter)[0]);
+            data.push(this.handleIS(q["IS"]));
         } else if (filter === "NOT") {
-            data.push(this.handleNOT(Object.values(filter)));
+            data.push(this.handleNOT(q["NOT"]));
         } else if (filter === "AND") {
-            data.push(this.handleAND(Object.values(filter)));
+            data.push(this.handleAND(q["AND"]));
         } else if (filter === "OR") {
-            data.push(this.handleOR(Object.values(filter)));
+            data.push(this.handleOR(q["OR"]));
         } else if (filter === "LT") {
-            data.push(this.handleLT(Object.keys(filter)[0], +Object.values(filter)[0]));
+            data.push(this.handleLT(q["LT"]));
         } else if (filter === "GT") {
-            data.push(this.handleGT(Object.keys(filter)[0], +Object.values(filter)[0]));
+            data.push(this.handleGT(q["GT"]));
         } else if (filter === "EQ") {
-            data.push(this.handleEQ(Object.keys(filter)[0], +Object.values(filter)[0]));
+            data.push(this.handleEQ(q["EQ"]));
         }
         return data;
     }
 
-    public handleOPTIONS (q: any): any {
-        return this.data; // stub
-
-    }
-
-    public handleIS(skey: string, input: string ): any[] {
+    public handleIS (q: any): any {
+        let data: any[] = [];
+        let skey: string = Object.keys(q)[0];
+        let input: any = q[skey];
+        // Log.trace("input: " + input);
         let str = skey.split("_");
         let sfield = str[1];
-
-        let data: any[] = [];
-        if (QueryController.isValidStringField(sfield)) {
-// =======
-//         // let data = this.datasetController.getDataset(this.id);
-//         if (this.isValidField(sfield)) {
-//             if (sfield === "dept") {
-// >>>>>>> alexis
-                // search data for sfield matching dept
-                // return array of json's that match
-            for (let item in this.data) {
-                let obj = JSON.parse(item);
-                if (sfield === "dept") {
-                    if (obj.Subject === input) {
-                        Log.trace("Subject:" + obj);
-                        data.push(item);
-                    }
-                    return data;
-                }
-                if (sfield === "id") {
-                    return data; // stub
-                }
+        for (let i of this.data) {
+            if (sfield === "dept" && input === Object.values(i)[0]) {
+                data.push(i);
+            } else if (sfield === "id" && input === Object.values(i)[1]) {
+                data.push(i);
+            } else if (sfield === "instructor" && input === Object.values(i)[3]) {
+                data.push(i);
+            } else if (sfield === "title" && input === Object.values(i)[4]) {
+                data.push(i);
+            } else if (sfield === "uuid" && input === Object.values(i)[8]) {
+                data.push(i);
             }
         }
-    }
+        return data;
+}
 
     public handleNOT (filters: any): any {
-        // return this.data;
         let data: any[] = [];
-        let alldata = this.datasetController.getDataset(this.id); // make copy of all data entries
         let nextFilterData: any[] = [];
-        // does this handle double not idkk???
-        for (let filter of filters) {
-            // recursively go into query adding to next filter data
-            nextFilterData.push(this.handleWHERE(filter));
+        for (let filter of filters) { // does this handle double not idkk???
+            nextFilterData.push(this.handleWHERE(filter)); // recursively go into query adding to next filter data
         }
-        for (let i of alldata) {
+        for (let i of filters) {
             if (!nextFilterData.includes(i, 0)) {
                 data.push(i); // if the filtered data is not in the array containing all data add it to new array
             }
@@ -192,11 +154,8 @@ export default class QueryController {
     }
 
     public handleAND (filters: any): any {
-        // return this.data;
         let data: any[] = [];
         for (let filter of filters) {
-            // recursively go into query adding all filtered results to this array
-            // data is an array of arrays to intersect
             data.push(this.handleWHERE(filter));
         }
         return QueryController.intersect(data);
@@ -250,24 +209,76 @@ export default class QueryController {
         return rsf;
     }
 
-    public handleLT (mkey: string, num: number): any {
-        return this.data;
+    public handleLT (q: any): any[] {
+        let data: any[] = [];
+        let mkey: string = Object.keys(q)[0];
+        let num: number = q[mkey];
+        let str = mkey.split("_");
+        let mfield = str[1];
+        for (let i of data) {
+            if (mfield === "avg" && num > Object.values(i)[2]) {
+                data.push(i);
+            } else if (mfield === "pass" && num > Object.values(i)[5]) {
+                data.push(i);
+            } else if (mfield === "fail" && num > Object.values(i)[6]) {
+                data.push(i);
+            } else if (mfield === "audit" && num > Object.values(i)[7]) {
+                data.push(i);
+            } else if (mfield === "year" && num > Object.values(i)[9]) {
+                data.push(i);
+            }
+        }
+        return data;
     }
 
-    public handleGT (mkey: string, num: number): any {
-        // return this.data;
-        let self: QueryController = this;
+    public handleGT (q: any): any {
         return new Promise(function (resolve, reject) {
             try {
-                resolve();
+                let data: any[] = [];
+                let mkey: string = Object.keys(q)[0];
+                let num: number = q[mkey];
+                let str = mkey.split("_");
+                let mfield = str[1];
+                for (let i of data) {
+                    if (mfield === "avg" && num < Object.values(i)[2]) {
+                        data.push(i);
+                    } else if (mfield === "pass" && num < Object.values(i)[5]) {
+                        data.push(i);
+                    } else if (mfield === "fail" && num < Object.values(i)[6]) {
+                        data.push(i);
+                    } else if (mfield === "audit" && num < Object.values(i)[7]) {
+                        data.push(i);
+                    } else if (mfield === "year" && num < Object.values(i)[9]) {
+                        data.push(i);
+                    }
+                }
+                resolve(data);
             } catch (error) {
                 reject(error);
             }
         });
     }
 
-    public handleEQ (mkey: string, num: number): any {
-        return this.data;
+    public handleEQ (q: any): any {
+        let data: any[] = [];
+        let mkey: string = Object.keys(q)[0];
+        let num: number = q[mkey];
+        let str = mkey.split("_");
+        let mfield = str[1];
+        for (let i of data) {
+            if (mfield === "avg" && num === Object.values(i)[2]) {
+                data.push(i);
+            } else if (mfield === "pass" && num === Object.values(i)[5]) {
+                data.push(i);
+            } else if (mfield === "fail" && num === Object.values(i)[6]) {
+                data.push(i);
+            } else if (mfield === "audit" && num === Object.values(i)[7]) {
+                data.push(i);
+            } else if (mfield === "year" && num === Object.values(i)[9]) {
+                data.push(i);
+            }
+        }
+        return data;
     }
 
     public static getID (query: any): any {
