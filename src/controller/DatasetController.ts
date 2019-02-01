@@ -144,4 +144,5 @@ export function sortResults(data: any[], order: string): any {
             return 0;
         });
     }
+    return data;
 }

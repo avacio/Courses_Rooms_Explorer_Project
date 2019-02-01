@@ -148,4 +148,9 @@ export default class InsightFacade implements IInsightFacade {
             return null;
         }
     }
+
+    // FOR TESTING
+    public getDatasetController(): DatasetController {
+        return this.datasetController;
+    }
 }

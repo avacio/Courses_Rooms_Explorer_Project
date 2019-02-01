@@ -11,6 +11,7 @@ import {
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
+import {organizeResults, sortResults} from "../src/controller/DatasetController";
 
 // This should match the schema given to TestUtil.validate(..) in TestUtil.readTestQueries(..)
 // except 'filename' which is injected when the file is read.
@@ -293,6 +294,17 @@ describe("InsightFacade Add/Remove Dataset", function () {
             response = err;
         } finally {
             expect(response).to.deep.equal([id]);
+            // TEST SORT AND RENDER
+            // if (id === "someInvalidJSON") {
+            Log.trace("BEFORE " + insightFacade.getDatasetController().getDataset(id).length.toString());
+            Log.trace(JSON.stringify(insightFacade.getDatasetController().getDataset(id)));
+            let sorted = sortResults(insightFacade.getDatasetController().getDataset(id), id + "_avg");
+            Log.trace("AFTER " + sorted.length.toString());
+            Log.trace(JSON.stringify(sorted));
+
+            let organized = organizeResults(sorted, [id + "_avg", id + "_dept"]);
+            Log.trace(JSON.stringify(organized));
+            // }
         }
     });
 
