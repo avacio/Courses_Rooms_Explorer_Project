@@ -1,6 +1,6 @@
 import {InsightDataset, InsightError, ResultTooLargeError} from "./IInsightFacade";
 import DatasetController, {organizeResults, sortResults} from "./DatasetController";
-import Query from "./Query";
+import Query, {intersect, union} from "./Query";
 import Log from "../Util";
 
 // do we need this? not sure
@@ -74,6 +74,8 @@ export default class QueryController {
         try {
             this.data = this.datasetController.getDataset(this.id); // all data entries for id
             let filtered = this.handleWHERE(obj.WHERE); // filter data
+            if (filtered.length > 5000) { throw new ResultTooLargeError("RTL"); }
+
             // let processedData = this.handleOPTIONS(filteredWHERE); // process Options
             let query = new Query(obj.WHERE, obj.OPTIONS); // original query // do we need this?
             if (obj.OPTIONS.ORDER) {
@@ -89,157 +91,161 @@ export default class QueryController {
     }
 
     public handleWHERE (q: any): any {
-        let wEntryNum: number = Object.keys(q).length;
-        if (wEntryNum === 0) { // maybe move this if to parseQuery
-            Log.trace("empty where");
-            if (this.data.length > 5000) { throw new ResultTooLargeError("RTL"); }
+        try {
+            let wEntryNum: number = Object.keys(q).length;
+            if (wEntryNum === 0) { // maybe move this if to parseQuery
+                Log.trace("empty where");
+                if (this.data.length > 5000) {
+                    throw new ResultTooLargeError("RTL");
+                }
+            }
+            let data: any[] = [];
+            // first (outer) filter
+            let filter = Object.keys(q)[0];
+            Log.trace("filter: " + filter);
+            if (filter === "IS") {
+                // data.push(this.handleIS(q["IS"]));
+                data = this.handleIS(q["IS"]);
+            } else if (filter === "NOT") {
+                // data.push(this.handleNOT(q["NOT"]));
+                data = this.handleNOT(q["NOT"]);
+            } else if (filter === "AND") {
+                // data.push(this.handleAND(q["AND"]));
+                data = this.handleAND(q["AND"]);
+            } else if (filter === "OR") {
+                // data.push(this.handleOR(q["OR"]));
+                data = this.handleOR(q["OR"]);
+            } else if (filter === "LT") {
+                // Log.trace(JSON.stringify(q["LT"]));
+                // data.push(this.handleLT(q["LT"]));
+                data = this.handleLT(q["LT"]);
+            } else if (filter === "GT") {
+                // data.push(this.handleGT(q["GT"]));
+                data = this.handleGT(q["GT"]);
+            } else if (filter === "EQ") {
+                // data.push(this.handleEQ(q["EQ"]));
+                data = this.handleEQ(q["EQ"]);
+            } else {
+                throw new InsightError("not valid filter");
+            }
+            return data;
+        } catch (error) {
+            throw new InsightError();
         }
-        let data: any[] = [];
-        // first (outer) filter
-        let filter = Object.keys(q)[0];
-        Log.trace("filter: " + filter);
-        if (filter === "IS") {
-            data.push(this.handleIS(q["IS"]));
-        } else if (filter === "NOT") {
-            data.push(this.handleNOT(q["NOT"]));
-        } else if (filter === "AND") {
-            data.push(this.handleAND(q["AND"]));
-        } else if (filter === "OR") {
-            data.push(this.handleOR(q["OR"]));
-        } else if (filter === "LT") {
-            data.push(this.handleLT(q["LT"]));
-        } else if (filter === "GT") {
-            data.push(this.handleGT(q["GT"]));
-        } else if (filter === "EQ") {
-            data.push(this.handleEQ(q["EQ"]));
-        }
-        return data;
     }
 
     public handleIS (q: any): any {
-        let data: any[] = [];
-        let skey: string = Object.keys(q)[0];
-        let input: any = q[skey];
-        // Log.trace("input: " + input);
-        let str = skey.split("_");
-        let sfield = str[1];
-        for (let i of this.data) {
-            if (sfield === "dept" && input === Object.values(i)[0]) {
-                data.push(i);
-            } else if (sfield === "id" && input === Object.values(i)[1]) {
-                data.push(i);
-            } else if (sfield === "instructor" && input === Object.values(i)[3]) {
-                data.push(i);
-            } else if (sfield === "title" && input === Object.values(i)[4]) {
-                data.push(i);
-            } else if (sfield === "uuid" && input === Object.values(i)[8]) {
-                data.push(i);
+        try {
+            let data: any[] = [];
+            let skey: string = Object.keys(q)[0];
+            if (typeof q[skey] !== "string") {
+                throw new InsightError("invalid input");
             }
+            let input: any = q[skey];
+            // Log.trace("input: " + input);
+            let str = skey.split("_");
+            let sfield = str[1];
+            for (let i of this.data) {
+                if (sfield === "dept" && input === Object.values(i)[0]) {
+                    data.push(i);
+                } else if (sfield === "id" && input === Object.values(i)[1]) {
+                    data.push(i);
+                } else if (sfield === "instructor" && input === Object.values(i)[3]) {
+                    data.push(i);
+                } else if (sfield === "title" && input === Object.values(i)[4]) {
+                    data.push(i);
+                } else if (sfield === "uuid" && input === Object.values(i)[8]) {
+                    data.push(i);
+                }
+            }
+            return data;
+        } catch (error) {
+            throw new InsightError();
         }
-        return data;
 }
 
     public handleNOT (filters: any): any {
-        let data: any[] = [];
-        let nextFilterData: any[] = [];
-        for (let filter of filters) { // does this handle double not idkk???
-            nextFilterData.push(this.handleWHERE(filter)); // recursively go into query adding to next filter data
-        }
-        for (let i of filters) {
-            if (!nextFilterData.includes(i, 0)) {
-                data.push(i); // if the filtered data is not in the array containing all data add it to new array
+        try {
+            let data: any[] = [];
+            let nextFilterData: any[] = [];
+            for (let filter of filters) { // does this handle double not idkk???
+                nextFilterData.push(this.handleWHERE(filter)); // recursively go into query adding to next filter data
             }
+            for (let i of filters) {
+                if (!nextFilterData.includes(i, 0)) {
+                    data.push(i); // if the filtered data is not in the array containing all data add it to new array
+                }
+            }
+            return data;
+        } catch (error) {
+            throw new InsightError("handle not");
         }
-        return data;
     }
 
     public handleAND (filters: any): any {
-        let data: any[] = [];
-        for (let filter of filters) {
-            data.push(this.handleWHERE(filter));
-        }
-        return QueryController.intersect(data);
-    }
-
-    private static intersect (data: any[]): any[] {
-        let x: any[] = data[0];
-        let rsf: any[] = [];
-        for (let i = 1; i < data.length; i++) {
-            rsf = QueryController.handleIntersect(x, data[i]);
-            x = rsf;
-        }
-        return x;
-    }
-
-    private static handleIntersect(x: any[], rsf: any[]): any[] {
-        let z: any[] = [];
-        for (let i of x) {
-            if (rsf.includes(i, 0)) {
-                z.push(i);
+        try {
+            let data: any[] = [];
+            for (let filter of filters) {
+                data.push(this.handleWHERE(filter));
             }
+            return intersect(data);
+        } catch (error) {
+            throw new InsightError("AND");
         }
-        return z;
     }
 
     public handleOR (filters: any): any {
-        // return this.data;
-        let data: any[] = [];
-        for (let filter of filters) {
-            data.push(this.handleWHERE(filter));
-        }
-        return QueryController.union(data);
-    }
-
-    private static union(data: any[]): any[] {
-        let x: any[] = data[0];
-        let rsf: any[] = [];
-        for (let i = 1; i < data.length; i++) {
-            rsf = QueryController.handleUnion(x, data[i]);
-            x = rsf;
-        }
-        return x;
-    }
-
-    private static handleUnion (x: any[], rsf: any[]): any[] {
-        for (let i of x ) {
-            if (!rsf.includes(i, 0)) {
-                rsf.push(i);
+        try {
+            // return this.data;
+            let data: any[] = [];
+            for (let filter of filters) {
+                data.push(this.handleWHERE(filter));
             }
+            return union(data);
+        } catch (error) {
+            throw new InsightError("OR");
         }
-        return rsf;
     }
 
     public handleLT (q: any): any[] {
-        let data: any[] = [];
-        let mkey: string = Object.keys(q)[0];
-        let num: number = q[mkey];
-        let str = mkey.split("_");
-        let mfield = str[1];
-        for (let i of data) {
-            if (mfield === "avg" && num > Object.values(i)[2]) {
-                data.push(i);
-            } else if (mfield === "pass" && num > Object.values(i)[5]) {
-                data.push(i);
-            } else if (mfield === "fail" && num > Object.values(i)[6]) {
-                data.push(i);
-            } else if (mfield === "audit" && num > Object.values(i)[7]) {
-                data.push(i);
-            } else if (mfield === "year" && num > Object.values(i)[9]) {
-                data.push(i);
+        try {
+            let data: any[] = [];
+            let mkey: string = Object.keys(q)[0];
+            if (typeof q[mkey] !== "number") { throw new InsightError("invalid input"); }
+            let num: number = q[mkey];
+            let str = mkey.split("_");
+            let mfield = str[1];
+            for (let i of this.data) { // WAS PREVIOUSLY JUST ITERATING OVER EMPTY [] INITIALIZED LOCALLY
+                if (mfield === "avg" && num > Object.values(i)[2]) {
+                    data.push(i);
+                } else if (mfield === "pass" && num > Object.values(i)[5]) {
+                    data.push(i);
+                } else if (mfield === "fail" && num > Object.values(i)[6]) {
+                    data.push(i);
+                } else if (mfield === "audit" && num > Object.values(i)[7]) {
+                    data.push(i);
+                } else if (mfield === "year" && num > Object.values(i)[9]) {
+                    data.push(i);
+                }
             }
+            return data;
+        } catch (error) {
+            throw new InsightError("handleLT");
         }
-        return data;
     }
 
+    // WHY ONLY THIS IN PROMISE, AND NOT OTHER MAthy
     public handleGT (q: any): any {
+        let self: QueryController = this;
         return new Promise(function (resolve, reject) {
             try {
                 let data: any[] = [];
                 let mkey: string = Object.keys(q)[0];
+                if (typeof q[mkey] !== "number") { throw new InsightError("invalid input"); }
                 let num: number = q[mkey];
                 let str = mkey.split("_");
                 let mfield = str[1];
-                for (let i of data) {
+                for (let i of self.data) {
                     if (mfield === "avg" && num < Object.values(i)[2]) {
                         data.push(i);
                     } else if (mfield === "pass" && num < Object.values(i)[5]) {
@@ -254,41 +260,35 @@ export default class QueryController {
                 }
                 resolve(data);
             } catch (error) {
-                reject(error);
+                reject(new InsightError("handle GT"));
             }
         });
     }
 
     public handleEQ (q: any): any {
-        let data: any[] = [];
-        let mkey: string = Object.keys(q)[0];
-        let num: number = q[mkey];
-        let str = mkey.split("_");
-        let mfield = str[1];
-        for (let i of data) {
-            if (mfield === "avg" && num === Object.values(i)[2]) {
-                data.push(i);
-            } else if (mfield === "pass" && num === Object.values(i)[5]) {
-                data.push(i);
-            } else if (mfield === "fail" && num === Object.values(i)[6]) {
-                data.push(i);
-            } else if (mfield === "audit" && num === Object.values(i)[7]) {
-                data.push(i);
-            } else if (mfield === "year" && num === Object.values(i)[9]) {
-                data.push(i);
+        try {
+            let data: any[] = [];
+            let mkey: string = Object.keys(q)[0];
+            if (typeof q[mkey] !== "number") { throw new InsightError("invalid input"); }
+            let num: number = q[mkey];
+            let str = mkey.split("_");
+            let mfield = str[1];
+            for (let i of this.data) {
+                if (mfield === "avg" && num === Object.values(i)[2]) {
+                    data.push(i);
+                } else if (mfield === "pass" && num === Object.values(i)[5]) {
+                    data.push(i);
+                } else if (mfield === "fail" && num === Object.values(i)[6]) {
+                    data.push(i);
+                } else if (mfield === "audit" && num === Object.values(i)[7]) {
+                    data.push(i);
+                } else if (mfield === "year" && num === Object.values(i)[9]) {
+                    data.push(i);
+                }
             }
-        }
-        return data;
-    }
-
-    public static getID (query: any): any {
-        let val: string;
-        for (val in Object.values(query)) {
-            if (typeof val === "string") {
-                let field: string[] = val.split("_");
-                let id: string = field[0];
-                return id;
-            }
+            return data;
+        } catch (error) {
+            throw new InsightError("handleEQ");
         }
     }
 
