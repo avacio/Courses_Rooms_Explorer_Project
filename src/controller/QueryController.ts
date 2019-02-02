@@ -159,7 +159,7 @@ export default class QueryController {
             let nextFilterData = this.handleWHERE(filters[nextFilter]);
             for (let i of filters) {
                 if (!nextFilterData.includes(i, 0)) {
-                    data.push(i); // if the filtered data is not in the array containing all data add it to new array
+                    data.push(i);
                 }
             }
             return data;
