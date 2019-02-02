@@ -1,5 +1,5 @@
 import {InsightDataset, InsightError, ResultTooLargeError} from "./IInsightFacade";
-import DatasetController, {organizeResults, sortResults} from "./DatasetController";
+import DatasetController, {filterObjectFields, organizeResults, sortResults} from "./DatasetController";
 import Query, {intersect, isValidMathField, isValidStringField, union} from "./Query";
 import Log from "../Util";
 
@@ -80,7 +80,7 @@ export default class QueryController {
     public handleWHERE (q: any): any {
         try {
             let wEntryNum: number = Object.keys(q).length;
-            if (wEntryNum === 0) { // maybe move this if to parseQuery
+            if (wEntryNum === 0) { // maybe move this if to parseQuery, might cause errors when handleWHERE reiterates
                 Log.trace("empty where");
                 if (this.data.length > 5000) {
                     throw new ResultTooLargeError("RTL");
@@ -98,7 +98,6 @@ export default class QueryController {
             } else if (filter === "OR") {
                 data = this.handleOR(q["OR"]);
             } else if (filter === "LT") {
-                // Log.trace(JSON.stringify(q["LT"]));
                 data = this.handleLT(q["LT"]);
             } else if (filter === "GT") {
                 data = this.handleGT(q["GT"]);
@@ -107,6 +106,7 @@ export default class QueryController {
             } else {
                 throw new InsightError("not valid filter");
             }
+            // this.data = data; // filters this.data each time
             return data;
         } catch (error) {
             if (error.message === "RTL") { throw new ResultTooLargeError("RTL");
@@ -148,17 +148,16 @@ export default class QueryController {
 
     public handleNOT (filters: any): any {
         try {
-            let data: any[] = [];
+            let data = this.data;
             let nextFilter = Object.keys(filters)[0];
-            // Log.trace("next filter: " + nextFilter);
-            // let nextFilterData: any[] = this.getNextFilterData(filters[nextFilter]);
-            let nextFilterData = this.handleWHERE(filters[nextFilter]);
-            for (let i of filters) {
-                if (!nextFilterData.includes(i, 0)) {
-                    data.push(i);
-                }
+            Log.trace("next filter: " + nextFilter);
+            if (nextFilter !== "NOT") {
+                let nextFilterData = this.handleWHERE(filters);
+                return data.filter((i: any) => !nextFilterData.includes(i));
+            } else { // double-negative case
+                Log.trace("double not");
+                return this.handleWHERE(filters[nextFilter]);
             }
-            return data;
         } catch (error) {
             throw new InsightError("handle not");
         }
