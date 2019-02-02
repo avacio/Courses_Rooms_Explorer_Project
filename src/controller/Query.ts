@@ -52,3 +52,19 @@ export function handleIntersect(x: any[], rsf: any[]): any[] {
     }
     return z;
 }
+
+// not being used
+export function isValidStringField(field: string): boolean {
+    // let str = key.split("_");
+    // let field = str[1];
+    return field === "dept" || field === "id" || field === "instructor"
+        || field === "title" || field === "uuid";
+}
+
+// not being used
+export function isValidMathField(field: string): boolean {
+    // let str = key.split("_");
+    // let field = str[1];
+    return field === "avg" || field === "pass" || field === "fail"
+        || field === "audit" || field === "year";
+}

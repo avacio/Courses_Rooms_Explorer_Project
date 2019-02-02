@@ -42,13 +42,5 @@
         }
     },
     "isQueryValid": true,
-    "result": [
-        { "courses_dept": "crwr", "crwr_year": "2015","crwr_pass": 113, "crwr_fail": 4, "crwr_audit": 2, "courses_instructor": "warrener, sheryda"},
-        { "courses_dept": "crwr", "crwr_year": "2015","crwr_pass": 95, "crwr_fail": 4, "crwr_audit": 0, "courses_instructor": "warrener, sheryda"},
-        { "courses_dept": "crwr", "crwr_year": "2016","crwr_pass": 127, "crwr_fail": 5, "crwr_audit": 1, "courses_instructor": "warrener, sheryda"},
-        { "courses_dept": "crwr", "crwr_year": "1900","crwr_pass": 127, "crwr_fail": 5, "crwr_audit": 2, "courses_instructor": ""},
-        { "courses_dept": "crwr", "crwr_year": "2014","crwr_pass": 120, "crwr_fail": 7, "crwr_audit": 0, "courses_instructor": "warrener, sheryda"},
-        { "courses_dept": "crwr", "crwr_year": "2014","crwr_pass": 120, "crwr_fail": 7, "crwr_audit": 0, "courses_instructor": ""},
-        { "courses_dept": "crwr", "crwr_year": "2015","crwr_pass": 208, "crwr_fail": 8, "crwr_audit": 2, "courses_instructor": ""}
-    ]
+    "result":[{"courses_dept":"crwr","courses_year":2015,"courses_pass":113,"courses_fail":4,"courses_audit":2,"courses_instructor":"warrener, sheryda"},{"courses_dept":"crwr","courses_year":2015,"courses_pass":95,"courses_fail":4,"courses_audit":0,"courses_instructor":"warrener, sheryda"},{"courses_dept":"crwr","courses_year":2016,"courses_pass":127,"courses_fail":5,"courses_audit":1,"courses_instructor":"warrener, sheryda"},{"courses_dept":"crwr","courses_year":1900,"courses_pass":127,"courses_fail":5,"courses_audit":2,"courses_instructor":""},{"courses_dept":"crwr","courses_year":2014,"courses_pass":120,"courses_fail":7,"courses_audit":0,"courses_instructor":"warrener, sheryda"},{"courses_dept":"crwr","courses_year":1900,"courses_pass":120,"courses_fail":7,"courses_audit":0,"courses_instructor":""},{"courses_dept":"crwr","courses_year":1900,"courses_pass":208,"courses_fail":8,"courses_audit":2,"courses_instructor":""}]
 }
