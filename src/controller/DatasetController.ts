@@ -132,8 +132,8 @@ export function sortResults(data: any[], order: string): any {
     const before = -1;
     const after = -before;
     if (order !== "") {
-        // data.sort((i1: any, i2: any) => {
-        [].slice.call(data).sort((i1: any, i2: any) => {
+        data.sort((i1: any, i2: any) => {
+        // [].slice.call(data).sort((i1: any, i2: any) => {
             let val1 = i1[order];
             let val2 = i2[order];
 

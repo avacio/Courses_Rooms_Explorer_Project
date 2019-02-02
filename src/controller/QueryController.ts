@@ -22,7 +22,6 @@ export default class QueryController {
     }
 
     public isValidQuery(q: any): boolean {
-        Log.trace(q.toString());
         if (q == null) { return false; }
         let keys = Object.keys(q);
         if (keys.length !== 2) { return false; }
@@ -34,11 +33,19 @@ export default class QueryController {
             || opts.COLUMNS.some((e: any) => typeof e !== "string")) {
             return false;
         }
+        if (opts.ORDER && (typeof opts.ORDER !== "string" ||
+            opts.COLUMNS.indexOf(opts.ORDER) === -1)) {
+            Log.trace("invalid order");
+            return false; }
         Log.trace("COLUMNS LENGTH " + opts.COLUMNS.length.toString());
         let idKey: string = "";
         for (let col of opts.COLUMNS) {
             if (col.indexOf("_") !== -1) {
-                let k: string = col.split("_")[0];
+                let fields = col.split("_");
+                let k: string = fields[0];
+                if (!isValidStringField(fields[1]) && !isValidMathField(fields[1])) {
+                    return false;
+                }
                 if (idKey === "") {
                     idKey = k;
                 } else if (idKey !== k) { // checks if multiple datasets
@@ -115,6 +122,7 @@ export default class QueryController {
             }
             let skey: string = Object.keys(q)[0];
             let input: any = q[skey];
+            if (typeof q[skey] !== "string") { throw new InsightError("invalid input"); }
             let str = skey.split("_");
             let sfield = str[1];
             if (!isValidStringField(sfield)) { throw new InsightError("invalid sfield"); }
@@ -208,7 +216,7 @@ export default class QueryController {
             }
             return data;
         } catch (error) {
-            throw new InsightError("handleLT");
+            throw new InsightError("handleLT" + error.message);
         }
     }
 
@@ -241,7 +249,7 @@ export default class QueryController {
             }
             return data;
             } catch (error) {
-                throw new InsightError("handle GT");
+                throw new InsightError("handle GT" + error.message);
             }
     }
 
@@ -273,7 +281,7 @@ export default class QueryController {
             }
             return data;
         } catch (error) {
-            throw new InsightError("handleEQ");
+            throw new InsightError("handleEQ" + error.message);
         }
     }
 
