@@ -1,0 +1,19 @@
+{
+    "title": "ROGUE ONE: invalid IS string",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_instructor": "a*a"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

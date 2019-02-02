@@ -84,7 +84,7 @@ export default class QueryController {
                 Log.trace("empty where");
                 if (this.data.length > 5000) {
                     throw new ResultTooLargeError("RTL");
-                }
+                } else { return this.data; }
             }
             let data: any[] = [];
             let filter = Object.keys(q)[0];
@@ -121,8 +121,10 @@ export default class QueryController {
                 throw new InsightError("too many keys");
             }
             let skey: string = Object.keys(q)[0];
-            let input: any = q[skey];
             if (typeof q[skey] !== "string") { throw new InsightError("invalid input"); }
+            let input: any = q[skey];
+
+            // no asterisks in the middle of input string TODO: can check in regex
             let str = skey.split("_");
             let sfield = str[1];
             if (!isValidStringField(sfield)) { throw new InsightError("invalid sfield"); }
