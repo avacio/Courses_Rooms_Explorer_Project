@@ -654,7 +654,11 @@ describe("InsightFacade PerformQuery", () => {
                         response = err;
                     } finally {
                         if (test.isQueryValid) {
-                            expect(response).to.deep.equal(test.result);
+                            // expect(response).to.deep.equal(test.result);
+
+                            // non-ordered testing
+                            expect(response).to.deep.include.members(test.result);
+                            expect(response.length).to.deep.equal(test.result.length);
                         } else {
                             switch (test.result) {
                                 case "InsightError":

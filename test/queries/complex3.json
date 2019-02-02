@@ -1,5 +1,5 @@
 {
-    "title": "all fields, and/or",
+    "title": "REGEX - all fields, and/or",
     "query": {
         "WHERE": {
             "OR": [
