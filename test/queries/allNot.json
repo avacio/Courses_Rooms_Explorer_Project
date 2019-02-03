@@ -2,7 +2,7 @@
     "title": "REGEX - all fields, not",
     "query": {
         "WHERE": {
-            "OR": [
+            "AND": [
                 {"NOT":
                 {
                     "EQ": {
@@ -78,15 +78,11 @@
                 "courses_pass",
                 "courses_fail",
                 "courses_audit",
-                "courses_instructor",
-                "courses_uuid",
-                "courses_title",
-                "courses_id",
-                "courses_avg"
+                "courses_instructor"
             ],
             "ORDER": "courses_year"
         }
     },
-    "isQueryValid": false,
-    "result": "ResultTooLarge"
+    "isQueryValid": true,
+    "result": []
 }

@@ -1,0 +1,41 @@
+{
+    "title": "GT fields",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "LT": {
+                        "courses_pass": 70
+                    }
+                },
+                {
+                    "LT": {
+                        "courses_year": 100
+                    }
+                },
+                {
+                    "LT": {
+                        "courses_audit": 3
+                    }
+                },
+                {
+                    "LT": {
+                        "courses_fail": 707
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor",
+                "courses_title",
+                "courses_uuid"
+            ],
+            "ORDER": "courses_uuid"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

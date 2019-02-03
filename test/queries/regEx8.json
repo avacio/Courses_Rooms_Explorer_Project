@@ -1,0 +1,20 @@
+{
+    "title": "regEx more than 2 *",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "***"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "isQueryValid": false,
+    "result":"InsightError"
+}

@@ -57,7 +57,7 @@ export function isValidMathField(field: string): boolean {
 }
 
 export default function handleRegexIS(sfield: any, input: any, data: any): any {
-    try {
+    // try {
         let regex: RegExp = new RegExp("^" + input.split("*").join(".*") + "$");
         // Log.trace("regex: " + regex);
         let newData: any[] = [];
@@ -76,7 +76,7 @@ export default function handleRegexIS(sfield: any, input: any, data: any): any {
             }
         }
         return newData;
-    } catch (error) {
-        throw new InsightError(error.message);
-    }
+    // } catch (error) {
+    //     throw new InsightError(error.message);
+    // }
 }

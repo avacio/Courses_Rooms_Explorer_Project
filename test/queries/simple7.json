@@ -1,0 +1,20 @@
+{
+    "title": "multiple datasets called in columns",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_uuid": "a*a"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "crwr_avg",
+                "test_fail"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

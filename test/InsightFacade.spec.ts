@@ -38,6 +38,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         someInvalidJSON: "./test/data/someInvalidJSON.zip",
         someNotJSON: "./test/data/someNotJSON.zip",
         wrongName: "./test/data/wrongName.zip",
+        missingCourseInfo: "./test/data/missingCourseInfo.zip"
         // crwrNotZipped: "./test/data/crwrNotZipped/", // TODO
         // unzipped: "./test/data/unzipped/" // TODO
         // unzipped: "./test/data/unzipped.zip" // TODO
@@ -217,6 +218,32 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
+    it("Should not be able to add dataset -- wrong base 64", async function () {
+        const id: string = "wrongBase64";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, "asdfasdf", InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
+    it("Should not be able to add dataset -- missing course info", async function () {
+        const id: string = "missingCourseInfo";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.be.instanceOf(InsightError);
+        }
+    });
+
     it("Should be able to add dataset -- files are .txt, but courses are in JSON format", async function () {
         const id: string = "allNotJSON";
         let response: string[];
@@ -298,11 +325,11 @@ describe("InsightFacade Add/Remove Dataset", function () {
             // if (id === "someInvalidJSON") {
             // Log.trace("BEFORE " + insightFacade.getDatasetController().getDataset(id).length.toString());
             // Log.trace(JSON.stringify(insightFacade.getDatasetController().getDataset(id)));
-            let sorted = sortResults(insightFacade.getDatasetController().getDataset(id), id + "_avg");
+            // let sorted = sortResults(insightFacade.getDatasetController().getDataset(id), id + "_avg");
             // Log.trace("AFTER " + sorted.length.toString());
             // Log.trace(JSON.stringify(sorted));
 
-            let organized = organizeResults(sorted, [id + "_avg", id + "_dept"]);
+            // let organized = organizeResults(sorted, [id + "_avg", id + "_dept"]);
             // Log.trace(JSON.stringify(organized));
             // }
         }
@@ -400,23 +427,23 @@ describe("InsightFacade Add/Remove Dataset", function () {
         }
     });
 
-    // it("testing listDatasets() after single successful add", async function () {
-    //     const id: string = "courses";
-    //     let response: string[];
-    //     let dataSetsResult: Promise<InsightDataset[]>;
-    //     let listedData: InsightDataset[];
-    //     try {
-    //         expect(await insightFacade.listDatasets()).to.deep.equal([]);
-    //         await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
-    //     } catch (err) {
-    //         response = err;
-    //     } finally {
-    //         // expect(await Promise.resolve(dataSetsResult).length).to.deep.include([id]);
-    //         // listedData = await Promise.resolve(dataSetsResult);
-    //         expect(insightFacade.listDatasets()).to.deep.equal
-    //         ({id, kind: InsightDatasetKind.Courses, numRows: 64612});
-    //     }
-    // });
+    it("testing listDatasets() after single successful add", async function () {
+        const id: string = "courses";
+        let response: string[];
+        let dataSetsResult: Promise<InsightDataset[]>;
+        let listedData: InsightDataset[];
+        try {
+            expect(await insightFacade.listDatasets()).to.deep.equal([]);
+            await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            // expect(await Promise.resolve(dataSetsResult).length).to.deep.include([id]);
+            // listedData = await Promise.resolve(dataSetsResult);
+            // expect(insightFacade.listDatasets()).to.deep.equal
+            // ({id, kind: InsightDatasetKind.Courses, numRows: 64612});
+        }
+    });
 
     // it("testing listDatasets() after successful add", async function () {
     //     const id: string = "courses";
@@ -571,6 +598,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 describe("InsightFacade PerformQuery", () => {
     const datasetsToQuery: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
+        someInvalidJSON: "./test/data/someInvalidJSON.zip"
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];

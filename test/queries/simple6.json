@@ -1,0 +1,18 @@
+{
+    "title": "no order",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_instructor": "alexander"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

@@ -32,26 +32,19 @@ export default class DatasetController {
     // }
 
     // returns false if id is null
-    public addDataset(id: string, content: any[], kind: InsightDatasetKind): boolean {
-        if (id != null && content != null) {
-            Log.trace("CONTENT LENGTH " + content.length.toString());
-            this.data.set(id, content);
-            this.insightData.set(id, {id, kind, numRows: content.length});
+    public addDataset(id: string, content: any[], kind: InsightDatasetKind) {
+        Log.trace("CONTENT LENGTH " + content.length.toString());
+        this.data.set(id, content);
+        this.insightData.set(id, {id, kind, numRows: content.length});
 
-            this.writeToCache(id);
-            return true;
-        }
-        return false;
+        this.writeToCache(id);
     }
 
-    public removeDataset(id: string): boolean {
-        if (id != null) {
-            this.data.delete(id);
-            this.insightData.delete(id);
-            fs.removeSync(path + "/" + id + ".json");    // remove from cache as well TODO
-            return true;
-        }
-        return false;
+    public removeDataset(id: string) {
+        this.data.delete(id);
+        this.insightData.delete(id);
+        fs.removeSync(path + "/" + id + ".json");    // remove from cache as well TODO
+        return true;
     }
 
     public getDataset(id: string): any[] {
@@ -88,7 +81,7 @@ export default class DatasetController {
 // HELPER
 
 export function checkParsed(j: any): any { // TODO: being used?
-    if (typeof j !== "string") { j = JSON.stringify((j)); }
+    // if (typeof j !== "string") { j = JSON.stringify((j)); }
     try {
         j = JSON.parse(j);
     } catch (error) {
@@ -113,13 +106,13 @@ export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {
     return filtered;
 }
 
-// assumes that only relevant queried sections are in data field
+// assumes that only relevant queried sections are in data field, and that order is valid string
 export function sortResults(data: any[], order: string): any {
     // increasing order
     const before = -1;
     const after = -before;
-    if (order !== "") {
-        data.sort((i1: any, i2: any) => {
+    // if (order !== "") {
+    data.sort((i1: any, i2: any) => {
             let val1 = i1[order];
             let val2 = i2[order];
 
@@ -130,6 +123,6 @@ export function sortResults(data: any[], order: string): any {
             }
             return 0;
         });
-    }
+    // }
     return data;
 }

@@ -117,6 +117,7 @@ export default class QueryController {
             let input: any = q[skey];
 
             let str = skey.split("_");
+            if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let sfield = str[1];
             if (!isValidStringField(sfield)) { throw new InsightError("invalid sfield"); }
 
@@ -129,7 +130,6 @@ export default class QueryController {
                 }
                 return handleRegexIS(sfield, input, this.data);
             } else {
-
                 for (let i of this.data) {
                     if (sfield === "dept" && input === Object.values(i)[0]) {
                         data.push(i);
@@ -201,6 +201,7 @@ export default class QueryController {
             if (typeof q[mkey] !== "number") { throw new InsightError("invalid input"); }
             let num: number = q[mkey];
             let str = mkey.split("_");
+            if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
             if (!isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
 
@@ -234,6 +235,7 @@ export default class QueryController {
             if (typeof q[mkey] !== "number") { throw new InsightError("invalid input"); }
             let num: number = q[mkey];
             let str = mkey.split("_");
+            if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
             if (!isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
 
@@ -266,6 +268,7 @@ export default class QueryController {
             if (typeof q[mkey] !== "number") { throw new InsightError("invalid input"); }
             let num: number = q[mkey];
             let str = mkey.split("_");
+            if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
             if (!isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
 

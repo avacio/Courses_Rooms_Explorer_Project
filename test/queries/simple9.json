@@ -1,0 +1,23 @@
+{
+    "title": "wrong dataset in order",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "GT": {
+                        "courses_avg": 98
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "crwr_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
