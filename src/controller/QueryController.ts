@@ -1,15 +1,8 @@
 import {InsightDataset, InsightError, ResultTooLargeError} from "./IInsightFacade";
 import DatasetController, {organizeResults, sortResults} from "./DatasetController";
-import Query, {intersect, isValidMathField, isValidStringField, union} from "./Query";
+import Query, {handleRegexIS, intersect, isValidMathField, isValidStringField, union} from "./Query";
 import Log from "../Util";
 
-// do we need this? not sure
-// export class QueryResult {
-//     constructor(query: Query, dataset: string) {
-//         //
-//         dataset = "";
-//     }
-// }
 export default class QueryController {
     private id: string;
     private data: any;
@@ -126,18 +119,24 @@ export default class QueryController {
             let str = skey.split("_");
             let sfield = str[1];
             if (!isValidStringField(sfield)) { throw new InsightError("invalid sfield"); }
+            // let regex: RegExp = new RegExp(input);
+            // let regex: RegExp;
+            if (input.indexOf("*") !== -1 ) {
+                return handleRegexIS(sfield, input, this.data);
+            } else {
 
-            for (let i of this.data) {
-                if (sfield === "dept" && input === Object.values(i)[0]) {
-                    data.push(i);
-                } else if (sfield === "id" && input === Object.values(i)[1]) {
-                    data.push(i);
-                } else if (sfield === "instructor" && input === Object.values(i)[3]) {
-                    data.push(i);
-                } else if (sfield === "title" && input === Object.values(i)[4]) {
-                    data.push(i);
-                } else if (sfield === "uuid" && input === Object.values(i)[8]) {
-                    data.push(i);
+                for (let i of this.data) {
+                    if (sfield === "dept" && input === Object.values(i)[0]) {
+                        data.push(i);
+                    } else if (sfield === "id" && input === Object.values(i)[1]) {
+                        data.push(i);
+                    } else if (sfield === "instructor" && input === Object.values(i)[3]) {
+                        data.push(i);
+                    } else if (sfield === "title" && input === Object.values(i)[4]) {
+                        data.push(i);
+                    } else if (sfield === "uuid" && input === Object.values(i)[8]) {
+                        data.push(i);
+                    }
                 }
             }
             return data;

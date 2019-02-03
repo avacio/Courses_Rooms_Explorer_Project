@@ -1,4 +1,7 @@
 /// MIGHT NOT BE USED
+import Log from "../Util";
+import {InsightError} from "./IInsightFacade";
+
 export default class Query {
     constructor(
         public WHERE: Filter, // TODO
@@ -67,4 +70,29 @@ export function isValidMathField(field: string): boolean {
     // let field = str[1];
     return field === "avg" || field === "pass" || field === "fail"
         || field === "audit" || field === "year";
+}
+
+export function handleRegexIS(sfield: any, input: any, data: any): any {
+    try {
+        let regex: RegExp = new RegExp("^" + input.split("*").join(".*") + "$");
+        Log.trace("regex: " + regex);
+        let newData: any[] = [];
+        // Log.trace("sfield: " + sfield);
+        for (let i of data) {
+            if (sfield === "dept" && Object.values(i)[0].match(regex)) {
+                newData.push(i);
+            } else if (sfield === "id" && Object.values(i)[1].match(regex)) {
+                newData.push(i);
+            } else if (sfield === "instructor" && Object.values(i)[3].match(regex)) {
+                newData.push(i);
+            } else if (sfield === "title" && Object.values(i)[4].match(regex)) {
+                newData.push(i);
+            } else if (sfield === "uuid" && Object.values(i)[8].match(regex)) {
+                newData.push(i);
+            }
+        }
+        return newData;
+    } catch (error) {
+        throw new InsightError(error.message);
+    }
 }
