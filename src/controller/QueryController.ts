@@ -1,6 +1,6 @@
-import {InsightDataset, InsightError, ResultTooLargeError} from "./IInsightFacade";
-import DatasetController, {filterObjectFields, organizeResults, sortResults} from "./DatasetController";
-import Query, {handleRegexIS, intersect, isValidMathField, isValidStringField, union} from "./Query";
+import {InsightError, ResultTooLargeError} from "./IInsightFacade";
+import DatasetController, {organizeResults, sortResults} from "./DatasetController";
+import handleRegexIS, {intersect, isValidMathField, isValidStringField, union} from "./Query";
 import Log from "../Util";
 
 export default class QueryController {
@@ -47,7 +47,7 @@ export default class QueryController {
             }
         }
         this.id = idKey;
-        Log.trace("ID TO PARSE: " + this.id);
+        // Log.trace("ID TO PARSE: " + this.id);
         return true;
     }
 
@@ -58,7 +58,6 @@ export default class QueryController {
             let filtered = this.handleWHERE(obj.WHERE); // filter data
             if (filtered.length > 5000) { throw new ResultTooLargeError("RTL"); }
 
-            // let query = new Query(obj.WHERE, obj.OPTIONS); // original query // do we need this?
             if (obj.OPTIONS.ORDER) {
                 let sorted = sortResults(filtered, obj.OPTIONS.ORDER);
                 return organizeResults(sorted, obj.OPTIONS.COLUMNS);
@@ -81,7 +80,7 @@ export default class QueryController {
             }
             let data: any[] = [];
             let filter = Object.keys(q)[0];
-            Log.trace("filter: " + filter);
+            // Log.trace("filter: " + filter);
             if (filter === "IS") {
                 data = this.handleIS(q["IS"]);
             } else if (filter === "NOT") {
@@ -117,13 +116,17 @@ export default class QueryController {
             if (typeof q[skey] !== "string") { throw new InsightError("invalid input"); }
             let input: any = q[skey];
 
-            // no asterisks in the middle of input string TODO: can check in regex
             let str = skey.split("_");
             let sfield = str[1];
             if (!isValidStringField(sfield)) { throw new InsightError("invalid sfield"); }
-            // let regex: RegExp = new RegExp(input);
-            // let regex: RegExp;
-            if (input.indexOf("*") !== -1 ) {
+
+            let asteriskCount = input.split("*").length - 1;
+            if (asteriskCount > 0) {
+                if (asteriskCount > 2 || (asteriskCount === 2 && input.lastIndexOf("*") !== input.length - 1) ||
+                    (asteriskCount === 2 && input.indexOf("*") !== 0) ||
+                    (input.indexOf("*") !== 0 && input.indexOf("*") !== input.length - 1)) {
+                    throw new InsightError("no '*' in the middle of a string allowed");
+                }
                 return handleRegexIS(sfield, input, this.data);
             } else {
 
@@ -151,7 +154,7 @@ export default class QueryController {
         try {
             let data = this.data;
             let nextFilter = Object.keys(filters)[0];
-            Log.trace("next filter: " + nextFilter);
+            // Log.trace("next filter: " + nextFilter);
             if (nextFilter !== "NOT") {
                 let nextFilterData = this.handleWHERE(filters);
                 return data.filter((i: any) => !nextFilterData.includes(i));

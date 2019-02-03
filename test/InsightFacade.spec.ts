@@ -296,14 +296,14 @@ describe("InsightFacade Add/Remove Dataset", function () {
             expect(response).to.deep.equal([id]);
             // TEST SORT AND RENDER
             // if (id === "someInvalidJSON") {
-            Log.trace("BEFORE " + insightFacade.getDatasetController().getDataset(id).length.toString());
-            Log.trace(JSON.stringify(insightFacade.getDatasetController().getDataset(id)));
+            // Log.trace("BEFORE " + insightFacade.getDatasetController().getDataset(id).length.toString());
+            // Log.trace(JSON.stringify(insightFacade.getDatasetController().getDataset(id)));
             let sorted = sortResults(insightFacade.getDatasetController().getDataset(id), id + "_avg");
-            Log.trace("AFTER " + sorted.length.toString());
-            Log.trace(JSON.stringify(sorted));
+            // Log.trace("AFTER " + sorted.length.toString());
+            // Log.trace(JSON.stringify(sorted));
 
             let organized = organizeResults(sorted, [id + "_avg", id + "_dept"]);
-            Log.trace(JSON.stringify(organized));
+            // Log.trace(JSON.stringify(organized));
             // }
         }
     });

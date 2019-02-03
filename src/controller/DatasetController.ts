@@ -17,21 +17,19 @@ export default class DatasetController {
     private data: Map<string, any[]>;
     private insightData: Map<string, InsightDataset>;
 
-    constructor(private cache = false) {
+    // constructor(private cache = false) {
+    constructor() {
         Log.trace("DatasetController constuctor");
-        this.data = new Map<string, any[]>(this.checkCache());
+        // this.data = new Map<string, any[]>(this.checkCache());
+        this.data = new Map<string, any[]>();
         this.insightData = new Map<string, InsightDataset>();
     }
 
-    private checkCache() {
-        if (this.cache && fs.existsSync(path)) {
-            return JSON.parse(fs.readFileSync(path).toString());
-        } else { return []; }
-    }
-
-    public clearCache() {
-        if (fs.existsSync(path)) { fs.unlinkSync(path); }
-    }
+    // private checkCache() { // unused because reading from internal data structure, not from disk
+    //     if (this.cache && fs.existsSync(path)) {
+    //         return JSON.parse(fs.readFileSync(path).toString());
+    //     } else { return []; }
+    // }
 
     // returns false if id is null
     public addDataset(id: string, content: any[], kind: InsightDatasetKind): boolean {
@@ -60,10 +58,6 @@ export default class DatasetController {
         return this.data.get(id);
     }
 
-    public getNumRows(id: string): number {
-        return this.insightData.get(id).numRows;
-    }
-
     public containsDataset(id: string): boolean {
         return this.data.has(id);
     }
@@ -72,9 +66,6 @@ export default class DatasetController {
         let r = [];
         for (let key of Array.from( this.data.keys()) ) { r.push(key); }
         return r;
-    }
-    public printAllKeys() {
-        for (let key of Array.from( this.data.keys()) ) { Log.trace("PRINTKEYS: " + key); }
     }
 
     private writeToCache(id: string) {
@@ -90,11 +81,7 @@ export default class DatasetController {
     }
 
     public listDatasets(): InsightDataset[] {
-        let list: InsightDataset[] = [];
-        for (let v of Array.from( this.insightData.values()) ) {
-            list.push(v);
-        }
-        return list;
+        return Array.from(this.insightData.values());
     }
 }
 //////////////////
@@ -133,7 +120,6 @@ export function sortResults(data: any[], order: string): any {
     const after = -before;
     if (order !== "") {
         data.sort((i1: any, i2: any) => {
-        // [].slice.call(data).sort((i1: any, i2: any) => {
             let val1 = i1[order];
             let val2 = i2[order];
 

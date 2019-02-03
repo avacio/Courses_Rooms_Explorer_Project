@@ -41,6 +41,6 @@
             "ORDER": "courses_uuid"
         }
     },
-    "isQueryValid": true,
+    "isQueryValid": false,
     "result": "ResultTooLarge"
 }

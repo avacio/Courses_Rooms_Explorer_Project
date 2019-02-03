@@ -1,21 +1,5 @@
-/// MIGHT NOT BE USED
 import Log from "../Util";
 import {InsightError} from "./IInsightFacade";
-
-export default class Query {
-    constructor(
-        public WHERE: Filter, // TODO
-        public OPTIONS: IQueryOptions,
-    ) {}
-
-}
-
-export enum Filter { IS, NOT, EQ, LT, GT, AND, OR }
-
-interface IQueryOptions {
-    COLUMNS: string[];
-    ORDER?: string; // ORDER IS NOT NECESSARY IN A QUERY
-}
 
 export function union(data: any[]): any[] {
     let x: any[] = data[0];
@@ -72,10 +56,10 @@ export function isValidMathField(field: string): boolean {
         || field === "audit" || field === "year";
 }
 
-export function handleRegexIS(sfield: any, input: any, data: any): any {
+export default function handleRegexIS(sfield: any, input: any, data: any): any {
     try {
         let regex: RegExp = new RegExp("^" + input.split("*").join(".*") + "$");
-        Log.trace("regex: " + regex);
+        // Log.trace("regex: " + regex);
         let newData: any[] = [];
         // Log.trace("sfield: " + sfield);
         for (let i of data) {

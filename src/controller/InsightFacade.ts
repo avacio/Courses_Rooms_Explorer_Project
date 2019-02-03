@@ -22,9 +22,10 @@ export default class InsightFacade implements IInsightFacade {
     protected datasetController: DatasetController;
     protected queryController: QueryController;
 
-    constructor(cache = false) {
+    constructor() {
         Log.trace("InsightFacadeImpl::init()");
-        this.datasetController = new DatasetController(cache);
+        // this.datasetController = new DatasetController(cache);
+        this.datasetController = new DatasetController();
         this.queryController = new QueryController(this.datasetController);
     }
 
@@ -76,7 +77,7 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    public performQuery(query: Query): Promise<any[]> {
+    public performQuery(query: any): Promise<any[]> {
         let self: InsightFacade = this;
         return new Promise(function (resolve, reject) {
             // const queryResult = QueryController.parseQuery(query);
@@ -124,7 +125,6 @@ export default class InsightFacade implements IInsightFacade {
             });
             return Promise.all(files).then((f) => f.filter((i: any) => i !== null ));
         } catch (error) {
-                Log.trace("CAUGHT ERROR READZIP");
                 return null;
             }
     }
@@ -145,7 +145,6 @@ export default class InsightFacade implements IInsightFacade {
                     ((typeof e.Year !== "number") ? parseInt(e.Year, 10) : e.Year);
             return entry;
         } catch (error) {
-            Log.error(error.message);
             return null;
         }
     }
