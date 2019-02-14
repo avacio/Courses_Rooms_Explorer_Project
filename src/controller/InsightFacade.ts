@@ -11,7 +11,6 @@ import DatasetController, {checkParsed} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import QueryController from "./QueryController";
-import Query from "./Query";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -24,7 +23,6 @@ export default class InsightFacade implements IInsightFacade {
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
-        // this.datasetController = new DatasetController(cache);
         this.datasetController = new DatasetController();
         this.queryController = new QueryController(this.datasetController);
     }
@@ -32,7 +30,6 @@ export default class InsightFacade implements IInsightFacade {
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let self: InsightFacade = this;
         return new Promise(async function (resolve, reject) {
-            // try {
                 if (self.datasetController.containsDataset(id)) { // already contains, then reject
                     return reject(new InsightError("ID ALREADY ADDED BEFORE" + id));
                 }
@@ -45,7 +42,7 @@ export default class InsightFacade implements IInsightFacade {
                 }
 
                 await new JSZip().loadAsync(content, {base64: true})
-                    .then((zip) => InsightFacade.readZip(id, zip).then(function (allData) {
+                    .then((zip) => InsightFacade.readZip(id, zip, kind).then(function (allData) {
                         if (allData !== null && allData.length !== 0) {
                                 // Log.trace("VALID, ADDED ADDDATASET: " + id);
                                 self.datasetController.addDataset(id, [].concat.apply([], allData), kind);
@@ -53,9 +50,6 @@ export default class InsightFacade implements IInsightFacade {
                             } else {
                                 return reject(new InsightError ("REJECTED addDataset, allData insignificant: " + id));
                             }}));
-            // } catch (error) {
-            //     return reject (new InsightError (error.message));
-            // }
         });
     }
 
@@ -99,27 +93,30 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    private static readZip(id: string, zip: JSZip): Promise<any[]> { // TODO
+    private static readZip(id: string, zip: JSZip, kind: InsightDatasetKind): Promise<any[]> {
         const files: Array<Promise<any[]>> = [];
-        // try {
-        zip.folder("courses").forEach((path: string, file: JSZipObject) => {
-                    files.push(file.async("text").then( (data) => {
-                        try {
-                            let parsed = checkParsed(data);
-                            return (parsed == null) ? null :
-                                parsed.result.map((val: any) => InsightFacade.makeEntry(val, id));
-                        } catch (error) {
-                            return null;
-                        }
-                    }));
+
+        if (kind === InsightDatasetKind.Courses) {
+            zip.folder("courses").forEach((path: string, file: JSZipObject) => {
+                files.push(file.async("text").then((data) => {
+                    try {
+                        let parsed = checkParsed(data);
+                        return (parsed == null) ? null :
+                            parsed.result.map((val: any) => InsightFacade.makeCourseEntry(val, id));
+                    } catch (error) {
+                        return null;
+                    }
+                }));
             });
-        return Promise.all(files).then((f) => f.filter((i: any) => i !== null ));
-        // } catch (error) {
-        //         return null;
-        //     }
+            return Promise.all(files).then((f) => f.filter((i: any) => i !== null ));
+        } else if (kind === InsightDatasetKind.Rooms) {
+            zip.file("index.htm").async("text").then((index) => {
+                // let buildings = getBuildings(index);
+            });
+        }
     }
 
-    private static makeEntry(e: any, id: string): any {
+    private static makeCourseEntry(e: any, id: string): any {
             let entry: any = {};
             entry[id + "_dept"] = e.Subject;
             entry[id + "_id"] = (typeof e.Course !== "string") ? e.Course.toString() : e.Course;

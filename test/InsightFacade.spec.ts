@@ -11,7 +11,7 @@ import {
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
-import {organizeResults, sortResults} from "../src/controller/DatasetController";
+import * as QUtil from "../src/controller/QueryUtil";
 
 // This should match the schema given to TestUtil.validate(..) in TestUtil.readTestQueries(..)
 // except 'filename' which is injected when the file is read.
