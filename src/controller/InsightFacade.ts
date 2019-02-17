@@ -7,10 +7,11 @@ import {
     NotFoundError,
     ResultTooLargeError
 } from "./IInsightFacade";
-import DatasetController, {checkParsed} from "./DatasetController";
+import DatasetController, {checkParsed, parseBuilding, readBuildings} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import QueryController from "./QueryController";
+import * as parse5 from "parse5/lib";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -94,9 +95,8 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     private static readZip(id: string, zip: JSZip, kind: InsightDatasetKind): Promise<any[]> {
-        const files: Array<Promise<any[]>> = [];
-
         if (kind === InsightDatasetKind.Courses) {
+            let files: Array<Promise<any[]>> = []; // TODO
             zip.folder("courses").forEach((path: string, file: JSZipObject) => {
                 files.push(file.async("text").then((data) => {
                     try {
@@ -108,10 +108,39 @@ export default class InsightFacade implements IInsightFacade {
                     }
                 }));
             });
-            return Promise.all(files).then((f) => f.filter((i: any) => i !== null ));
+            return Promise.all(files).then((f) => f.filter((i: any) => i !== null));
         } else if (kind === InsightDatasetKind.Rooms) {
-            zip.file("index.htm").async("text").then((index) => {
-                // let buildings = getBuildings(index);
+            zip.file("index.htm").async("text").then((data) => {
+                try {
+                    let buildings = readBuildings(data);
+                    // files = buildings.map((link) => parseNode(zip, link));
+                    let files = buildings.map((link) => {
+                        return zip.file(link.substring(2)).async("text").then((b) => parseBuilding(id, b));
+                    });
+                    return Promise.all(files).then((f) => f.filter((i: any) => i !== null));
+                    // files.push
+
+                    // files = buildings.map()
+                // let i = data.indexOf("<tbody>");
+                // let j = data.indexOf("</tbody>");
+                // // let body = parse5.parseFragment(data.substring(i, j)).childNodes[0];
+                // let element = parse5.parseFragment(data.substring(i, j)) as parse5.AST.Default.Element;
+                // let buildings = [];
+                // let rooms = [];
+                //
+                // element.childNodes.forEach((node: any) => {
+                //     if (node.nodeName === "tr") {
+                //         let b = {};
+                //         node.childNodes.forEach((bNode: any) => {
+                //             if (bNode.nodeName === "td") {
+                //                 // Object.assign(b, self.processElement())
+                //             }
+                //         });
+                //     }
+                // });
+                } catch (error) {
+                    return null;
+                }
             });
         }
     }
