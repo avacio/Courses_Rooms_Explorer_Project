@@ -2,8 +2,10 @@ import Log from "../Util";
 import {InsightDataset, InsightDatasetKind, InsightError} from "./IInsightFacade";
 import * as fs from "fs-extra";
 import * as http from "http";
-import * as parse5 from "parse5/lib";
+// import * as parse5 from "parse5/lib";
 // export const parse5 = require("parse5");
+const parse5 = require("parse5");
+
 /**
  * Helper class to help parse and control datasets
  *
@@ -16,6 +18,7 @@ import * as parse5 from "parse5/lib";
 // }
 const path = __dirname + "/../../data/";
 const geoURL = "http://cs310.ugrad.cs.ubc.ca:11316/api/v1/project_k7c1b_s7s0b/";
+
 export default class DatasetController {
     private data: Map<string, any[]>;
     private insightData: Map<string, InsightDataset>;
@@ -93,13 +96,14 @@ export function checkParsed(j: any): any { // TODO: being used?
 }
 
 export function readBuildings(data: string): string[] {
-    let doc = parse5.parse(data) as parse5.AST.Default.Document;
+    // let doc = parse5.parse(data) as parse5.AST.Default.Document;
+    let doc = parse5.parse(data);
     let buildings = parseElements(doc, [{
         name: "class",
         value: "^(odd|even).*"
     }]);
 
-    return buildings.map((child) => {
+    return buildings.map((child: any) => {
         let links = parseElements(child, [{
             name: "href",
             value: ".*"
@@ -112,9 +116,11 @@ export function readBuildings(data: string): string[] {
     });
 }
 
-export function parseElements(node: parse5.AST.Default.ParentNode, attributes: any[]): parse5.AST.Default.Element[] {
+// export function parseElements(node: parse5.AST.Default.ParentNode, attributes: any[]): parse5.AST.Default.Element[] {
+export function parseElements(node: any, attributes: any[]): any {
     let matches = [];
-    let e = node as parse5.AST.Default.Element;
+    // let e = node as parse5.AST.Default.Element;
+    let e = node;
 
     if (e.attrs !== null) {
         if (hasMatchingAttributes(e, attributes)) {
@@ -123,7 +129,8 @@ export function parseElements(node: parse5.AST.Default.ParentNode, attributes: a
     }
     if (node.childNodes !== null) {
         for (let child of node.childNodes) {
-            let matchingChildren = parseElements(child as parse5.AST.Default.Element, attributes);
+            // let matchingChildren = parseElements(child as parse5.AST.Default.Element, attributes);
+            let matchingChildren = parseElements(child, attributes);
             matches.push(...matchingChildren); // ... spreads the object and overwrites as necessary
         }
     }
@@ -131,7 +138,8 @@ export function parseElements(node: parse5.AST.Default.ParentNode, attributes: a
 }
 
 // TODO
-function hasMatchingAttributes(e: parse5.AST.Default.Element, attributes: any[]): boolean {
+// function hasMatchingAttributes(e: parse5.AST.Default.Element, attributes: any[]): boolean {
+function hasMatchingAttributes(e: any, attributes: any[]): boolean {
     return attributes.every((attr) => {
        return e.attrs.some((elemAttr: any) => {
            return attr.name === elemAttr.name && elemAttr.value.search(attr.value) !== -1; });
@@ -146,7 +154,8 @@ function hasMatchingAttributes(e: parse5.AST.Default.Element, attributes: any[])
 ////////////////////////
 export function parseBuilding(id: string, b: string): Promise<any[]> {
     try {
-        let doc = parse5.parse(b) as parse5.AST.Default.Document;
+        // let doc = parse5.parse(b) as parse5.AST.Default.Document;
+        let doc = parse5.parse(b);
         const name = parseElements(doc, [{
             name: "rel",
             value: "canonical"
@@ -161,20 +170,22 @@ export function parseBuilding(id: string, b: string): Promise<any[]> {
         }]);
 
         const rShortname = name[0].attrs[1].value;
-        const rFullname = (roomsInfo[0].childNodes[0] as parse5.AST.Default.TextNode).value;
-        const rAddress = (roomsInfo[1].childNodes[0] as parse5.AST.Default.TextNode).value;
+        // const rFullname = (roomsInfo[0].childNodes[0] as parse5.AST.Default.TextNode).value;
+        // const rAddress = (roomsInfo[1].childNodes[0] as parse5.AST.Default.TextNode).value;
+        const rFullname = (roomsInfo[0].childNodes[0]).value;
+        const rAddress = (roomsInfo[1].childNodes[0]).value;
         const url = geoURL + encodeURI(rAddress);
 
         // TODO
         return Promise.resolve(httpGet(url)).then((geoResponse) => {
             let geo = geoResponse as IGeoResponse;
-            return getRoomEntries(doc).map((room) => {
+            return getRoomEntries(doc).map((room: any) => {
                 const fields = parseElements(room, [{
                     name: "class",
                     value: "^views-field .*"
                 }]);
                 return makeRoomsEntry(id, fields, geo, rShortname, rFullname, rAddress);
-            }).filter((entry) => {
+            }).filter((entry: any) => {
                 return Object.keys(entry).map((key) => entry[key])
                     .every((val) => val !== null);
             });
@@ -222,7 +233,8 @@ export function httpGet(url: string): Promise<any> {
     });
 }
 
-function getRoomEntries(doc: parse5.AST.Default.Document): parse5.AST.Default.ParentNode[] {
+// function getRoomEntries(doc: parse5.AST.Default.Document): parse5.AST.Default.ParentNode[] {
+function getRoomEntries(doc: any): any {
     let rooms = parseElements(doc, [{
         name: "class",
         value: "^view view-buildings-and-classrooms view-id-building_and_classrooms .*"
@@ -233,11 +245,13 @@ function getRoomEntries(doc: parse5.AST.Default.Document): parse5.AST.Default.Pa
     }]);
 }
 
-function makeRoomsEntry(id: string, fields: parse5.AST.Default.Element[], geo: IGeoResponse, rShortname: string,
+// function makeRoomsEntry(id: string, fields: parse5.AST.Default.Element[], geo: IGeoResponse, rShortname: string,
+function makeRoomsEntry(id: string, fields: any, geo: IGeoResponse, rShortname: string,
                         rFullname: string, rAddress: string): any {
     // TODO
-    const roomsNum = ((fields[0].childNodes[1] as parse5.AST.Default.Element)
-        .childNodes[0] as parse5.AST.Default.TextNode).value.trim();
+    // const roomsNum = ((fields[0].childNodes[1] as parse5.AST.Default.Element)
+    //     .childNodes[0] as parse5.AST.Default.TextNode).value.trim();
+    const roomsNum = (fields[0].childNodes[1]).childNodes[0].value.trim();
     let entry: any = {};
 
     entry[id + "_fullname"] = rFullname;
@@ -247,9 +261,13 @@ function makeRoomsEntry(id: string, fields: parse5.AST.Default.Element[], geo: I
     entry[id + "_address"] = rAddress;
     entry[id + "_lat"] = geo.lat;
     entry[id + "_lon"] = geo.lon;
-    entry[id + "_seats"] = parseInt((fields[1].childNodes[0] as parse5.AST.Default.TextNode).value.trim(), 10);
-    entry[id + "_type"] = (fields[3].childNodes[0] as parse5.AST.Default.TextNode).value.trim();
-    entry[id + "_furniture"] = (fields[2].childNodes[0] as parse5.AST.Default.TextNode).value.trim();
-    entry[id + "_href"] = (fields[0].childNodes[1] as parse5.AST.Default.Element).attrs[0].value;
+    // entry[id + "_seats"] = parseInt((fields[1].childNodes[0] as parse5.AST.Default.TextNode).value.trim(), 10);
+    entry[id + "_seats"] = parseInt(fields[1].childNodes[0].value.trim(), 10);
+    // entry[id + "_type"] = (fields[3].childNodes[0] as parse5.AST.Default.TextNode).value.trim();
+    // entry[id + "_furniture"] = (fields[2].childNodes[0] as parse5.AST.Default.TextNode).value.trim();
+    // entry[id + "_href"] = (fields[0].childNodes[1] as parse5.AST.Default.Element).attrs[0].value;
+    entry[id + "_type"] = fields[3].childNodes[0].value.trim();
+    entry[id + "_furniture"] = fields[2].childNodes[0].value.trim();
+    entry[id + "_href"] = fields[0].childNodes[1].attrs[0].value;
     return entry;
 }
