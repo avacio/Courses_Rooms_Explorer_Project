@@ -11,8 +11,8 @@ import DatasetController, {checkParsed, parseBuilding, readBuildings} from "./Da
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import QueryController from "./QueryController";
-import * as parse5 from "parse5/lib";
-
+// import * as parse5 from "parse5/lib";
+// export const parse5 = require("parse5");
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade

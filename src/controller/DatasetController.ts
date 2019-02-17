@@ -1,9 +1,9 @@
 import Log from "../Util";
 import {InsightDataset, InsightDatasetKind, InsightError} from "./IInsightFacade";
 import * as fs from "fs-extra";
-import * as parse5 from "parse5/lib";
 import * as http from "http";
-
+import * as parse5 from "parse5/lib";
+// export const parse5 = require("parse5");
 /**
  * Helper class to help parse and control datasets
  *
@@ -133,7 +133,7 @@ export function parseElements(node: parse5.AST.Default.ParentNode, attributes: a
 // TODO
 function hasMatchingAttributes(e: parse5.AST.Default.Element, attributes: any[]): boolean {
     return attributes.every((attr) => {
-       return e.attrs.some((elemAttr) => {
+       return e.attrs.some((elemAttr: any) => {
            return attr.name === elemAttr.name && elemAttr.value.search(attr.value) !== -1; });
     });
 }
