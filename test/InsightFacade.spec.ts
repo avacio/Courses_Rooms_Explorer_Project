@@ -40,7 +40,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
         wrongName: "./test/data/wrongName.zip",
         missingCourseInfo: "./test/data/missingCourseInfo.zip",
         rooms: "./test/data/rooms.zip",
-        rooms1: "./test/data/rooms1.zip"
         // crwrNotZipped: "./test/data/crwrNotZipped/", // TODO
         // unzipped: "./test/data/unzipped/" // TODO
         // unzipped: "./test/data/unzipped.zip" // TODO
@@ -138,7 +137,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     it("Should add the valid 'rooms' dataset", async function () {
         const id: string = "rooms";
-        // const id: string = "rooms1";
         let response: string[];
 
         try {

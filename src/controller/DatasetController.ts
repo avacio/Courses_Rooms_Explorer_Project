@@ -2,8 +2,7 @@ import Log from "../Util";
 import {InsightDataset, InsightDatasetKind, InsightError} from "./IInsightFacade";
 import * as fs from "fs-extra";
 import * as http from "http";
-// import * as parse5 from "parse5/lib";
-// export const parse5 = require("parse5");
+import {makeRoomsEntry} from "./InsightFacade";
 const parse5 = require("parse5");
 
 /**
@@ -61,14 +60,10 @@ export default class DatasetController {
     }
 
     private writeToCache(id: string) {
-        const entries: any[] = [];
-        this.data.forEach(async function (value, key) { // needs to be async or no?
-            entries.push(value);
-        });
         if (!fs.existsSync(path)) {
             fs.mkdirSync(path);
         }
-        fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(entries)); // TODO
+        fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(Array.from(this.data.values())));
         Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
     }
 
@@ -84,7 +79,7 @@ export interface IGeoResponse {
     error?: string;
 }
 
-export function checkParsed(j: any): any { // TODO: being used?
+export function checkParsed(j: any): any {
     try {
         j = JSON.parse(j);
     } catch (error) {
@@ -116,20 +111,13 @@ export function readBuildings(data: string): string[] {
 }
 export function parseElements(node: any, attributes: any[]): any {
     let matches: any = [];
-    // let e = node as parse5.AST.Default.Element;
     if (node == null) { return matches; }
     let e = node;
-    // Log.trace("in parseElem1");
-    // if (e.attrs !== null) {
-    if (e.attrs !== undefined && e.attrs !== null) {
-    // if (e.attrs !== undefined) {
+    if (e.attrs !== undefined) {
         if (hasMatchingAttributes(e, attributes)) {
             return [e];
         }
-        // Log.trace("return from hasmatching attributes");
     }
-    // Log.trace("in parseElem2");
-    // if (node.childNodes !== null) {
     if (node.childNodes !== undefined) {
         for (let child of node.childNodes) {
             let matchingChildren = parseElements(child, attributes);
@@ -147,7 +135,6 @@ function hasMatchingAttributes(e: any, attributes: any[]): boolean {
 }
 
 export function parseBuilding(id: string, b: string): Promise<any[]> {
-    // try {
         let doc = parse5.parse(b);
         const name = parseElements(doc, [{
             name: "rel",
@@ -183,17 +170,11 @@ export function parseBuilding(id: string, b: string): Promise<any[]> {
                 return makeRoomsEntry(id, fields, geo, rShortname, rFullname, rAddress);
             }).filter((entry: any) => {
                 return Object.keys(entry).map((key) => entry[key])
-                    // .every((val) => val !== null);
                     .every((val) => val !== undefined);
             }); } catch (error) {
                 return null;
             }
         });
-    // }
-    // catch (error) {
-    //     Log.trace("parseBuilding error");
-    //     throw new InsightError("parseBuilding");
-    // }
 }
 
 export function httpGet(url: string): Promise<any> {
@@ -219,9 +200,9 @@ export function httpGet(url: string): Promise<any> {
                 res.resume();
                 reject(error);
             }
-        }).on("error", (e: Error) => {
-            Log.error(e.message);
-            reject(e);
+        }).on("error", (error: Error) => {
+            Log.error(error.message);
+            reject(error);
         });
     });
 }
@@ -235,24 +216,4 @@ function getRoomEntries(doc: any): any {
         name: "class",
         value: "^(odd|even).*"
     }]);
-}
-
-function makeRoomsEntry(id: string, fields: any, geo: IGeoResponse, rShortname: string,
-                        rFullname: string, rAddress: string): any {
-    const roomsNum = (fields[0].childNodes[1]).childNodes[0].value.trim();
-    let entry: any = {};
-
-    // Log.trace(id + "_name: " + rShortname + "_" + roomsNum.toString());
-    entry[id + "_fullname"] = rFullname;
-    entry[id + "_shortname"] = rShortname;
-    entry[id + "_number"] = roomsNum;
-    entry[id + "_name"] = rShortname + "_" + roomsNum;
-    entry[id + "_address"] = rAddress;
-    entry[id + "_lat"] = geo.lat;
-    entry[id + "_lon"] = geo.lon;
-    entry[id + "_seats"] = parseInt(fields[1].childNodes[0].value.trim(), 10);
-    entry[id + "_type"] = fields[3].childNodes[0].value.trim();
-    entry[id + "_furniture"] = fields[2].childNodes[0].value.trim();
-    entry[id + "_href"] = fields[0].childNodes[1].attrs[0].value;
-    return entry;
 }

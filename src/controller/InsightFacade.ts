@@ -7,12 +7,10 @@ import {
     NotFoundError,
     ResultTooLargeError
 } from "./IInsightFacade";
-import DatasetController, {checkParsed, parseBuilding, readBuildings} from "./DatasetController";
+import DatasetController, {checkParsed, IGeoResponse, parseBuilding, readBuildings} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import QueryController from "./QueryController";
-// import * as parse5 from "parse5/lib";
-// export const parse5 = require("parse5");
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
@@ -96,9 +94,8 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     private static readZip(id: string, zip: JSZip, kind: InsightDatasetKind): Promise<any[]> {
-        let files: Array<Promise<any[]>> = []; // TODO
         if (kind === InsightDatasetKind.Courses) {
-            // let files: Array<Promise<any[]>> = []; // TODO
+            let files: Array<Promise<any[]>> = []; // TODO
             zip.folder("courses").forEach((path: string, file: JSZipObject) => {
                 files.push(file.async("text").then((data) => {
                     try {
@@ -112,7 +109,6 @@ export default class InsightFacade implements IInsightFacade {
             });
             return Promise.all(files).then((f) => f.filter((i: any) => i !== null));
         } else if (kind === InsightDatasetKind.Rooms) {
-            // return readZipRooms(id, zip);
             return zip.file("rooms/index.htm").async("text").then((data) => {
                 const buildings = readBuildings(data);
                 const promises = buildings.map((link) => {
@@ -138,4 +134,22 @@ export default class InsightFacade implements IInsightFacade {
                     ((typeof e.Year !== "number") ? parseInt(e.Year, 10) : e.Year);
             return entry;
     }
+}
+
+export function makeRoomsEntry(id: string, fields: any, geo: IGeoResponse, rShortname: string,
+                               rFullname: string, rAddress: string): any {
+    const roomsNum = (fields[0].childNodes[1]).childNodes[0].value.trim();
+    let entry: any = {};
+    entry[id + "_fullname"] = rFullname;
+    entry[id + "_shortname"] = rShortname;
+    entry[id + "_number"] = roomsNum;
+    entry[id + "_name"] = rShortname + "_" + roomsNum;
+    entry[id + "_address"] = rAddress;
+    entry[id + "_lat"] = geo.lat;
+    entry[id + "_lon"] = geo.lon;
+    entry[id + "_seats"] = parseInt(fields[1].childNodes[0].value.trim(), 10);
+    entry[id + "_type"] = fields[3].childNodes[0].value.trim();
+    entry[id + "_furniture"] = fields[2].childNodes[0].value.trim();
+    entry[id + "_href"] = fields[0].childNodes[1].attrs[0].value;
+    return entry;
 }
