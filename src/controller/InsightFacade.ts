@@ -44,7 +44,7 @@ export default class InsightFacade implements IInsightFacade {
 
                 await new JSZip().loadAsync(content, {base64: true})
                     .then((zip) => InsightFacade.readZip(id, zip, kind).then(function (allData) {
-                        Log.trace("ALLDATA LENGTH: " + allData.length);
+                        // Log.trace("ALLDATA LENGTH: " + allData.length);
                         if (allData !== null && allData.length !== 0) {
                                 // Log.trace("VALID, ADDED ADDDATASET: " + id);
                                 self.datasetController.addDataset(id, [].concat.apply([], allData), kind);
@@ -112,27 +112,14 @@ export default class InsightFacade implements IInsightFacade {
             });
             return Promise.all(files).then((f) => f.filter((i: any) => i !== null));
         } else if (kind === InsightDatasetKind.Rooms) {
-            // let files: Array[Promise<any[]>] = []; // TODO
-            // let files: Array<Promise<any[]>> = []; // TODO
-            zip.file("rooms/index.htm").async("text").then((data) => {
-                try {
-                let buildings = readBuildings(data);
-                files = buildings.map((link) => {
+            // return readZipRooms(id, zip);
+            return zip.file("rooms/index.htm").async("text").then((data) => {
+                const buildings = readBuildings(data);
+                const promises = buildings.map((link) => {
                     return zip.file("rooms/" + link.substring(2)).async("text").then((b) => parseBuilding(id, b));
-                    });
-                Log.trace("RETURNED files length " + files.length);
-                } catch (error) {
-                    Log.trace("ERROR IN READZIP");
-                    return null;
-                }
-                Log.trace(typeof files);
-                return Promise.all(files).then((f) => {
-                    Log.trace("F: " + typeof f);
-                    Log.trace("RETURNING RIGHTNOW files length " + files.length);
-                    return f.filter((i: any) => i !== null); }); // TODO
+                });
+                return Promise.all(promises);
             });
-            // Log.trace(files.toString());
-            // return Promise.all(files).then((f) => f.filter((i: any) => i !== null));
         }
     }
 
@@ -150,28 +137,5 @@ export default class InsightFacade implements IInsightFacade {
             entry[id + "_year"] = (e.Section && e.Section === "overall") ? 1900 :
                     ((typeof e.Year !== "number") ? parseInt(e.Year, 10) : e.Year);
             return entry;
-    }
-
-    // private readZipRooms(id: string, zip: JSZip, kind: InsightDatasetKind): Promise<any[]> {
-    private readZipRooms(id: string, zip: JSZip, kind: InsightDatasetKind): any {
-        let files: Array<Promise<any[]>> = []; // TODO
-        zip.file("rooms/index.htm").async("text").then((data) => {
-            try {
-                let buildings = readBuildings(data);
-                files = buildings.map((link) => {
-                    return zip.file("rooms/" + link.substring(2)).async("text").then((b) => parseBuilding(id, b));
-                });
-                Log.trace("RETURNED files length " + files.length);
-            } catch (error) {
-                Log.trace("ERROR IN READZIP");
-                return null;
-            }
-            Log.trace(typeof files);
-            return Promise.all(files).then((f) => {
-                Log.trace("RETURNING RIGHTNOW files length " + files.length);
-                return f.filter((i: any) => i !== null); }); // TODO
-        });
-        // Log.trace(files.toString());
-        // return Promise.all(files).then((f) => f.filter((i: any) => i !== null));
     }
 }

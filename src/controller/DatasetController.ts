@@ -242,7 +242,7 @@ function makeRoomsEntry(id: string, fields: any, geo: IGeoResponse, rShortname: 
     const roomsNum = (fields[0].childNodes[1]).childNodes[0].value.trim();
     let entry: any = {};
 
-    Log.trace(id + "_name: " + rShortname + "_" + roomsNum.toString());
+    // Log.trace(id + "_name: " + rShortname + "_" + roomsNum.toString());
     entry[id + "_fullname"] = rFullname;
     entry[id + "_shortname"] = rShortname;
     entry[id + "_number"] = roomsNum;
