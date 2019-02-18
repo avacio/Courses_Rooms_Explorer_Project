@@ -11,7 +11,7 @@ import {
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
-import {organizeResults, sortResults} from "../src/controller/DatasetController";
+import * as QUtil from "../src/controller/QueryUtil";
 
 // This should match the schema given to TestUtil.validate(..) in TestUtil.readTestQueries(..)
 // except 'filename' which is injected when the file is read.
@@ -38,7 +38,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         someInvalidJSON: "./test/data/someInvalidJSON.zip",
         someNotJSON: "./test/data/someNotJSON.zip",
         wrongName: "./test/data/wrongName.zip",
-        missingCourseInfo: "./test/data/missingCourseInfo.zip"
+        missingCourseInfo: "./test/data/missingCourseInfo.zip",
+        rooms: "./test/data/rooms.zip",
         // crwrNotZipped: "./test/data/crwrNotZipped/", // TODO
         // unzipped: "./test/data/unzipped/" // TODO
         // unzipped: "./test/data/unzipped.zip" // TODO
@@ -127,6 +128,19 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
         try {
             response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
+        } catch (err) {
+            response = err;
+        } finally {
+            expect(response).to.deep.equal([id]);
+        }
+    });
+
+    it("Should add the valid 'rooms' dataset", async function () {
+        const id: string = "rooms";
+        let response: string[];
+
+        try {
+            response = await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Rooms);
         } catch (err) {
             response = err;
         } finally {

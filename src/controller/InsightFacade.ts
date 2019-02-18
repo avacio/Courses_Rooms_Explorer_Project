@@ -7,12 +7,10 @@ import {
     NotFoundError,
     ResultTooLargeError
 } from "./IInsightFacade";
-import DatasetController, {checkParsed} from "./DatasetController";
+import DatasetController, {checkParsed, IGeoResponse, parseBuilding, readBuildings} from "./DatasetController";
 import * as JSZip from "jszip";
 import {JSZipObject} from "jszip";
 import QueryController from "./QueryController";
-import Query from "./Query";
-
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
@@ -24,7 +22,6 @@ export default class InsightFacade implements IInsightFacade {
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
-        // this.datasetController = new DatasetController(cache);
         this.datasetController = new DatasetController();
         this.queryController = new QueryController(this.datasetController);
     }
@@ -32,7 +29,6 @@ export default class InsightFacade implements IInsightFacade {
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let self: InsightFacade = this;
         return new Promise(async function (resolve, reject) {
-            // try {
                 if (self.datasetController.containsDataset(id)) { // already contains, then reject
                     return reject(new InsightError("ID ALREADY ADDED BEFORE" + id));
                 }
@@ -45,7 +41,8 @@ export default class InsightFacade implements IInsightFacade {
                 }
 
                 await new JSZip().loadAsync(content, {base64: true})
-                    .then((zip) => InsightFacade.readZip(id, zip).then(function (allData) {
+                    .then((zip) => InsightFacade.readZip(id, zip, kind).then(function (allData) {
+                        // Log.trace("ALLDATA LENGTH: " + allData.length);
                         if (allData !== null && allData.length !== 0) {
                                 // Log.trace("VALID, ADDED ADDDATASET: " + id);
                                 self.datasetController.addDataset(id, [].concat.apply([], allData), kind);
@@ -53,9 +50,6 @@ export default class InsightFacade implements IInsightFacade {
                             } else {
                                 return reject(new InsightError ("REJECTED addDataset, allData insignificant: " + id));
                             }}));
-            // } catch (error) {
-            //     return reject (new InsightError (error.message));
-            // }
         });
     }
 
@@ -99,27 +93,33 @@ export default class InsightFacade implements IInsightFacade {
         });
     }
 
-    private static readZip(id: string, zip: JSZip): Promise<any[]> { // TODO
-        const files: Array<Promise<any[]>> = [];
-        // try {
-        zip.folder("courses").forEach((path: string, file: JSZipObject) => {
-                    files.push(file.async("text").then( (data) => {
-                        try {
-                            let parsed = checkParsed(data);
-                            return (parsed == null) ? null :
-                                parsed.result.map((val: any) => InsightFacade.makeEntry(val, id));
-                        } catch (error) {
-                            return null;
-                        }
-                    }));
+    private static readZip(id: string, zip: JSZip, kind: InsightDatasetKind): Promise<any[]> {
+        if (kind === InsightDatasetKind.Courses) {
+            let files: Array<Promise<any[]>> = []; // TODO
+            zip.folder("courses").forEach((path: string, file: JSZipObject) => {
+                files.push(file.async("text").then((data) => {
+                    try {
+                        let parsed = checkParsed(data);
+                        return (parsed == null) ? null :
+                            parsed.result.map((val: any) => InsightFacade.makeCourseEntry(val, id));
+                    } catch (error) {
+                        return null;
+                    }
+                }));
             });
-        return Promise.all(files).then((f) => f.filter((i: any) => i !== null ));
-        // } catch (error) {
-        //         return null;
-        //     }
+            return Promise.all(files).then((f) => f.filter((i: any) => i !== null));
+        } else if (kind === InsightDatasetKind.Rooms) {
+            return zip.file("rooms/index.htm").async("text").then((data) => {
+                const buildings = readBuildings(data);
+                const promises = buildings.map((link) => {
+                    return zip.file("rooms/" + link.substring(2)).async("text").then((b) => parseBuilding(id, b));
+                });
+                return Promise.all(promises);
+            });
+        }
     }
 
-    private static makeEntry(e: any, id: string): any {
+    private static makeCourseEntry(e: any, id: string): any {
             let entry: any = {};
             entry[id + "_dept"] = e.Subject;
             entry[id + "_id"] = (typeof e.Course !== "string") ? e.Course.toString() : e.Course;
@@ -134,4 +134,22 @@ export default class InsightFacade implements IInsightFacade {
                     ((typeof e.Year !== "number") ? parseInt(e.Year, 10) : e.Year);
             return entry;
     }
+}
+
+export function makeRoomsEntry(id: string, fields: any, geo: IGeoResponse, rShortname: string,
+                               rFullname: string, rAddress: string): any {
+    const roomsNum = (fields[0].childNodes[1]).childNodes[0].value.trim();
+    let entry: any = {};
+    entry[id + "_fullname"] = rFullname;
+    entry[id + "_shortname"] = rShortname;
+    entry[id + "_number"] = roomsNum;
+    entry[id + "_name"] = rShortname + "_" + roomsNum;
+    entry[id + "_address"] = rAddress;
+    entry[id + "_lat"] = geo.lat;
+    entry[id + "_lon"] = geo.lon;
+    entry[id + "_seats"] = parseInt(fields[1].childNodes[0].value.trim(), 10);
+    entry[id + "_type"] = fields[3].childNodes[0].value.trim();
+    entry[id + "_furniture"] = fields[2].childNodes[0].value.trim();
+    entry[id + "_href"] = fields[0].childNodes[1].attrs[0].value;
+    return entry;
 }

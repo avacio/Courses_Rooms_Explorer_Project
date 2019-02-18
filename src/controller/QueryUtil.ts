@@ -1,5 +1,6 @@
 import Log from "../Util";
 import {InsightError} from "./IInsightFacade";
+export * from "./QueryUtil";
 
 export function union(data: any[]): any[] {
     let x: any[] = data[0];
@@ -40,7 +41,6 @@ export function handleIntersect(x: any[], rsf: any[]): any[] {
     return z;
 }
 
-// not being used
 export function isValidStringField(field: string): boolean {
     // let str = key.split("_");
     // let field = str[1];
@@ -48,7 +48,6 @@ export function isValidStringField(field: string): boolean {
         || field === "title" || field === "uuid";
 }
 
-// not being used
 export function isValidMathField(field: string): boolean {
     // let str = key.split("_");
     // let field = str[1];
@@ -56,8 +55,7 @@ export function isValidMathField(field: string): boolean {
         || field === "audit" || field === "year";
 }
 
-export default function handleRegexIS(sfield: any, input: any, data: any): any {
-    // try {
+export function handleRegexIS(sfield: any, input: any, data: any): any {
         let regex: RegExp = new RegExp("^" + input.split("*").join(".*") + "$");
         // Log.trace("regex: " + regex);
         let newData: any[] = [];
@@ -76,7 +74,39 @@ export default function handleRegexIS(sfield: any, input: any, data: any): any {
             }
         }
         return newData;
-    // } catch (error) {
-    //     throw new InsightError(error.message);
+}
+
+// will put data in relevant columns
+export function organizeResults(data: any[], columns: string[]): any[] {
+    return [].slice.call(data).map((i: any) => filterObjectFields(i, columns));
+}
+
+// makes one line with given column keys
+export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {[key: string]: any} {
+    const filtered: {[key: string]: any} = {};
+    for (let k of keys) {
+        filtered[k] = obj[k];
+    }
+    return filtered;
+}
+
+// assumes that only relevant queried sections are in data field, and that order is valid string
+export function sortResults(data: any[], order: string): any {
+    // increasing order
+    const before = -1;
+    const after = -before;
+    // if (order !== "") {
+    data.sort((i1: any, i2: any) => {
+        let val1 = i1[order];
+        let val2 = i2[order];
+
+        if (val1 < val2) {
+            return before;
+        } else if (val1 > val2) {
+            return after;
+        }
+        return 0;
+    });
     // }
+    return data;
 }

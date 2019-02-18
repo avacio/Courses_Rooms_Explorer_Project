@@ -1,6 +1,6 @@
 import {InsightError, ResultTooLargeError} from "./IInsightFacade";
-import DatasetController, {organizeResults, sortResults} from "./DatasetController";
-import handleRegexIS, {intersect, isValidMathField, isValidStringField, union} from "./Query";
+import DatasetController from "./DatasetController";
+import * as QUtil from "./QueryUtil";
 import Log from "../Util";
 
 export default class QueryController {
@@ -36,7 +36,7 @@ export default class QueryController {
             if (col.indexOf("_") !== -1) {
                 let fields = col.split("_");
                 let k: string = fields[0];
-                if (!isValidStringField(fields[1]) && !isValidMathField(fields[1])) {
+                if (!QUtil.isValidStringField(fields[1]) && !QUtil.isValidMathField(fields[1])) {
                     return false;
                 }
                 if (idKey === "") {
@@ -51,7 +51,6 @@ export default class QueryController {
         return true;
     }
 
-    // assume query is valid
     public parseQuery(obj: any): any[] {
         try {
             this.data = this.datasetController.getDataset(this.id); // all data entries for id
@@ -59,10 +58,10 @@ export default class QueryController {
             if (filtered.length > 5000) { throw new ResultTooLargeError("RTL"); }
 
             if (obj.OPTIONS.ORDER) {
-                let sorted = sortResults(filtered, obj.OPTIONS.ORDER);
-                return organizeResults(sorted, obj.OPTIONS.COLUMNS);
+                let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
+                return QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
             }
-            return organizeResults(filtered, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
+            return QUtil.organizeResults(filtered, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
         } catch (error) {
             if (error.message === "RTL") { throw new ResultTooLargeError("RTL");
             } else { throw new InsightError(error.message); }
@@ -98,7 +97,6 @@ export default class QueryController {
             } else {
                 throw new InsightError("not valid filter");
             }
-            // this.data = data; // filters this.data each time
             return data;
         } catch (error) {
             if (error.message === "RTL") { throw new ResultTooLargeError("RTL");
@@ -119,7 +117,7 @@ export default class QueryController {
             let str = skey.split("_");
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let sfield = str[1];
-            if (!isValidStringField(sfield)) { throw new InsightError("invalid sfield"); }
+            if (!QUtil.isValidStringField(sfield)) { throw new InsightError("invalid sfield"); }
 
             let asteriskCount = input.split("*").length - 1;
             if (asteriskCount > 0) {
@@ -128,7 +126,7 @@ export default class QueryController {
                     (input.indexOf("*") !== 0 && input.indexOf("*") !== input.length - 1)) {
                     throw new InsightError("no '*' in the middle of a string allowed");
                 }
-                return handleRegexIS(sfield, input, this.data);
+                return QUtil.handleRegexIS(sfield, input, this.data);
             } else {
                 for (let i of this.data) {
                     if (sfield === "dept" && input === Object.values(i)[0]) {
@@ -173,7 +171,7 @@ export default class QueryController {
             for (let filter of filters) {
                 data.push(this.handleWHERE(filter));
             }
-            return intersect(data);
+            return QUtil.intersect(data);
         } catch (error) {
             throw new InsightError("AND");
         }
@@ -185,7 +183,7 @@ export default class QueryController {
             for (let filter of filters) {
                 data.push(this.handleWHERE(filter));
             }
-            return union(data);
+            return QUtil.union(data);
         } catch (error) {
             throw new InsightError("OR");
         }
@@ -203,7 +201,7 @@ export default class QueryController {
             let str = mkey.split("_");
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
-            if (!isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
+            if (!QUtil.isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
 
             for (let i of this.data) { // WAS PREVIOUSLY JUST ITERATING OVER EMPTY [] INITIALIZED LOCALLY
                 if (mfield === "avg" && num > Object.values(i)[2]) {
@@ -237,7 +235,7 @@ export default class QueryController {
             let str = mkey.split("_");
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
-            if (!isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
+            if (!QUtil.isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
 
             for (let i of self.data) {
                 if (mfield === "avg" && num < Object.values(i)[2]) {
@@ -270,7 +268,7 @@ export default class QueryController {
             let str = mkey.split("_");
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
-            if (!isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
+            if (!QUtil.isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
 
             for (let i of this.data) {
                 if (mfield === "avg" && num === Object.values(i)[2]) {
