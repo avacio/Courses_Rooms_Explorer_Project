@@ -45,31 +45,49 @@ export function isValidStringField(field: string): boolean {
     // let str = key.split("_");
     // let field = str[1];
     return field === "dept" || field === "id" || field === "instructor"
-        || field === "title" || field === "uuid";
+        || field === "title" || field === "uuid" || field === "fullname" || field === "shortname"
+        || field === "number" || field === "name" || field === "address" || field === "type"
+        || field === "furniture" || field === "href";
 }
 
 export function isValidMathField(field: string): boolean {
     // let str = key.split("_");
     // let field = str[1];
     return field === "avg" || field === "pass" || field === "fail"
-        || field === "audit" || field === "year";
+        || field === "audit" || field === "year" || field === "lat" || field === "lon" || field === "seats";
 }
 
-export function handleRegexIS(sfield: any, input: any, data: any): any {
+export function handleRegexIS(id: any, sfield: any, input: any, data: any): any {
         let regex: RegExp = new RegExp("^" + input.split("*").join(".*") + "$");
         // Log.trace("regex: " + regex);
         let newData: any[] = [];
         // Log.trace("sfield: " + sfield);
         for (let i of data) {
-            if (sfield === "dept" && Object.values(i)[0].match(regex)) {
+            if (sfield === "dept" && Object.values(i)[0].match(regex)) { // 0
                 newData.push(i);
-            } else if (sfield === "id" && Object.values(i)[1].match(regex)) {
+            } else if (sfield === "id" && Object.values(i)[1].match(regex)) { // 1
                 newData.push(i);
-            } else if (sfield === "instructor" && Object.values(i)[3].match(regex)) {
+            } else if (sfield === "instructor" && Object.values(i)[3].match(regex)) { // 3
                 newData.push(i);
-            } else if (sfield === "title" && Object.values(i)[4].match(regex)) {
+            } else if (sfield === "title" && Object.values(i)[4].match(regex)) { // 4
                 newData.push(i);
-            } else if (sfield === "uuid" && Object.values(i)[8].match(regex)) {
+            } else if (sfield === "uuid" && Object.values(i)[8].match(regex)) { // 8
+                newData.push(i);
+            } else if (sfield === "fullname" && Object.values(i)[0].match(regex)) { // at this point we know kind=rooms
+                newData.push(i);
+            } else if (sfield === "shortname" && Object.values(i)[1].match(regex)) {
+                newData.push(i);
+            } else if (sfield === "number" && Object.values(i)[2].match(regex)) {
+                newData.push(i);
+            } else if (sfield === "name" && Object.values(i)[3].match(regex)) {
+                newData.push(i);
+            } else if (sfield === "address" && Object.values(i)[4].match(regex)) {
+                newData.push(i);
+            } else if (sfield === "type" && Object.values(i)[8].match(regex)) {
+                newData.push(i);
+            } else if (sfield === "furniture" && Object.values(i)[9].match(regex)) {
+                newData.push(i);
+            } else if (sfield === "href" && Object.values(i)[10].match(regex)) {
                 newData.push(i);
             }
         }
@@ -109,4 +127,66 @@ export function sortResults(data: any[], order: string): any {
     });
     // }
     return data;
+}
+
+export function handleRoomsIS(sfield: any, input: any, dataset: any): any {
+    // let newData: any[] = [];
+    // for (let i of data) {
+    if (sfield === "fullname" && input === Object.values(dataset)[0]) {
+            // newData.push(i);
+            return dataset;
+        } else if (sfield === "shortname" && input === Object.values(dataset)[1]) {
+            return dataset;
+        } else if (sfield === "number" && input === Object.values(dataset)[2]) {
+            return dataset;
+        } else if (sfield === "name" && input === Object.values(dataset)[3]) {
+            return dataset;
+        } else if (sfield === "address" && input === Object.values(dataset)[4]) {
+            return dataset;
+        } else if (sfield === "type" && input === Object.values(dataset)[8]) {
+            return dataset;
+        } else if (sfield === "furniture" && input === Object.values(dataset)[9]) {
+            return dataset;
+        } else if (sfield === "href" && input === Object.values(dataset)[10]) {
+            return dataset;
+        } else { return new InsightError("invalid key"); }
+    // }
+    // return newData;
+}
+
+// export function handleRoomsIS(id: any, sfield: any, input: any, data: any): any {
+//     let newData: any[] = [];
+//     for (let i of data) {
+//         if (isValidStringField(sfield) && input === Object.values(i)[id + sfield]) {
+//             newData.push(i);
+//         }
+//     }
+// }
+
+export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): any {
+    if (op === "LT") {
+        if (mfield === "lat" && num > Object.values(dataset)[5]) {
+            return dataset;
+        } else if (mfield === "lon" && num > Object.values(dataset)[6]) {
+            return dataset;
+        } else if (mfield === "seats" && num > Object.values(dataset)[7]) {
+            return dataset;
+        }
+    } else if (op === "GT") {
+        if (mfield === "lat" && num < Object.values(dataset)[5]) {
+            return dataset;
+        } else if (mfield === "lon" && num < Object.values(dataset)[6]) {
+            return dataset;
+        } else if (mfield === "seats" && num < Object.values(dataset)[7]) {
+            return dataset;
+        }
+    } else if (op === "EQ") {
+        if (mfield === "lat" && num === Object.values(dataset)[5]) {
+            return dataset;
+        } else if (mfield === "lon" && num === Object.values(dataset)[6]) {
+            return dataset;
+        } else if (mfield === "seats" && num === Object.values(dataset)[7]) {
+            return dataset;
+        }
+    }
 }

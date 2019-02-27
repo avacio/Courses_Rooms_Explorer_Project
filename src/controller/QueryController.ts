@@ -2,6 +2,7 @@ import {InsightError, ResultTooLargeError} from "./IInsightFacade";
 import DatasetController from "./DatasetController";
 import * as QUtil from "./QueryUtil";
 import Log from "../Util";
+import {handleRoomsIS, handleRoomsMATH} from "./QueryUtil";
 
 export default class QueryController {
     private id: string;
@@ -113,12 +114,10 @@ export default class QueryController {
             let skey: string = Object.keys(q)[0];
             if (typeof q[skey] !== "string") { throw new InsightError("invalid input"); }
             let input: any = q[skey];
-
             let str = skey.split("_");
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let sfield = str[1];
             if (!QUtil.isValidStringField(sfield)) { throw new InsightError("invalid sfield"); }
-
             let asteriskCount = input.split("*").length - 1;
             if (asteriskCount > 0) {
                 if (asteriskCount > 2 || (asteriskCount === 2 && input.lastIndexOf("*") !== input.length - 1) ||
@@ -126,7 +125,7 @@ export default class QueryController {
                     (input.indexOf("*") !== 0 && input.indexOf("*") !== input.length - 1)) {
                     throw new InsightError("no '*' in the middle of a string allowed");
                 }
-                return QUtil.handleRegexIS(sfield, input, this.data);
+                return QUtil.handleRegexIS(this.id, sfield, input, this.data);
             } else {
                 for (let i of this.data) {
                     if (sfield === "dept" && input === Object.values(i)[0]) {
@@ -139,7 +138,10 @@ export default class QueryController {
                         data.push(i);
                     } else if (sfield === "uuid" && input === Object.values(i)[8]) {
                         data.push(i);
-                    }
+                    } else if (sfield === "fullname" || sfield === "shortname" || sfield === "number"
+                    || sfield === "name" || sfield === "address" || sfield === "type" || sfield === "furniture"
+                        || sfield === "href") {
+                        data.push(handleRoomsIS(sfield, input, i)); }
                 }
             }
             return data;
@@ -176,7 +178,6 @@ export default class QueryController {
             throw new InsightError("AND");
         }
     }
-
     public handleOR (filters: any): any {
         try {
             let data: any[] = [];
@@ -214,7 +215,8 @@ export default class QueryController {
                     data.push(i);
                 } else if (mfield === "year" && num > Object.values(i)[9]) {
                     data.push(i);
-                }
+                } else if (mfield === "lat" || mfield === "lon" || mfield === "seats") {
+                    data.push(handleRoomsMATH("LT", mfield, num, i)); }
             }
             return data;
         } catch (error) {
@@ -248,7 +250,8 @@ export default class QueryController {
                     data.push(i);
                 } else if (mfield === "year" && num < Object.values(i)[9]) {
                     data.push(i);
-                }
+                } else if (mfield === "lat" || mfield === "lon" || mfield === "seats") {
+                    (data.push(handleRoomsMATH("GT", mfield, num, i))); }
             }
             return data;
             } catch (error) {
@@ -281,7 +284,8 @@ export default class QueryController {
                     data.push(i);
                 } else if (mfield === "year" && num === Object.values(i)[9]) {
                     data.push(i);
-                }
+                } else if (mfield === "lat" || mfield === "lon" || mfield === "seats") {
+                    data.push(handleRoomsMATH("EQ", mfield, num, i)); }
             }
             return data;
         } catch (error) {
