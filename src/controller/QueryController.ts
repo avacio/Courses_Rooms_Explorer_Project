@@ -104,7 +104,6 @@ export default class QueryController {
             } else { throw new InsightError("handle WHere" + error.message); }
         }
     }
-
     public handleIS (q: any): any {
         try {
             let data: any[] = [];
