@@ -1,0 +1,29 @@
+{
+    "title": "d2 rooms no trans",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_name": "DMP_*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name"
+            ],
+            "ORDER": "rooms_name",
+            "FORM": "TABLE"
+        }
+    },
+    "isQueryValid": true,
+    "result": [{
+        "rooms_name": "DMP_101"
+    }, {
+        "rooms_name": "DMP_110"
+    }, {
+        "rooms_name": "DMP_201"
+    }, {
+        "rooms_name": "DMP_301"
+    }, {
+        "rooms_name": "DMP_310"
+    }]
+}

@@ -1,0 +1,22 @@
+{
+    "title": "d2 rooms regex",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_name": "DMP_*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name",
+                "rooms_lat",
+                "rooms_lon"
+            ],
+            "ORDER": "rooms_name",
+            "FORM": "TABLE"
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {"rooms_name":"DMP_101","rooms_lat":49.26125,"rooms_lon":-123.24807},{"rooms_name":"DMP_110","rooms_lat":49.26125,"rooms_lon":-123.24807},{"rooms_name":"DMP_201","rooms_lat":49.26125,"rooms_lon":-123.24807},{"rooms_name":"DMP_301","rooms_lat":49.26125,"rooms_lon":-123.24807},{"rooms_name":"DMP_310","rooms_lat":49.26125,"rooms_lon":-123.24807}
+    ]}
