@@ -111,7 +111,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
     it("Should remove the courses dataset", async function () {
         const id: string = "courses";
         let response: string;
-
         try {
             await insightFacade.addDataset(id, datasets[id], InsightDatasetKind.Courses);
             response = await insightFacade.removeDataset(id);
