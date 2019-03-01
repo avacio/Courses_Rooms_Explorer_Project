@@ -62,6 +62,10 @@ export function handleRegexIS(id: any, sfield: any, input: any, data: any): any 
         // Log.trace("regex: " + regex);
         let newData: any[] = [];
         // Log.trace("sfield: " + sfield);
+        let ds = data[1];
+        // Log.trace(Object.values(ds)[1]);
+        // Log.trace(Object.keys(ds)[1]);
+        // Log.trace(Object.keys(ds)[])
         for (let i of data) {
             if (sfield === "dept" && Object.values(i)[0].match(regex)) { // 0
                 newData.push(i);
@@ -73,7 +77,7 @@ export function handleRegexIS(id: any, sfield: any, input: any, data: any): any 
                 newData.push(i);
             } else if (sfield === "uuid" && Object.values(i)[8].match(regex)) { // 8
                 newData.push(i);
-            } else if (sfield === "fullname" && Object.values(i)[0].match(regex)) { // at this point we know kind=rooms
+            } else if (sfield === "fullname" && Object.values(i)[0].match(regex)) {
                 newData.push(i);
             } else if (sfield === "shortname" && Object.values(i)[1].match(regex)) {
                 newData.push(i);
@@ -154,15 +158,6 @@ export function handleRoomsIS(sfield: any, input: any, dataset: any): any {
     // return newData;
 }
 
-// export function handleRoomsIS(id: any, sfield: any, input: any, data: any): any {
-//     let newData: any[] = [];
-//     for (let i of data) {
-//         if (isValidStringField(sfield) && input === Object.values(i)[id + sfield]) {
-//             newData.push(i);
-//         }
-//     }
-// }
-
 export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): any {
     if (op === "LT") {
         if (mfield === "lat" && num > Object.values(dataset)[5]) {
@@ -190,3 +185,16 @@ export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): a
         }
     }
 }
+
+// export function handleTransformation(group: string[], apply: string[], data: any[]): any {
+//     let groups: any[] = [];
+//     for (let i of data) {
+//         let keyValues: any[] = [];
+//         for (let key of group) {
+//             keyValues.push(i[key]); // key values for each section
+//         }
+//         for (let kv of keyValues) {
+//
+//         }
+//     }
+// }

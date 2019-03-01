@@ -204,7 +204,7 @@ export default class QueryController {
             if (!QUtil.isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
 
             for (let i of this.data) { // WAS PREVIOUSLY JUST ITERATING OVER EMPTY [] INITIALIZED LOCALLY
-                if (mfield === "avg" && num > Object.values(i)[2]) {
+                if (mfield === "avg" && num > Object.values(i)[2]) { // MAGIC NUMBERS!! :O
                     data.push(i);
                 } else if (mfield === "pass" && num > Object.values(i)[5]) {
                     data.push(i);
