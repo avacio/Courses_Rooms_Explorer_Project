@@ -1,5 +1,6 @@
 import Log from "../Util";
 import {InsightError} from "./IInsightFacade";
+import {handleAVG, handleCOUNT, handleMAX, handleMIN, handleSUM} from "./QueryApplyFunctions";
 export * from "./QueryUtil";
 
 export function union(data: any[]): any[] {
@@ -195,7 +196,7 @@ export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): a
 
 export function handleGroup(data: any[], group: string[]): any {
     let groups: any = new Map();
-    let groupKeys: any = Object.values(group)[0];
+    let groupKeys: any = Object.values(group);
     Log.trace("asldfjklakdsjfla");
     Log.trace(groupKeys);
     // let groups: Map<any, any[]>;
@@ -224,6 +225,19 @@ export function handleGroup(data: any[], group: string[]): any {
     return result;
 }
 export function handleApply(data: any, apply: any): any {
-    let key = Object.keys(data)[0];
-    // let token =
+    let applyKey = Object.keys(data)[0]; // eg overallAVG
+    let token = Object.keys(applyKey)[0]; // eg AVG
+    let key = Object.values(applyKey)[0]; // eg courses_avg
+    if (token === "MAX") {
+        return handleMAX(data, key);
+    } else if (token === "MIN") {
+        return handleMIN(data, key);
+    } else if (token === "AVG") {
+        return handleAVG(data, key);
+    } else if (token === "SUM") {
+        return handleSUM(data, key);
+    } else if (token === "COUNT") {
+        return handleCOUNT(data, key);
+    }
+
 }

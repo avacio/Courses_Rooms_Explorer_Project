@@ -54,7 +54,11 @@ export default class QueryController {
             let filtered = this.handleWHERE(obj.WHERE); // filter data
             if (filtered.length > 5000) { throw new ResultTooLargeError("RTL"); }
             // Log.trace("Trans?" + obj.TRANSFORMATIONS);
-            if (!obj.OPTIONS.ORDER && obj.TRANSFORMATIONS) {
+            Log.trace("sldfkjlsd " + obj.OPTIONS.ORDER);
+            Log.trace("ssdfsdfsdssss: " + Object.values(obj)[2]);
+            Log.trace("ssdfsdfsdssss2: " + obj.TRANSFORMATIONS.APPLY);
+            if (!obj.OPTIONS.ORDER && obj.TRANSFORMATIONS !== undefined) {
+                // Log.trace("THISSSSSSS!!!!!");
                 let trans = QUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
                 return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
             }
