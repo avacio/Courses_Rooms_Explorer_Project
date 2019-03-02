@@ -1,5 +1,5 @@
 {
-    "title": "SELECT dept, avg WHERE courses_id IS 553",
+    "title": "d2 spec, courses, transformations",
     "query": {
         "WHERE": {
             "GT": {
@@ -26,7 +26,6 @@
         }
     },
     "isQueryValid": true,
-    "result": {
         "result": [
             {
                 "courses_title": "rsrch methdlgy",
@@ -14997,5 +14996,4 @@
                 "overallAvg": 90
             }
         ]
-    }
 }

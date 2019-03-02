@@ -63,7 +63,7 @@ export default class DatasetController {
         if (!fs.existsSync(path)) {
             fs.mkdirSync(path);
         }
-        fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(Array.from(this.data.values())));
+        fs.writeFileSync(path + "/" + id + ".json", JSON.stringify(this.data.get(id)));
         Log.trace("WRITE TO CACHE!!! " + path + "/" + id + ".json");
     }
 

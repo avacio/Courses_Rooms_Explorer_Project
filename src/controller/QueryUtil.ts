@@ -112,24 +112,31 @@ export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {
     return filtered;
 }
 
-// assumes that only relevant queried sections are in data field, and that order is valid string
-export function sortResults(data: any[], order: string): any {
-    // increasing order
-    const before = -1;
-    const after = -before;
-    // if (order !== "") {
-    data.sort((i1: any, i2: any) => {
-        let val1 = i1[order];
-        let val2 = i2[order];
+// assumes that only relevant queried sections are in data field
+// if ORDER is string then it is "UP" or "DOWN"
+// if ORDER is string[] it will be a set of valid keys
+// export function sortResults(data: any[], order: string | string[]): any {
+export function sortResults(data: any[], order: any): any {
+    const sortKeys = (typeof order === "string" ? [order] : order.keys);
+    // if sorted by keys, automatically set direction to UP
+    const sortDir = (typeof order === "string" ? "UP" : order.dir);
 
-        if (val1 < val2) {
-            return before;
-        } else if (val1 > val2) {
-            return after;
+    // increasing order if before = -1
+    const before = (sortDir === "UP" ? -1 : 1);
+    const after = -before;
+    data.sort((i1: any, i2: any) => {
+        for (let k of sortKeys) {
+            let val1 = i1[k];
+            let val2 = i2[k];
+
+            if (val1 < val2) {
+                return before;
+            } else if (val1 > val2) {
+                return after;
+            }
         }
         return 0;
     });
-    // }
     return data;
 }
 
