@@ -2,24 +2,21 @@ import {InsightError, ResultTooLargeError} from "./IInsightFacade";
 import DatasetController from "./DatasetController";
 import * as QUtil from "./QueryUtil";
 import Log from "../Util";
-import {handleRoomsIS, handleRoomsMATH} from "./QueryUtil";
+import {handleApply, handleGroup, handleRoomsIS, handleRoomsMATH, organizeResults, sortResults} from "./QueryUtil";
 
 export default class QueryController {
     private id: string;
     private data: any;
     private datasetController: DatasetController;
-
     constructor(datasetController: DatasetController) {
         this.id = "";
         this.datasetController = datasetController;
         this.data = null;
     }
-
     public isValidQuery(q: any): boolean {
         if (q == null) { return false; }
         let keys = Object.keys(q);
         if (keys.length !== 2) { return false; }
-
         // OPTIONS FORMAT
         const opts = q.OPTIONS;
         if (opts === null || !Array.isArray(opts.COLUMNS)
@@ -51,14 +48,23 @@ export default class QueryController {
         // Log.trace("ID TO PARSE: " + this.id);
         return true;
     }
-
     public parseQuery(obj: any): any[] {
         try {
             this.data = this.datasetController.getDataset(this.id); // all data entries for id
             let filtered = this.handleWHERE(obj.WHERE); // filter data
             if (filtered.length > 5000) { throw new ResultTooLargeError("RTL"); }
-
-            if (obj.OPTIONS.ORDER) {
+            // Log.trace("Trans?" + obj.TRANSFORMATIONS);
+            if (!obj.OPTIONS.ORDER && obj.TRANSFORMATIONS) {
+                let trans = QUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
+                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
+            }
+            if (obj.OPTIONS && obj.TRANSFORMATIONS) {
+                let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
+                let org = QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
+                let trans = QUtil.handleGroup(org, obj.TRANSFORMATIONS.GROUP);
+                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
+            }
+            if (obj.OPTIONS.ORDER && !obj.TRANSFORMATIONS) {
                 let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
                 return QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
             }
@@ -68,7 +74,6 @@ export default class QueryController {
             } else { throw new InsightError(error.message); }
         }
     }
-
     public handleWHERE (q: any): any {
         try {
             let wEntryNum: number = Object.keys(q).length;
@@ -148,7 +153,6 @@ export default class QueryController {
             throw new InsightError(error.message);
         }
 }
-
     public handleNOT (filters: any): any {
         try {
             let data = this.data;
@@ -165,7 +169,6 @@ export default class QueryController {
             throw new InsightError("handle not");
         }
     }
-
     public handleAND (filters: any): any {
         try {
             let data: any[] = [];
@@ -188,7 +191,6 @@ export default class QueryController {
             throw new InsightError("OR");
         }
     }
-
     public handleLT (q: any): any[] {
         try {
             let data: any[] = [];
@@ -202,7 +204,6 @@ export default class QueryController {
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
             if (!QUtil.isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
-
             for (let i of this.data) { // WAS PREVIOUSLY JUST ITERATING OVER EMPTY [] INITIALIZED LOCALLY
                 if (mfield === "avg" && num > Object.values(i)[2]) { // MAGIC NUMBERS!! :O
                     data.push(i);
@@ -222,7 +223,6 @@ export default class QueryController {
             throw new InsightError("handleLT" + error.message);
         }
     }
-
     public handleGT (q: any): any {
         let self: QueryController = this;
         try {
@@ -237,7 +237,6 @@ export default class QueryController {
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
             if (!QUtil.isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
-
             for (let i of self.data) {
                 if (mfield === "avg" && num < Object.values(i)[2]) {
                     data.push(i);
@@ -257,7 +256,6 @@ export default class QueryController {
                 throw new InsightError("handle GT" + error.message);
             }
     }
-
     public handleEQ (q: any): any {
         try {
             let data: any[] = [];
@@ -291,7 +289,6 @@ export default class QueryController {
             throw new InsightError("handleEQ" + error.message);
         }
     }
-
     public getQueryID(): string {
         return this.id;
     }

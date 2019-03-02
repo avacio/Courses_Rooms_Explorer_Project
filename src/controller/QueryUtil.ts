@@ -62,10 +62,10 @@ export function handleRegexIS(id: any, sfield: any, input: any, data: any): any 
         // Log.trace("regex: " + regex);
         let newData: any[] = [];
         // Log.trace("sfield: " + sfield);
-        let ds = data[1];
+        // let ds = data[1];
         // Log.trace(Object.values(ds)[1]);
         // Log.trace(Object.keys(ds)[1]);
-        // Log.trace(Object.keys(ds)[])
+        // Log.trace(ds["courses_id"]);
         for (let i of data) {
             if (sfield === "dept" && Object.values(i)[0].match(regex)) { // 0
                 newData.push(i);
@@ -186,15 +186,37 @@ export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): a
     }
 }
 
-// export function handleTransformation(group: string[], apply: string[], data: any[]): any {
-//     let groups: any[] = [];
-//     for (let i of data) {
-//         let keyValues: any[] = [];
-//         for (let key of group) {
-//             keyValues.push(i[key]); // key values for each section
-//         }
-//         for (let kv of keyValues) {
-//
-//         }
-//     }
-// }
+export function handleGroup(data: any[], group: string[]): any {
+    let groups: any = new Map();
+    let groupKeys: any = Object.values(group)[0];
+    Log.trace("asldfjklakdsjfla");
+    Log.trace(groupKeys);
+    // let groups: Map<any, any[]>;
+    for (let i of data) {
+        let keyValues: any[] = []; // maybe make map
+        for (let key of groupKeys) {
+            // let keyValues: any[] = [];
+            keyValues.push(i[key.toString()]);
+        }
+        for (let val of keyValues) {
+            if (groups.has(val.toString())) {
+                let a: any[] = groups.get(val.toString());
+                a.push(i);
+                groups.set(val, a);
+            } else if (!groups.has(val.toString())) {
+                let b: any[] = [];
+                b.push(i);
+                groups.set(val, b);
+            }
+        } // idk if this will work for multiple group keys must fix!!
+    }
+    let result: any[] = [];
+    for (let g of groups) {
+        result.push(group.values());
+    }
+    return result;
+}
+export function handleApply(data: any, apply: any): any {
+    let key = Object.keys(data)[0];
+    // let token =
+}
