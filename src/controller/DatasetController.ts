@@ -48,7 +48,9 @@ export default class DatasetController {
     public getDataset(id: string): any[] {
         return this.data.get(id);
     }
-
+    public getDataKind(id: string): InsightDatasetKind {
+        return this.insightData.get(id).kind;
+    }
     public containsDataset(id: string): boolean {
         return this.data.has(id);
     }
