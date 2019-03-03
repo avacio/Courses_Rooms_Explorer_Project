@@ -1,7 +1,7 @@
 import {InsightDatasetKind, InsightError, ResultTooLargeError} from "./IInsightFacade";
 import DatasetController from "./DatasetController";
 import * as QUtil from "./QueryUtil";
-import {handleRoomsIS} from "./QueryUtil";
+import * as TransUtil from "./QueryApplyFunctions";
 import Log from "../Util";
 
 export default class QueryController {
@@ -76,9 +76,9 @@ export default class QueryController {
 
             Log.trace("OBJ TRANS" + JSON.stringify(obj.TRANSFORMATIONS));
             if (obj.TRANSFORMATIONS) {
-                Log.trace("!ORDER && TRANS THISSSSSSS!!!!!");
-                let trans = QUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
-                filtered = QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
+                Log.trace("has TRANS");
+                let trans = TransUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
+                filtered = TransUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
             }
             if (obj.OPTIONS.ORDER) {
                 Log.trace("has ORDER");
@@ -130,9 +130,7 @@ export default class QueryController {
     public handleIS (q: any): any {
         try {
             let data: any[] = [];
-            if (Object.keys(q).length > 1) {
-                throw new InsightError("too many keys");
-            }
+            if (Object.keys(q).length > 1) { throw new InsightError("too many keys"); }
             let skey: string = Object.keys(q)[0];
             if (typeof q[skey] !== "string") { throw new InsightError("invalid input"); }
             let input: any = q[skey];
@@ -166,7 +164,7 @@ export default class QueryController {
                         }
                     }
                 } else if (this.datasetKind === InsightDatasetKind.Rooms) {
-                    data = handleRoomsIS(sfield, input, this.data);
+                    data = QUtil.handleRoomsIS(sfield, input, this.data);
                 }
             }
             return data;
