@@ -20,7 +20,10 @@
                 "rooms_lon",
                 "rooms_seats"
             ],
-            "ORDER": "rooms_name"}
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": ["rooms_name"]
+            }}
     },
     "isQueryValid": true,
     "result": [{"rooms_fullname":"Frederic Lasserre","rooms_shortname":"LASR","rooms_number":"105","rooms_name":"LASR_105","rooms_address":"6333 Memorial Road","rooms_type":"","rooms_furniture":"Classroom-Fixed Tablets","rooms_href":"http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/LASR-105","rooms_lat":49.26767,"rooms_lon":-123.25583,"rooms_seats":60}]
