@@ -21,7 +21,6 @@ export default class QueryController {
         this.datasetKind = null;
         if (q == null) { return false; }
 
-        // OPTIONS FORMAT
         const opts = q.OPTIONS;
         if (opts === null || !Array.isArray(opts.COLUMNS)
             || opts.COLUMNS.length < 1 || opts.length > 2
@@ -63,25 +62,31 @@ export default class QueryController {
             this.data = this.datasetController.getDataset(this.id); // all data entries for id
             let filtered = this.handleWHERE(obj.WHERE); // filter data
             if (filtered.length > 5000) { throw new ResultTooLargeError("RTL"); }
+            if (filtered.length === 0) { return []; }
 
             Log.trace("OBJ TRANS" + JSON.stringify(obj.TRANSFORMATIONS));
             if (!obj.OPTIONS.ORDER && obj.TRANSFORMATIONS) {
-                // Log.trace("THISSSSSSS!!!!!");
+                Log.trace("!ORDER && TRANS THISSSSSSS!!!!!");
                 let trans = QUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
                 return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY, obj.TRANSFORMATIONS.GROUP);
             }
             if (obj.OPTIONS && obj.TRANSFORMATIONS) {
+                Log.trace("OPTIONS && TRANS");
                 let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
                 let org = QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
                 let trans = QUtil.handleGroup(org, obj.TRANSFORMATIONS.GROUP);
-                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY, obj.TRANSFORMATIONS.GROUP);
-                // return QUtil.organizeResults(trans, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
+                let apply = QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY, obj.TRANSFORMATIONS.GROUP);
+                return QUtil.organizeResults(apply, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
             }
             if (obj.OPTIONS.ORDER && !obj.TRANSFORMATIONS) {
+                Log.trace("ORDER && !TRANS");
+                // Log.trace("IN PARSEQUERY" + JSON.stringify(obj.OPTIONS.ORDER));
+                // Log.trace("IN PARSEQUERY" + obj.OPTIONS.ORDER);
+                Log.trace("IN PARSEQUERY" + JSON.stringify(filtered));
                 let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
+                Log.trace("return from sorted");
                 return QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
             }
-
             return QUtil.organizeResults(filtered, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
         } catch (error) {
             if (error.message === "RTL") { throw new ResultTooLargeError("RTL");
@@ -164,7 +169,7 @@ export default class QueryController {
                         }
                     }
                 } else if (this.datasetKind === InsightDatasetKind.Rooms) {
-                    data = handleRoomsIS(sfield, input, this.data); // STUB
+                    data = handleRoomsIS(sfield, input, this.data);
                 }
             }
             return data;
@@ -202,7 +207,7 @@ export default class QueryController {
                     }
                 }
             } else if (this.datasetKind === InsightDatasetKind.Rooms) {
-                data = QUtil.handleRoomsMATH("LT", mfield, num, -1); // STUB
+                data = QUtil.handleRoomsMATH("LT", mfield, num, this.data); // STUB
             }
             return data;
         } catch (error) {

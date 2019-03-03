@@ -77,7 +77,6 @@ export default class InsightFacade implements IInsightFacade {
                 }
                 let results: any[] = self.queryController.parseQuery(query);
                 if (results.length > 5000) { reject (new ResultTooLargeError()); }
-
                 return resolve(results);
             } catch (error) {
                 if (error.message === "RTL") { reject (new ResultTooLargeError());

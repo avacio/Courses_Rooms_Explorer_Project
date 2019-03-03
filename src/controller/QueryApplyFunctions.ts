@@ -1,4 +1,4 @@
-export function handleMAX(data: any, key: any, applyKey: any): any {
+export function handleMAX(data: any, key: any, applyKey: any): any { // applyKey
     for (let group of data) {
         let max: number = 0;
         for (let section of group) {
