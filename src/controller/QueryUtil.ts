@@ -111,11 +111,6 @@ export function handleRegexIS(id: any, sfield: any, input: any, data: any): any 
         let regex: RegExp = new RegExp("^" + input.split("*").join(".*") + "$");
         // Log.trace("regex: " + regex);
         let newData: any[] = [];
-        // Log.trace("sfield: " + sfield);
-        // let ds = data[1];
-        // Log.trace(Object.values(ds)[1]);
-        // Log.trace(Object.keys(ds)[1]);
-        // Log.trace(ds["courses_id"]);
         for (let i of data) {
             if (sfield === "dept" && Object.values(i)[0].match(regex)) { // 0
                 newData.push(i);
@@ -171,8 +166,7 @@ export function sortResults(data: any[], order: any): any {
     // if sorted by keys, automatically set direction to UP
     const sortDir = (typeof order === "string" ? "UP" : order.dir);
 
-    // increasing order if before = -1
-    const before = (sortDir === "UP" ? -1 : 1);
+    const before = (sortDir === "UP" ? -1 : 1); // increasing order if before = -1
     const after = -before;
     data.sort((i1: any, i2: any) => {
         for (let k of sortKeys) {
