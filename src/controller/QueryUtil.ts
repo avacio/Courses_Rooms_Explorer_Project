@@ -1,6 +1,5 @@
 import Log from "../Util";
 import {InsightDatasetKind, InsightError} from "./IInsightFacade";
-import {handleAVG, handleCOUNT, handleMAX, handleMIN, handleSUM} from "./QueryApplyFunctions";
 import QueryController from "./QueryController";
 export * from "./QueryUtil";
 
@@ -111,11 +110,6 @@ export function handleRegexIS(id: any, sfield: any, input: any, data: any): any 
         let regex: RegExp = new RegExp("^" + input.split("*").join(".*") + "$");
         // Log.trace("regex: " + regex);
         let newData: any[] = [];
-        // Log.trace("sfield: " + sfield);
-        // let ds = data[1];
-        // Log.trace(Object.values(ds)[1]);
-        // Log.trace(Object.keys(ds)[1]);
-        // Log.trace(ds["courses_id"]);
         for (let i of data) {
             if (sfield === "dept" && Object.values(i)[0].match(regex)) { // 0
                 newData.push(i);
@@ -168,11 +162,9 @@ export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {
 // export function sortResults(data: any[], order: string | string[]): any {
 export function sortResults(data: any[], order: any): any {
     const sortKeys = (typeof order === "string" ? [order] : order.keys);
-    // if sorted by keys, automatically set direction to UP
-    const sortDir = (typeof order === "string" ? "UP" : order.dir);
+    const sortDir = (typeof order === "string" ? "UP" : order.dir); // default set direction to UP
 
-    // increasing order if before = -1
-    const before = (sortDir === "UP" ? -1 : 1);
+    const before = (sortDir === "UP" ? -1 : 1); // increasing order if before = -1
     const after = -before;
     data.sort((i1: any, i2: any) => {
         for (let k of sortKeys) {
@@ -248,51 +240,4 @@ export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): a
         }
     }
     return data;
-}
-
-export function handleGroup(data: any[], group: string[]): any {
-    let groups: any = new Map();
-    let groupKeys: any = Object.values(group);
-    Log.trace("asldfjklakdsjfla");
-    Log.trace(groupKeys);
-    // let groups: Map<any, any[]>;
-    for (let i of data) {
-        let keyValues: any[] = []; // maybe make map
-        for (let key of groupKeys) {
-            // let keyValues: any[] = [];
-            keyValues.push(i[key.toString()]);
-        }
-        for (let val of keyValues) {
-            if (groups.has(val.toString())) {
-                let a: any[] = groups.get(val.toString());
-                a.push(i);
-                groups.set(val, a);
-            } else if (!groups.has(val.toString())) {
-                let b: any[] = [];
-                b.push(i);
-                groups.set(val, b);
-            }
-        } // idk if this will work for multiple group keys must fix!!
-    }
-    let result: any[] = [];
-    for (let g of groups) {
-        result.push(group.values());
-    }
-    return result;
-}
-export function handleApply(data: any, apply: any): any {
-    let applyKey = Object.keys(data)[0]; // eg overallAVG
-    let token = Object.keys(applyKey)[0]; // eg AVG
-    let key = Object.values(applyKey)[0]; // eg courses_avg
-    if (token === "MAX") {
-        return handleMAX(data, key);
-    } else if (token === "MIN") {
-        return handleMIN(data, key);
-    } else if (token === "AVG") {
-        return handleAVG(data, key);
-    } else if (token === "SUM") {
-        return handleSUM(data, key);
-    } else if (token === "COUNT") {
-        return handleCOUNT(data, key);
-    }
 }

@@ -1,0 +1,20 @@
+{
+    "title": "d2 rooms no trans -- invalid order",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_name": "DMP_*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_shortname"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": ["rooms_name"]
+            }}
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

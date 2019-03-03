@@ -1,7 +1,7 @@
 import {InsightDatasetKind, InsightError, ResultTooLargeError} from "./IInsightFacade";
 import DatasetController from "./DatasetController";
 import * as QUtil from "./QueryUtil";
-import {handleRoomsIS} from "./QueryUtil";
+import * as TransUtil from "./QueryApplyFunctions";
 import Log from "../Util";
 
 export default class QueryController {
@@ -27,13 +27,6 @@ export default class QueryController {
             || opts.COLUMNS.some((e: any) => typeof e !== "string")) {
             return false;
         }
-        if (opts.ORDER &&
-            ((typeof opts.ORDER === "string" && opts.COLUMNS.indexOf(opts.ORDER) === -1) ||
-            (opts.ORDER.keys && !Array.isArray(opts.ORDER.keys)
-        ))) {
-            Log.trace("invalid order");
-            return false; }
-        Log.trace("COLUMNS LENGTH " + opts.COLUMNS.length.toString());
         let idKey: string = "";
         for (let col of opts.COLUMNS) {
             if (col.indexOf("_") !== -1) {
@@ -54,6 +47,23 @@ export default class QueryController {
         }
         this.id = idKey;
         this.datasetKind = this.datasetController.getDataKind(this.id);
+        if (opts.ORDER) {
+            if ((typeof opts.ORDER === "string" && opts.COLUMNS.indexOf(opts.ORDER) === -1)
+                || Array.isArray(opts.ORDER)) {
+                Log.trace("INVALID ORDER");
+                return false;
+            }
+            if (opts.ORDER.keys && Array.isArray(opts.ORDER.keys)) {
+                for (let k of opts.ORDER.keys) {
+                    let fields = k.split("_");
+                    Log.trace("ORDER KEYS " + fields[1]);
+                    if (opts.COLUMNS.indexOf(k) === -1 || (!QUtil.isValidStringField(this.datasetKind, fields[1])
+                        && !QUtil.isValidMathField(this.datasetKind, fields[1]))) {
+                        Log.trace("INVALID ORDER");
+                        return false; }
+                }
+            }
+        }
         return true;
     }
 
@@ -65,27 +75,14 @@ export default class QueryController {
             if (filtered.length === 0) { return []; }
 
             Log.trace("OBJ TRANS" + JSON.stringify(obj.TRANSFORMATIONS));
-            if (!obj.OPTIONS.ORDER && obj.TRANSFORMATIONS) {
-                Log.trace("!ORDER && TRANS THISSSSSSS!!!!!");
-                let trans = QUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
-                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
+            if (obj.TRANSFORMATIONS) {
+                Log.trace("has TRANS");
+                let trans = TransUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
+                filtered = TransUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
             }
-            if (obj.OPTIONS && obj.TRANSFORMATIONS) {
-                Log.trace("OPTIONS && TRANS");
-                let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
-                let org = QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
-                let trans = QUtil.handleGroup(org, obj.TRANSFORMATIONS.GROUP);
-                let apply = QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
-                return QUtil.organizeResults(apply, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
-            }
-            if (obj.OPTIONS.ORDER && !obj.TRANSFORMATIONS) {
-                Log.trace("ORDER && !TRANS");
-                // Log.trace("IN PARSEQUERY" + JSON.stringify(obj.OPTIONS.ORDER));
-                // Log.trace("IN PARSEQUERY" + obj.OPTIONS.ORDER);
-                Log.trace("IN PARSEQUERY" + JSON.stringify(filtered));
-                let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
-                Log.trace("return from sorted");
-                return QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
+            if (obj.OPTIONS.ORDER) {
+                Log.trace("has ORDER");
+                filtered = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
             }
             return QUtil.organizeResults(filtered, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
         } catch (error) {
@@ -133,9 +130,7 @@ export default class QueryController {
     public handleIS (q: any): any {
         try {
             let data: any[] = [];
-            if (Object.keys(q).length > 1) {
-                throw new InsightError("too many keys");
-            }
+            if (Object.keys(q).length > 1) { throw new InsightError("too many keys"); }
             let skey: string = Object.keys(q)[0];
             if (typeof q[skey] !== "string") { throw new InsightError("invalid input"); }
             let input: any = q[skey];
@@ -169,7 +164,7 @@ export default class QueryController {
                         }
                     }
                 } else if (this.datasetKind === InsightDatasetKind.Rooms) {
-                    data = handleRoomsIS(sfield, input, this.data);
+                    data = QUtil.handleRoomsIS(sfield, input, this.data);
                 }
             }
             return data;
@@ -207,7 +202,7 @@ export default class QueryController {
                     }
                 }
             } else if (this.datasetKind === InsightDatasetKind.Rooms) {
-                data = QUtil.handleRoomsMATH("LT", mfield, num, this.data); // STUB
+                data = QUtil.handleRoomsMATH("LT", mfield, num, this.data);
             }
             return data;
         } catch (error) {
@@ -245,7 +240,7 @@ export default class QueryController {
                     }
                 }
             } else if (this.datasetKind === InsightDatasetKind.Rooms) {
-                data = QUtil.handleRoomsMATH("GT", mfield, num, -1); // STUB}
+                data = QUtil.handleRoomsMATH("GT", mfield, num, this.data);
             }
             return data;
         } catch (error) {
@@ -282,7 +277,7 @@ export default class QueryController {
                     }
                 }
             } else if (this.datasetKind === InsightDatasetKind.Rooms) {
-                data = QUtil.handleRoomsMATH("EQ", mfield, num, -1); // STUB
+                data = QUtil.handleRoomsMATH("EQ", mfield, num, this.data);
             }
             return data;
         } catch (error) {

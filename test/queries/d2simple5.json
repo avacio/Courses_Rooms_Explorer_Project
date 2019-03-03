@@ -1,0 +1,17 @@
+{
+    "title": "d2 rooms no trans",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_name": "DMP_*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name"
+            ],
+            "ORDER": "rooms_seats"}
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
