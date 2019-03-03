@@ -224,20 +224,20 @@ export function handleGroup(data: any[], group: string[]): any {
     }
     return result;
 }
-export function handleApply(data: any, apply: any): any {
+export function handleApply(data: any, apply: any, groupKeys: any[]): any {
     let applyKey = Object.keys(data)[0]; // eg overallAVG
     let token = Object.keys(applyKey)[0]; // eg AVG
     let key = Object.values(applyKey)[0]; // eg courses_avg
     if (token === "MAX") {
-        return handleMAX(data, key);
+        return handleMAX(data, key, applyKey);
     } else if (token === "MIN") {
-        return handleMIN(data, key);
+        return handleMIN(data, key, applyKey);
     } else if (token === "AVG") {
-        return handleAVG(data, key);
+        return handleAVG(data, key, applyKey);
     } else if (token === "SUM") {
-        return handleSUM(data, key);
+        return handleSUM(data, key, applyKey);
     } else if (token === "COUNT") {
-        return handleCOUNT(data, key);
+        return handleCOUNT(data, key, applyKey);
     }
 
 }

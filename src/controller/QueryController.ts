@@ -54,19 +54,18 @@ export default class QueryController {
             let filtered = this.handleWHERE(obj.WHERE); // filter data
             if (filtered.length > 5000) { throw new ResultTooLargeError("RTL"); }
             // Log.trace("Trans?" + obj.TRANSFORMATIONS);
-            Log.trace("sldfkjlsd " + obj.OPTIONS.ORDER);
-            Log.trace("ssdfsdfsdssss: " + Object.values(obj)[2]);
-            Log.trace("ssdfsdfsdssss2: " + obj.TRANSFORMATIONS.APPLY);
+            // Log.trace("sldfkjlsd " + obj.OPTIONS.ORDER);
+            // Log.trace("ssdfsdfsdssss: " + Object.values(obj)[2]);
+            // Log.trace("ssdfsdfsdssss2: " + obj.TRANSFORMATIONS.APPLY);
             if (!obj.OPTIONS.ORDER && obj.TRANSFORMATIONS !== undefined) {
-                // Log.trace("THISSSSSSS!!!!!");
                 let trans = QUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
-                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
+                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY, obj.TRANSFORMATIONS.GROUP);
             }
             if (obj.OPTIONS && obj.TRANSFORMATIONS) {
                 let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
                 let org = QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
                 let trans = QUtil.handleGroup(org, obj.TRANSFORMATIONS.GROUP);
-                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
+                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY, obj.TRANSFORMATIONS.GROUP);
             }
             if (obj.OPTIONS.ORDER && !obj.TRANSFORMATIONS) {
                 let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
