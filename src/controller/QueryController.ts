@@ -209,7 +209,6 @@ export default class QueryController {
             throw new InsightError("handleLT" + error.message);
         }
     }
-
     public handleGT (q: any): any {
         let self: QueryController = this;
         try {

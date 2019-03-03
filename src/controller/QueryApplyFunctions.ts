@@ -12,11 +12,16 @@ export function handleGroup(data: any[], group: string[]): any {
         for (let key of groupKeys) {
             // let keyValues: any[] = [];
             keyValues.push(i[key.toString()]);
+            Log.trace("keyValue: " + i[key.toString()]);
         }
         for (let val of keyValues) {
+            // Log.trace("val: " + val);
             if (groups.has(val.toString())) {
                 let a: any[] = groups.get(val.toString());
+                // Log.trace("values already in groups*: " + JSON.stringify(a));
                 a.push(i);
+                // Log.trace("i: " + JSON.stringify(i));
+                // Log.trace("after a.push(i): " + JSON.stringify(a));
                 groups.set(val, a);
             } else if (!groups.has(val.toString())) {
                 let b: any[] = [];
@@ -25,41 +30,65 @@ export function handleGroup(data: any[], group: string[]): any {
             }
         } // idk if this will work for multiple group keys must fix!!
     }
+    // Log.trace("populated groups: " + JSON.stringify(groups));
+    Log.trace("idk what to write here: " + Object.values(groups)[0]);
     let result: any[] = [];
     for (let g of groups) {
-        result.push(group.values());
+        Log.trace("g.values(): " + JSON.stringify(Object.values(g)));
+        // result.push(g.values()); // super wrong
+        result.push(Object.values(g));
     }
+    // Log.trace("groups: " + JSON.stringify(result));
+    // Log.trace("groupsLLLL: " + Object.values(groups.values())[0]);
     return result;
 }
 export function handleApply(data: any, apply: any): any {
-    let applyKey = Object.keys(data)[0]; // eg overallAVG
-    let token = Object.keys(applyKey)[0]; // eg AVG
-    let key = Object.values(applyKey)[0]; // eg courses_avg
+    // Log.trace("apply: " + JSON.stringify(apply)); // [{"maxSeats":{"MAX":"rooms_seats"}}]
+    let a = Object.values(apply)[0]; // first in array of apply values {"maxSeats":{"MAX":"rooms_seats"}}
+    let applyKey = Object.keys(a); // maxSeats
+    // Log.trace("in apply: " + JSON.stringify(a));
+    // Log.trace("should be maxSeats: " + applyKey);
+    let t = Object.values(a)[0]; // inside maxSeats {"MAX":"rooms_seats"}
+    let token = Object.keys(t)[0]; // MAX
+    // Log.trace("in maxSeats: " + JSON.stringify(t));
+    // Log.trace("should be MAX: " + token);
+    let key = Object.values(t)[0]; // rooms_seats
+    // Log.trace("should be rooms_seats: " + key);
     if (token === "MAX") {
-        return handleMAX(data, key);
+        return handleMAX(data, key, applyKey);
     } else if (token === "MIN") {
-        return handleMIN(data, key);
+        return handleMIN(data, key, applyKey);
     } else if (token === "AVG") {
-        return handleAVG(data, key);
+        return handleAVG(data, key, applyKey);
     } else if (token === "SUM") {
-        return handleSUM(data, key);
+        return handleSUM(data, key, applyKey);
     } else if (token === "COUNT") {
-        return handleCOUNT(data, key);
+        return handleCOUNT(data, key, applyKey);
     }
 }
 
-export function handleMAX(data: any, key: any): any {
+export function handleMAX(data: any, key: any, applyKey: any): any {
+    Log.trace("WE IN MAX");
+    // Log.trace("groups: " + JSON.stringify(data));
     for (let group of data) {
         let max: number = 0;
+        Log.trace("group: " + group);
+        // Log.trace("group2: " + group[key.toString()]);
         for (let section of group) {
-            if (section[key.toString()] > max) {
-                max = section[key.toString()];
+            Log.trace("section: " + JSON.stringify(section));
+            Log.trace("section2: " + Object.values(section)[0][key.toString()]);
+            if (Object.values(section)[0][key.toString()] > max) {
+                max = Object.values(section)[0][key.toString()];
             }
         }
+        // group.push(applyKey + ":" + max);
+        Log.trace("max: " + max);
+        // Log.trace("each group: " + JSON.stringify(group));
     }
+    return data;
 }
 
-export function handleMIN(data: any, key: any): any {
+export function handleMIN(data: any, key: any, applyKey: any): any {
     for (let group of data) {
         let min: number = Number.MAX_VALUE;
         for (let section of group) {
@@ -70,7 +99,7 @@ export function handleMIN(data: any, key: any): any {
     }
 }
 
-export function handleAVG(data: any, key: any): any {
+export function handleAVG(data: any, key: any, applyKey: any): any {
     for (let group of data) {
         let sum: number = 0;
         let count: number = 0;
@@ -82,7 +111,7 @@ export function handleAVG(data: any, key: any): any {
     }
 }
 
-export function handleSUM(data: any, key: any): any {
+export function handleSUM(data: any, key: any, applyKey: any): any {
     for (let group of data) {
         let sum = 0;
         for (let section of group) {
@@ -91,7 +120,7 @@ export function handleSUM(data: any, key: any): any {
     }
 }
 
-export function handleCOUNT(data: any, key: any): any {
+export function handleCOUNT(data: any, key: any, applyKey: any): any {
     for (let group of data) {
         let count: number = 0;
         for (let section of group) {
