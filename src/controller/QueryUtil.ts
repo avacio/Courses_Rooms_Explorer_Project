@@ -1,7 +1,50 @@
 import Log from "../Util";
-import {InsightError} from "./IInsightFacade";
+import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import {handleAVG, handleCOUNT, handleMAX, handleMIN, handleSUM} from "./QueryApplyFunctions";
+import QueryController from "./QueryController";
+
 export * from "./QueryUtil";
+
+export function handleNOT(qc: QueryController, filters: any): any {
+    try {
+        let data = qc.getData();
+        let nextFilter = Object.keys(filters)[0];
+        // Log.trace("next filter: " + nextFilter);
+        if (nextFilter !== "NOT") {
+            let nextFilterData = qc.handleWHERE(filters);
+            return data.filter((i: any) => !nextFilterData.includes(i));
+        } else { // double-negative case
+            Log.trace("double not");
+            return qc.handleWHERE(filters[nextFilter]);
+        }
+    } catch (error) {
+        throw new InsightError("handle not");
+    }
+}
+
+export function handleAND(qc: QueryController, filters: any): any {
+    try {
+        let data: any[] = [];
+        for (let filter of filters) {
+            data.push(qc.handleWHERE(filter));
+        }
+        return intersect(data);
+    } catch (error) {
+        throw new InsightError("AND");
+    }
+}
+
+export function handleOR(qc: QueryController, filters: any): any {
+    try {
+        let data: any[] = [];
+        for (let filter of filters) {
+            data.push(qc.handleWHERE(filter));
+        }
+        return union(data);
+    } catch (error) {
+        throw new InsightError("OR");
+    }
+}
 
 export function union(data: any[]): any[] {
     let x: any[] = data[0];
@@ -42,20 +85,32 @@ export function handleIntersect(x: any[], rsf: any[]): any[] {
     return z;
 }
 
-export function isValidStringField(field: string): boolean {
-    // let str = key.split("_");
-    // let field = str[1];
-    return field === "dept" || field === "id" || field === "instructor"
-        || field === "title" || field === "uuid" || field === "fullname" || field === "shortname"
+export function isValidStringField(kind: InsightDatasetKind, field: string): boolean {
+    if (kind === InsightDatasetKind.Courses) {
+        return field === "dept" || field === "id" || field === "instructor"
+        || field === "title" || field === "uuid";
+    } else if (kind === InsightDatasetKind.Rooms) {
+        return field === "fullname" || field === "shortname"
         || field === "number" || field === "name" || field === "address" || field === "type"
         || field === "furniture" || field === "href";
+    } else {
+        return field === "dept" || field === "id" || field === "instructor"
+            || field === "title" || field === "uuid" || field === "fullname" || field === "shortname"
+            || field === "number" || field === "name" || field === "address" || field === "type"
+            || field === "furniture" || field === "href";
+    }
 }
 
-export function isValidMathField(field: string): boolean {
-    // let str = key.split("_");
-    // let field = str[1];
-    return field === "avg" || field === "pass" || field === "fail"
-        || field === "audit" || field === "year" || field === "lat" || field === "lon" || field === "seats";
+export function isValidMathField(kind: InsightDatasetKind, field: string): boolean {
+    if (kind === InsightDatasetKind.Courses) {
+        return field === "avg" || field === "pass" || field === "fail"
+        || field === "audit" || field === "year";
+    } else if (kind === InsightDatasetKind.Rooms) {
+        return field === "lat" || field === "lon" || field === "seats";
+    } else {
+        return field === "avg" || field === "pass" || field === "fail"
+            || field === "audit" || field === "year" || field === "lat" || field === "lon" || field === "seats";
+    }
 }
 
 export function handleRegexIS(id: any, sfield: any, input: any, data: any): any {
@@ -239,5 +294,4 @@ export function handleApply(data: any, apply: any): any {
     } else if (token === "COUNT") {
         return handleCOUNT(data, key);
     }
-
 }
