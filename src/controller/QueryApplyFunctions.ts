@@ -4,8 +4,8 @@ export * from "./QueryApplyFunctions";
 export function handleGroup(data: any[], group: string[]): any {
     let groups: any = new Map();
     let groupKeys: any = Object.values(group);
-    Log.trace("asldfjklakdsjfla");
-    Log.trace(groupKeys);
+    // Log.trace("asldfjklakdsjfla");
+    // Log.trace(groupKeys);
     // let groups: Map<any, any[]>;
     for (let i of data) {
         let keyValues: any[] = []; // maybe make map
@@ -28,15 +28,21 @@ export function handleGroup(data: any[], group: string[]): any {
                 b.push(i);
                 groups.set(val, b);
             }
-        } // idk if this will work for multiple group keys must fix!!
+            // Log.trace("i: " + JSON.stringify(i));
+            // Log.trace("group values: " + JSON.stringify(groups.get(val.toString())));
+        } // idk if this will work for multiple group keys must fix
     }
     // Log.trace("populated groups: " + JSON.stringify(groups));
-    Log.trace("idk what to write here: " + Object.values(groups)[0]);
+    // Log.trace("idk what to write here: " + Object.values(groups)[0]);
+    // Log.trace("idk what to write here: " + groups.get());
     let result: any[] = [];
-    for (let g of groups) {
-        Log.trace("g.values(): " + JSON.stringify(Object.values(g)));
+    for (let g of groups.values()) {
+        // Log.trace("g.values(): " + JSON.stringify(Object.values(g)));
+        // Log.trace("sldfk: " + JSON.stringify(g));
         // result.push(g.values()); // super wrong
         result.push(Object.values(g));
+        // Log.trace("this is what im adding to result: " + JSON.stringify(Object.values(g)));
+        // result.push();
     }
     // Log.trace("groups: " + JSON.stringify(result));
     // Log.trace("groupsLLLL: " + Object.values(groups.values())[0]);
@@ -72,17 +78,22 @@ export function handleMAX(data: any, key: any, applyKey: any): any {
     // Log.trace("groups: " + JSON.stringify(data));
     for (let group of data) {
         let max: number = 0;
-        Log.trace("group: " + group);
+        // Log.trace("group: " + group);
         // Log.trace("group2: " + group[key.toString()]);
         for (let section of group) {
             Log.trace("section: " + JSON.stringify(section));
             Log.trace("section2: " + Object.values(section)[0][key.toString()]);
-            if (Object.values(section)[0][key.toString()] > max) {
-                max = Object.values(section)[0][key.toString()];
+            if (section[key.toString()] > max) { // Object.values(section)[0][key.toString()
+                max = section[key.toString()]; // Object.values(section)[0][key.toString()
             }
         }
         // group.push(applyKey + ":" + max);
         Log.trace("max: " + max);
+        Log.trace("each group: " + JSON.stringify(group));
+        for (let s of group) {
+            s[applyKey] = max;
+            // Log.trace("s: " + JSON.stringify(s));
+        }
         // Log.trace("each group: " + JSON.stringify(group));
     }
     return data;
