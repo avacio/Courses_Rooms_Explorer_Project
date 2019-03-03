@@ -2,14 +2,12 @@ import Log from "../Util";
 import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import {handleAVG, handleCOUNT, handleMAX, handleMIN, handleSUM} from "./QueryApplyFunctions";
 import QueryController from "./QueryController";
-
 export * from "./QueryUtil";
 
 export function handleNOT(qc: QueryController, filters: any): any {
     try {
         let data = qc.getData();
         let nextFilter = Object.keys(filters)[0];
-        // Log.trace("next filter: " + nextFilter);
         if (nextFilter !== "NOT") {
             let nextFilterData = qc.handleWHERE(filters);
             return data.filter((i: any) => !nextFilterData.includes(i));
@@ -87,29 +85,25 @@ export function handleIntersect(x: any[], rsf: any[]): any[] {
 
 export function isValidStringField(kind: InsightDatasetKind, field: string): boolean {
     if (kind === InsightDatasetKind.Courses) {
-        return field === "dept" || field === "id" || field === "instructor"
-        || field === "title" || field === "uuid";
+        return field === "dept" || field === "id" || field === "instructor" || field === "title" || field === "uuid";
     } else if (kind === InsightDatasetKind.Rooms) {
-        return field === "fullname" || field === "shortname"
-        || field === "number" || field === "name" || field === "address" || field === "type"
-        || field === "furniture" || field === "href";
+        return field === "fullname" || field === "shortname" || field === "number" || field === "name" ||
+            field === "address" || field === "type" || field === "furniture" || field === "href";
     } else {
-        return field === "dept" || field === "id" || field === "instructor"
-            || field === "title" || field === "uuid" || field === "fullname" || field === "shortname"
-            || field === "number" || field === "name" || field === "address" || field === "type"
-            || field === "furniture" || field === "href";
+        return field === "dept" || field === "id" || field === "instructor" || field === "title" ||
+            field === "uuid" || field === "fullname" || field === "shortname" || field === "number" ||
+            field === "name" || field === "address" || field === "type" || field === "furniture" || field === "href";
     }
 }
 
 export function isValidMathField(kind: InsightDatasetKind, field: string): boolean {
     if (kind === InsightDatasetKind.Courses) {
-        return field === "avg" || field === "pass" || field === "fail"
-        || field === "audit" || field === "year";
+        return field === "avg" || field === "pass" || field === "fail" || field === "audit" || field === "year";
     } else if (kind === InsightDatasetKind.Rooms) {
         return field === "lat" || field === "lon" || field === "seats";
     } else {
-        return field === "avg" || field === "pass" || field === "fail"
-            || field === "audit" || field === "year" || field === "lat" || field === "lon" || field === "seats";
+        return field === "avg" || field === "pass" || field === "fail" || field === "audit" ||
+            field === "year" || field === "lat" || field === "lon" || field === "seats";
     }
 }
 
@@ -196,57 +190,64 @@ export function sortResults(data: any[], order: any): any {
     return data;
 }
 
-export function handleRoomsIS(sfield: any, input: any, dataset: any): any {
-    // let newData: any[] = [];
-    // for (let i of data) {
-    if (sfield === "fullname" && input === Object.values(dataset)[0]) {
-            // newData.push(i);
-            return dataset;
-        } else if (sfield === "shortname" && input === Object.values(dataset)[1]) {
-            return dataset;
-        } else if (sfield === "number" && input === Object.values(dataset)[2]) {
-            return dataset;
-        } else if (sfield === "name" && input === Object.values(dataset)[3]) {
-            return dataset;
-        } else if (sfield === "address" && input === Object.values(dataset)[4]) {
-            return dataset;
-        } else if (sfield === "type" && input === Object.values(dataset)[8]) {
-            return dataset;
-        } else if (sfield === "furniture" && input === Object.values(dataset)[9]) {
-            return dataset;
-        } else if (sfield === "href" && input === Object.values(dataset)[10]) {
-            return dataset;
-        } else { return new InsightError("invalid key"); }
-    // }
-    // return newData;
+export function handleRoomsIS(sfield: any, input: any, dataset: any[]): any[] {
+    let newData: any[] = [];
+    for (let i of dataset) {
+        if (sfield === "fullname" && input === Object.values(i)[0]) {
+            newData.push(i);
+        } else if (sfield === "shortname" && input === Object.values(i)[1]) {
+            newData.push(i);
+        } else if (sfield === "number" && input === Object.values(i)[2]) {
+            newData.push(i);
+        } else if (sfield === "name" && input === Object.values(i)[3]) {
+            newData.push(i);
+        } else if (sfield === "address" && input === Object.values(i)[4]) {
+            newData.push(i);
+        } else if (sfield === "type" && input === Object.values(i)[8]) {
+            newData.push(i);
+        } else if (sfield === "furniture" && input === Object.values(i)[9]) {
+            newData.push(i);
+        } else if (sfield === "href" && input === Object.values(i)[10]) {
+            newData.push(i);
+        }
+    }
+    return newData;
 }
 
 export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): any {
+    let data: any[] = [];
     if (op === "LT") {
-        if (mfield === "lat" && num > Object.values(dataset)[5]) {
-            return dataset;
-        } else if (mfield === "lon" && num > Object.values(dataset)[6]) {
-            return dataset;
-        } else if (mfield === "seats" && num > Object.values(dataset)[7]) {
-            return dataset;
+        for (let i of dataset) {
+            if (mfield === "lat" && num > Object.values(i)[5]) {
+                data.push(i);
+            } else if (mfield === "lon" && num > Object.values(i)[6]) {
+                data.push(i);
+            } else if (mfield === "seats" && num > Object.values(i)[7]) {
+                data.push(i);
+            }
         }
     } else if (op === "GT") {
-        if (mfield === "lat" && num < Object.values(dataset)[5]) {
-            return dataset;
-        } else if (mfield === "lon" && num < Object.values(dataset)[6]) {
-            return dataset;
-        } else if (mfield === "seats" && num < Object.values(dataset)[7]) {
-            return dataset;
+        for (let i of dataset) {
+            if (mfield === "lat" && num < Object.values(i)[5]) {
+                data.push(i);
+            } else if (mfield === "lon" && num < Object.values(i)[6]) {
+                data.push(i);
+            } else if (mfield === "seats" && num < Object.values(i)[7]) {
+                data.push(i);
+            }
         }
     } else if (op === "EQ") {
-        if (mfield === "lat" && num === Object.values(dataset)[5]) {
-            return dataset;
-        } else if (mfield === "lon" && num === Object.values(dataset)[6]) {
-            return dataset;
-        } else if (mfield === "seats" && num === Object.values(dataset)[7]) {
-            return dataset;
+        for (let i of dataset) {
+            if (mfield === "lat" && num === Object.values(i)[5]) {
+                data.push(i);
+            } else if (mfield === "lon" && num === Object.values(i)[6]) {
+                data.push(i);
+            } else if (mfield === "seats" && num === Object.values(i)[7]) {
+                data.push(i);
+            }
         }
     }
+    return data;
 }
 
 export function handleGroup(data: any[], group: string[]): any {
