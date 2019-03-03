@@ -1,0 +1,20 @@
+{
+    "title": "d2 rooms no trans -- dataset not added",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_name": "DMP_*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "wrong_shortname"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": ["wrong_shortname"]
+            }}
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
