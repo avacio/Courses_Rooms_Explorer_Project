@@ -18,12 +18,12 @@
         "OPTIONS": {
             "COLUMNS": [
                 "rooms_shortname",
-                "maxSeats"
+                "rooms_seats"
             ],
             "ORDER": {
                 "dir": "DOWN",
                 "keys": [
-                    "maxSeats"
+                    "rooms_seats"
                 ]
             }
         },
@@ -33,7 +33,7 @@
             ],
             "APPLY": [
                 {
-                    "maxSeats": {
+                    "seats": {
                         "MAX": "rooms_seats"
                     }
                 }

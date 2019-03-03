@@ -1,22 +1,26 @@
-import {InsightError, ResultTooLargeError} from "./IInsightFacade";
+import {InsightDatasetKind, InsightError, ResultTooLargeError} from "./IInsightFacade";
 import DatasetController from "./DatasetController";
 import * as QUtil from "./QueryUtil";
+import {handleRoomsIS} from "./QueryUtil";
 import Log from "../Util";
-import {handleApply, handleGroup, handleRoomsIS, handleRoomsMATH, organizeResults, sortResults} from "./QueryUtil";
 
 export default class QueryController {
-    private id: string;
-    private data: any;
-    private datasetController: DatasetController;
+    protected id: string;
+    protected data: any;
+    protected datasetController: DatasetController;
+    protected datasetKind: InsightDatasetKind;
+
     constructor(datasetController: DatasetController) {
         this.id = "";
         this.datasetController = datasetController;
         this.data = null;
+        this.datasetKind = null;
     }
+
     public isValidQuery(q: any): boolean {
+        this.datasetKind = null;
         if (q == null) { return false; }
-        let keys = Object.keys(q);
-        if (keys.length !== 2) { return false; }
+
         // OPTIONS FORMAT
         const opts = q.OPTIONS;
         if (opts === null || !Array.isArray(opts.COLUMNS)
@@ -24,8 +28,10 @@ export default class QueryController {
             || opts.COLUMNS.some((e: any) => typeof e !== "string")) {
             return false;
         }
-        if (opts.ORDER && (typeof opts.ORDER !== "string" ||
-            opts.COLUMNS.indexOf(opts.ORDER) === -1)) {
+        if (opts.ORDER &&
+            ((typeof opts.ORDER === "string" && opts.COLUMNS.indexOf(opts.ORDER) === -1) ||
+            (opts.ORDER.keys && !Array.isArray(opts.ORDER.keys)
+        ))) {
             Log.trace("invalid order");
             return false; }
         Log.trace("COLUMNS LENGTH " + opts.COLUMNS.length.toString());
@@ -34,30 +40,33 @@ export default class QueryController {
             if (col.indexOf("_") !== -1) {
                 let fields = col.split("_");
                 let k: string = fields[0];
-                if (!QUtil.isValidStringField(fields[1]) && !QUtil.isValidMathField(fields[1])) {
+                if (!QUtil.isValidStringField(this.datasetKind, fields[1]) &&
+                    !QUtil.isValidMathField(this.datasetKind, fields[1])) {
+                    Log.trace("INVALID FIELD" + fields[1]);
                     return false;
                 }
                 if (idKey === "") {
                     idKey = k;
                 } else if (idKey !== k) { // checks if multiple datasets
+                    Log.trace("multiple id keys in columns");
                     return false;
                 }
             }
         }
         this.id = idKey;
-        // Log.trace("ID TO PARSE: " + this.id);
+        this.datasetKind = this.datasetController.getDataKind(this.id);
         return true;
     }
+
     public parseQuery(obj: any): any[] {
         try {
             this.data = this.datasetController.getDataset(this.id); // all data entries for id
             let filtered = this.handleWHERE(obj.WHERE); // filter data
             if (filtered.length > 5000) { throw new ResultTooLargeError("RTL"); }
-            // Log.trace("Trans?" + obj.TRANSFORMATIONS);
-            // Log.trace("sldfkjlsd " + obj.OPTIONS.ORDER);
-            // Log.trace("ssdfsdfsdssss: " + Object.values(obj)[2]);
-            // Log.trace("ssdfsdfsdssss2: " + obj.TRANSFORMATIONS.APPLY);
-            if (!obj.OPTIONS.ORDER && obj.TRANSFORMATIONS !== undefined) {
+
+            Log.trace("OBJ TRANS" + JSON.stringify(obj.TRANSFORMATIONS));
+            if (!obj.OPTIONS.ORDER && obj.TRANSFORMATIONS) {
+                // Log.trace("THISSSSSSS!!!!!");
                 let trans = QUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
                 return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY, obj.TRANSFORMATIONS.GROUP);
             }
@@ -65,18 +74,21 @@ export default class QueryController {
                 let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
                 let org = QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
                 let trans = QUtil.handleGroup(org, obj.TRANSFORMATIONS.GROUP);
-                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY, obj.TRANSFORMATIONS.GROUP);
+                // return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
+                return QUtil.organizeResults(trans, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
             }
             if (obj.OPTIONS.ORDER && !obj.TRANSFORMATIONS) {
                 let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
                 return QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
             }
+
             return QUtil.organizeResults(filtered, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
         } catch (error) {
             if (error.message === "RTL") { throw new ResultTooLargeError("RTL");
             } else { throw new InsightError(error.message); }
         }
     }
+
     public handleWHERE (q: any): any {
         try {
             let wEntryNum: number = Object.keys(q).length;
@@ -92,11 +104,11 @@ export default class QueryController {
             if (filter === "IS") {
                 data = this.handleIS(q["IS"]);
             } else if (filter === "NOT") {
-                data = this.handleNOT(q["NOT"]);
+                data = QUtil.handleNOT(this, q["NOT"]);
             } else if (filter === "AND") {
-                data = this.handleAND(q["AND"]);
+                data = QUtil.handleAND(this, q["AND"]);
             } else if (filter === "OR") {
-                data = this.handleOR(q["OR"]);
+                data = QUtil.handleOR(this, q["OR"]);
             } else if (filter === "LT") {
                 data = this.handleLT(q["LT"]);
             } else if (filter === "GT") {
@@ -112,6 +124,7 @@ export default class QueryController {
             } else { throw new InsightError("handle WHere" + error.message); }
         }
     }
+
     public handleIS (q: any): any {
         try {
             let data: any[] = [];
@@ -121,10 +134,12 @@ export default class QueryController {
             let skey: string = Object.keys(q)[0];
             if (typeof q[skey] !== "string") { throw new InsightError("invalid input"); }
             let input: any = q[skey];
+
             let str = skey.split("_");
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let sfield = str[1];
-            if (!QUtil.isValidStringField(sfield)) { throw new InsightError("invalid sfield"); }
+            if (!QUtil.isValidStringField(this.datasetKind, sfield)) { throw new InsightError("invalid sfield"); }
+
             let asteriskCount = input.split("*").length - 1;
             if (asteriskCount > 0) {
                 if (asteriskCount > 2 || (asteriskCount === 2 && input.lastIndexOf("*") !== input.length - 1) ||
@@ -134,66 +149,30 @@ export default class QueryController {
                 }
                 return QUtil.handleRegexIS(this.id, sfield, input, this.data);
             } else {
-                for (let i of this.data) {
-                    if (sfield === "dept" && input === Object.values(i)[0]) {
-                        data.push(i);
-                    } else if (sfield === "id" && input === Object.values(i)[1]) {
-                        data.push(i);
-                    } else if (sfield === "instructor" && input === Object.values(i)[3]) {
-                        data.push(i);
-                    } else if (sfield === "title" && input === Object.values(i)[4]) {
-                        data.push(i);
-                    } else if (sfield === "uuid" && input === Object.values(i)[8]) {
-                        data.push(i);
-                    } else if (sfield === "fullname" || sfield === "shortname" || sfield === "number"
-                    || sfield === "name" || sfield === "address" || sfield === "type" || sfield === "furniture"
-                        || sfield === "href") {
-                        data.push(handleRoomsIS(sfield, input, i)); }
+                if (this.datasetKind === InsightDatasetKind.Courses) {
+                    for (let i of this.data) {
+                        if (sfield === "dept" && input === Object.values(i)[0]) {
+                            data.push(i);
+                        } else if (sfield === "id" && input === Object.values(i)[1]) {
+                            data.push(i);
+                        } else if (sfield === "instructor" && input === Object.values(i)[3]) {
+                            data.push(i);
+                        } else if (sfield === "title" && input === Object.values(i)[4]) {
+                            data.push(i);
+                        } else if (sfield === "uuid" && input === Object.values(i)[8]) {
+                            data.push(i);
+                        }
+                    }
+                } else if (this.datasetKind === InsightDatasetKind.Rooms) {
+                    data = handleRoomsIS(sfield, input, -1); // STUB
                 }
             }
             return data;
         } catch (error) {
             throw new InsightError(error.message);
         }
-}
-    public handleNOT (filters: any): any {
-        try {
-            let data = this.data;
-            let nextFilter = Object.keys(filters)[0];
-            // Log.trace("next filter: " + nextFilter);
-            if (nextFilter !== "NOT") {
-                let nextFilterData = this.handleWHERE(filters);
-                return data.filter((i: any) => !nextFilterData.includes(i));
-            } else { // double-negative case
-                Log.trace("double not");
-                return this.handleWHERE(filters[nextFilter]);
-            }
-        } catch (error) {
-            throw new InsightError("handle not");
-        }
     }
-    public handleAND (filters: any): any {
-        try {
-            let data: any[] = [];
-            for (let filter of filters) {
-                data.push(this.handleWHERE(filter));
-            }
-            return QUtil.intersect(data);
-        } catch (error) {
-            throw new InsightError("AND");
-        }
-    }
-    public handleOR (filters: any): any {
-        try {
-            let data: any[] = [];
-            for (let filter of filters) {
-                data.push(this.handleWHERE(filter));
-            }
-            return QUtil.union(data);
-        } catch (error) {
-            throw new InsightError("OR");
-        }
-    }
+
     public handleLT (q: any): any[] {
         try {
             let data: any[] = [];
@@ -206,26 +185,31 @@ export default class QueryController {
             let str = mkey.split("_");
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
-            if (!QUtil.isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
-            for (let i of this.data) { // WAS PREVIOUSLY JUST ITERATING OVER EMPTY [] INITIALIZED LOCALLY
-                if (mfield === "avg" && num > Object.values(i)[2]) { // MAGIC NUMBERS!! :O
-                    data.push(i);
-                } else if (mfield === "pass" && num > Object.values(i)[5]) {
-                    data.push(i);
-                } else if (mfield === "fail" && num > Object.values(i)[6]) {
-                    data.push(i);
-                } else if (mfield === "audit" && num > Object.values(i)[7]) {
-                    data.push(i);
-                } else if (mfield === "year" && num > Object.values(i)[9]) {
-                    data.push(i);
-                } else if (mfield === "lat" || mfield === "lon" || mfield === "seats") {
-                    data.push(handleRoomsMATH("LT", mfield, num, i)); }
+            if (!QUtil.isValidMathField(this.datasetKind, mfield)) { throw new InsightError("invalid mfield"); }
+
+            if (this.datasetKind === InsightDatasetKind.Courses) {
+                for (let i of this.data) {
+                    if (mfield === "avg" && num > Object.values(i)[2]) {
+                        data.push(i);
+                    } else if (mfield === "pass" && num > Object.values(i)[5]) {
+                        data.push(i);
+                    } else if (mfield === "fail" && num > Object.values(i)[6]) {
+                        data.push(i);
+                    } else if (mfield === "audit" && num > Object.values(i)[7]) {
+                        data.push(i);
+                    } else if (mfield === "year" && num > Object.values(i)[9]) {
+                        data.push(i);
+                    }
+                }
+            } else if (this.datasetKind === InsightDatasetKind.Rooms) {
+                data = QUtil.handleRoomsMATH("LT", mfield, num, -1); // STUB
             }
             return data;
         } catch (error) {
             throw new InsightError("handleLT" + error.message);
         }
     }
+
     public handleGT (q: any): any {
         let self: QueryController = this;
         try {
@@ -239,26 +223,31 @@ export default class QueryController {
             let str = mkey.split("_");
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
-            if (!QUtil.isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
-            for (let i of self.data) {
-                if (mfield === "avg" && num < Object.values(i)[2]) {
-                    data.push(i);
-                } else if (mfield === "pass" && num < Object.values(i)[5]) {
-                    data.push(i);
-                } else if (mfield === "fail" && num < Object.values(i)[6]) {
-                    data.push(i);
-                } else if (mfield === "audit" && num < Object.values(i)[7]) {
-                    data.push(i);
-                } else if (mfield === "year" && num < Object.values(i)[9]) {
-                    data.push(i);
-                } else if (mfield === "lat" || mfield === "lon" || mfield === "seats") {
-                    (data.push(handleRoomsMATH("GT", mfield, num, i))); }
+            if (!QUtil.isValidMathField(this.datasetKind, mfield)) { throw new InsightError("invalid mfield"); }
+
+            if (this.datasetKind === InsightDatasetKind.Courses) {
+                for (let i of self.data) {
+                    if (mfield === "avg" && num < Object.values(i)[2]) {
+                        data.push(i);
+                    } else if (mfield === "pass" && num < Object.values(i)[5]) {
+                        data.push(i);
+                    } else if (mfield === "fail" && num < Object.values(i)[6]) {
+                        data.push(i);
+                    } else if (mfield === "audit" && num < Object.values(i)[7]) {
+                        data.push(i);
+                    } else if (mfield === "year" && num < Object.values(i)[9]) {
+                        data.push(i);
+                    }
+                }
+            } else if (this.datasetKind === InsightDatasetKind.Rooms) {
+                data = QUtil.handleRoomsMATH("GT", mfield, num, -1); // STUB}
             }
             return data;
-            } catch (error) {
-                throw new InsightError("handle GT" + error.message);
-            }
+        } catch (error) {
+            throw new InsightError("handle GT" + error.message);
+        }
     }
+
     public handleEQ (q: any): any {
         try {
             let data: any[] = [];
@@ -271,28 +260,35 @@ export default class QueryController {
             let str = mkey.split("_");
             if (str[0] !== this.id) { throw new InsightError("referencing multiple datasets"); }
             let mfield = str[1];
-            if (!QUtil.isValidMathField(mfield)) { throw new InsightError("invalid mfield"); }
+            if (!QUtil.isValidMathField(this.datasetKind, mfield)) { throw new InsightError("invalid mfield"); }
 
-            for (let i of this.data) {
-                if (mfield === "avg" && num === Object.values(i)[2]) {
-                    data.push(i);
-                } else if (mfield === "pass" && num === Object.values(i)[5]) {
-                    data.push(i);
-                } else if (mfield === "fail" && num === Object.values(i)[6]) {
-                    data.push(i);
-                } else if (mfield === "audit" && num === Object.values(i)[7]) {
-                    data.push(i);
-                } else if (mfield === "year" && num === Object.values(i)[9]) {
-                    data.push(i);
-                } else if (mfield === "lat" || mfield === "lon" || mfield === "seats") {
-                    data.push(handleRoomsMATH("EQ", mfield, num, i)); }
+            if (this.datasetKind === InsightDatasetKind.Courses) {
+                for (let i of this.data) {
+                    if (mfield === "avg" && num === Object.values(i)[2]) {
+                        data.push(i);
+                    } else if (mfield === "pass" && num === Object.values(i)[5]) {
+                        data.push(i);
+                    } else if (mfield === "fail" && num === Object.values(i)[6]) {
+                        data.push(i);
+                    } else if (mfield === "audit" && num === Object.values(i)[7]) {
+                        data.push(i);
+                    } else if (mfield === "year" && num === Object.values(i)[9]) {
+                        data.push(i);
+                    }
+                }
+            } else if (this.datasetKind === InsightDatasetKind.Rooms) {
+                data = QUtil.handleRoomsMATH("EQ", mfield, num, -1); // STUB
             }
             return data;
         } catch (error) {
             throw new InsightError("handleEQ" + error.message);
         }
     }
+
     public getQueryID(): string {
         return this.id;
+    }
+    public getData(): any {
+        return this.data;
     }
 }

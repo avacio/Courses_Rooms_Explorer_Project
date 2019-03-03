@@ -12,8 +12,7 @@
                 "rooms_lat",
                 "rooms_lon"
             ],
-            "ORDER": "rooms_name",
-            "FORM": "TABLE"
+            "ORDER": "rooms_name"
         }
     },
     "isQueryValid": true,

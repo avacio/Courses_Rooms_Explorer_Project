@@ -10,9 +10,7 @@
             "COLUMNS": [
                 "rooms_name"
             ],
-            "ORDER": "rooms_name",
-            "FORM": "TABLE"
-        }
+            "ORDER": "rooms_name"}
     },
     "isQueryValid": true,
     "result": [{
