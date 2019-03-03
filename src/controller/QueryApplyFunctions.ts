@@ -96,7 +96,13 @@ export function handleMAX(data: any, key: any, applyKey: any): any {
         }
         // Log.trace("each group: " + JSON.stringify(group));
     }
-    return data;
+    // return data;
+    // Log.trace("what gets passed to organize res: " + JSON.stringify(data));
+    let result: any[] = [];
+    for (let i of data) {
+        result.push(i[0]);
+    }
+    return result;
 }
 
 export function handleMIN(data: any, key: any, applyKey: any): any {
@@ -107,7 +113,15 @@ export function handleMIN(data: any, key: any, applyKey: any): any {
                 min = section[key.toString()];
             }
         }
+        for (let s of group) {
+            s[applyKey] = min;
+        }
     }
+    let result: any[] = [];
+    for (let i of data) {
+        result.push(i[0]);
+    }
+    return result;
 }
 
 export function handleAVG(data: any, key: any, applyKey: any): any {
@@ -119,7 +133,15 @@ export function handleAVG(data: any, key: any, applyKey: any): any {
             count++;
         }
         let avg: number = sum / count;
+        for (let s of group) {
+            s[applyKey] = avg;
+        }
     }
+    let result: any[] = [];
+    for (let i of data) {
+        result.push(i[0]);
+    }
+    return result;
 }
 
 export function handleSUM(data: any, key: any, applyKey: any): any {
@@ -128,7 +150,15 @@ export function handleSUM(data: any, key: any, applyKey: any): any {
         for (let section of group) {
             sum += section[key.toString()];
         }
+        for (let s of group) {
+            s[applyKey] = sum;
+        }
     }
+    let result: any[] = [];
+    for (let i of data) {
+        result.push(i[0]);
+    }
+    return result;
 }
 
 export function handleCOUNT(data: any, key: any, applyKey: any): any {
@@ -139,5 +169,13 @@ export function handleCOUNT(data: any, key: any, applyKey: any): any {
                 count++;
             }
         }
+        for (let s of group) {
+            s[applyKey] = count;
+        }
     }
+    let result: any[] = [];
+    for (let i of data) {
+        result.push(i[0]);
+    }
+    return result;
 }
