@@ -1,5 +1,5 @@
 {
-    "title": "d2 rooms no trans",
+    "title": "d2 rooms no trans -- invalid order",
     "query": {
         "WHERE": {
             "IS": {
@@ -8,9 +8,12 @@
         },
         "OPTIONS": {
             "COLUMNS": [
-                "rooms_name"
+                "rooms_shortname"
             ],
-            "ORDER": "rooms_seats"}
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": ["rooms_year"]
+            }}
     },
     "isQueryValid": false,
     "result": "InsightError"
