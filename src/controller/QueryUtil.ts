@@ -197,28 +197,28 @@ export function sortResults(data: any[], order: any): any {
 }
 
 export function handleRoomsIS(sfield: any, input: any, dataset: any): any {
-    // let newData: any[] = [];
-    // for (let i of data) {
-    if (sfield === "fullname" && input === Object.values(dataset)[0]) {
-            // newData.push(i);
-            return dataset;
-        } else if (sfield === "shortname" && input === Object.values(dataset)[1]) {
-            return dataset;
-        } else if (sfield === "number" && input === Object.values(dataset)[2]) {
-            return dataset;
-        } else if (sfield === "name" && input === Object.values(dataset)[3]) {
-            return dataset;
-        } else if (sfield === "address" && input === Object.values(dataset)[4]) {
-            return dataset;
-        } else if (sfield === "type" && input === Object.values(dataset)[8]) {
-            return dataset;
-        } else if (sfield === "furniture" && input === Object.values(dataset)[9]) {
-            return dataset;
-        } else if (sfield === "href" && input === Object.values(dataset)[10]) {
-            return dataset;
-        } else { return new InsightError("invalid key"); }
-    // }
-    // return newData;
+    let newData: any[] = [];
+    for (let i of dataset) {
+        if (sfield === "fullname" && input === Object.values(i)[0]) {
+                newData.push(i);
+                // return dataset;
+            } else if (sfield === "shortname" && input === Object.values(i)[1]) {
+                newData.push(i);
+            } else if (sfield === "number" && input === Object.values(i)[2]) {
+                newData.push(i);
+            } else if (sfield === "name" && input === Object.values(i)[3]) {
+                newData.push(i);
+            } else if (sfield === "address" && input === Object.values(i)[4]) {
+                newData.push(i);
+            } else if (sfield === "type" && input === Object.values(i)[8]) {
+                newData.push(i);
+            } else if (sfield === "furniture" && input === Object.values(i)[9]) {
+                newData.push(i);
+            } else if (sfield === "href" && input === Object.values(i)[10]) {
+                newData.push(i);
+            } else { return new InsightError("invalid key"); }
+        }
+    return newData;
 }
 
 export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): any {

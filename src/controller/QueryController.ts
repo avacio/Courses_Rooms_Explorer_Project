@@ -74,8 +74,8 @@ export default class QueryController {
                 let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
                 let org = QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
                 let trans = QUtil.handleGroup(org, obj.TRANSFORMATIONS.GROUP);
-                // return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
-                return QUtil.organizeResults(trans, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
+                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY, obj.TRANSFORMATIONS.GROUP);
+                // return QUtil.organizeResults(trans, obj.OPTIONS.COLUMNS); // the sorted, rendered array!
             }
             if (obj.OPTIONS.ORDER && !obj.TRANSFORMATIONS) {
                 let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
@@ -164,7 +164,7 @@ export default class QueryController {
                         }
                     }
                 } else if (this.datasetKind === InsightDatasetKind.Rooms) {
-                    data = handleRoomsIS(sfield, input, -1); // STUB
+                    data = handleRoomsIS(sfield, input, this.data); // STUB
                 }
             }
             return data;
