@@ -6,7 +6,6 @@ export function handleMAX(data: any, key: any, applyKey: any): any { // applyKey
                 max = section[key.toString()];
             }
         }
-        //
     }
 }
 

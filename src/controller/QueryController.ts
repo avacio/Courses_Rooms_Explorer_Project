@@ -68,7 +68,8 @@ export default class QueryController {
             if (!obj.OPTIONS.ORDER && obj.TRANSFORMATIONS) {
                 Log.trace("!ORDER && TRANS THISSSSSSS!!!!!");
                 let trans = QUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
-                return QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY, obj.TRANSFORMATIONS.GROUP);
+                let apply = QUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY, obj.TRANSFORMATIONS.GROUP);
+                return QUtil.organizeResults(apply, obj.OPTIONS.COLUMNS);
             }
             if (obj.OPTIONS && obj.TRANSFORMATIONS) {
                 Log.trace("OPTIONS && TRANS");
@@ -82,7 +83,7 @@ export default class QueryController {
                 Log.trace("ORDER && !TRANS");
                 // Log.trace("IN PARSEQUERY" + JSON.stringify(obj.OPTIONS.ORDER));
                 // Log.trace("IN PARSEQUERY" + obj.OPTIONS.ORDER);
-                Log.trace("IN PARSEQUERY" + JSON.stringify(filtered));
+                // Log.trace("IN PARSEQUERY" + JSON.stringify(filtered));
                 let sorted = QUtil.sortResults(filtered, obj.OPTIONS.ORDER);
                 Log.trace("return from sorted");
                 return QUtil.organizeResults(sorted, obj.OPTIONS.COLUMNS);
@@ -214,7 +215,6 @@ export default class QueryController {
             throw new InsightError("handleLT" + error.message);
         }
     }
-
     public handleGT (q: any): any {
         let self: QueryController = this;
         try {
