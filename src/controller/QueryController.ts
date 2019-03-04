@@ -21,6 +21,11 @@ export default class QueryController {
         this.datasetKind = null;
         if (q == null) { return false; }
 
+        const trans = q.TRANSFORMATIONS;
+        if (trans && (Object.keys(trans).length !== 2 || !trans.GROUP || !trans.APPLY)) {
+            return false;
+        }
+
         const opts = q.OPTIONS;
         if (opts === null || !Array.isArray(opts.COLUMNS)
             || opts.COLUMNS.length < 1 || Object.keys(opts).length > 2
@@ -30,6 +35,7 @@ export default class QueryController {
         let idKey: string = "";
         for (let col of opts.COLUMNS) {
             if (col.indexOf("_") !== -1) {
+                if (q.TRANSFORMATIONS && !QUtil.checkColumnsTrans(q, col)) { return false; }
                 let fields = col.split("_");
                 let k: string = fields[0];
                 if (!QUtil.isValidStringField(this.datasetKind, fields[1]) &&
@@ -48,10 +54,6 @@ export default class QueryController {
         this.id = idKey;
         this.datasetKind = this.datasetController.getDataKind(this.id);
 
-        const trans = q.TRANSFORMATIONS;
-        if (trans && (Object.keys(trans).length !== 2 || !trans.GROUP || !trans.APPLY)) {
-            return false;
-        }
         return QUtil.isValidOrder(q, this);
     }
 
