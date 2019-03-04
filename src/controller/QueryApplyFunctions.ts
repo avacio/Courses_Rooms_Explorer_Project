@@ -30,7 +30,7 @@ export function handleGroup(data: any[], group: string[]): any {
             }
             // Log.trace("i: " + JSON.stringify(i));
             // Log.trace("group values: " + JSON.stringify(groups.get(val.toString())));
-        } // idk if this will work for multiple group keys must fix
+        } // idk if this will work for multiple group keys must fix!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
     // Log.trace("populated groups: " + JSON.stringify(groups));
     // Log.trace("idk what to write here: " + Object.values(groups)[0]);
@@ -50,26 +50,28 @@ export function handleGroup(data: any[], group: string[]): any {
 }
 export function handleApply(data: any, apply: any): any {
     // Log.trace("apply: " + JSON.stringify(apply)); // [{"maxSeats":{"MAX":"rooms_seats"}}]
-    let a = Object.values(apply)[0]; // first in array of apply values {"maxSeats":{"MAX":"rooms_seats"}}
-    let applyKey = Object.keys(a); // maxSeats
-    // Log.trace("in apply: " + JSON.stringify(a));
-    // Log.trace("should be maxSeats: " + applyKey);
-    let t = Object.values(a)[0]; // inside maxSeats {"MAX":"rooms_seats"}
-    let token = Object.keys(t)[0]; // MAX
-    // Log.trace("in maxSeats: " + JSON.stringify(t));
-    // Log.trace("should be MAX: " + token);
-    let key = Object.values(t)[0]; // rooms_seats
-    // Log.trace("should be rooms_seats: " + key);
-    if (token === "MAX") {
-        return handleMAX(data, key, applyKey);
-    } else if (token === "MIN") {
-        return handleMIN(data, key, applyKey);
-    } else if (token === "AVG") {
-        return handleAVG(data, key, applyKey);
-    } else if (token === "SUM") {
-        return handleSUM(data, key, applyKey);
-    } else if (token === "COUNT") {
-        return handleCOUNT(data, key, applyKey);
+    // let a = Object.values(apply)[0]; // first in array of apply values {"maxSeats":{"MAX":"rooms_seats"}}
+    for (let a of Object.values(apply)) {
+        let applyKey = Object.keys(a); // maxSeats
+        // Log.trace("in apply: " + JSON.stringify(a));
+        // Log.trace("should be maxSeats: " + applyKey);
+        let t = Object.values(a)[0]; // inside maxSeats {"MAX":"rooms_seats"}
+        let token = Object.keys(t)[0]; // MAX
+        // Log.trace("in maxSeats: " + JSON.stringify(t));
+        // Log.trace("should be MAX: " + token);
+        let key = Object.values(t)[0]; // rooms_seats
+        // Log.trace("should be rooms_seats: " + key);
+        if (token === "MAX") {
+            return handleMAX(data, key, applyKey);
+        } else if (token === "MIN") {
+            return handleMIN(data, key, applyKey);
+        } else if (token === "AVG") {
+            return handleAVG(data, key, applyKey);
+        } else if (token === "SUM") {
+            return handleSUM(data, key, applyKey);
+        } else if (token === "COUNT") {
+            return handleCOUNT(data, key, applyKey);
+        }
     }
 }
 
