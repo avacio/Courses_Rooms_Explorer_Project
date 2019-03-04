@@ -18,12 +18,17 @@ export default class QueryController {
     }
 
     public isValidQuery(q: any): boolean {
+        let idKey: string = "";
         this.datasetKind = null;
         if (q == null) { return false; }
 
         const trans = q.TRANSFORMATIONS;
         if (trans && (Object.keys(trans).length !== 2 || !trans.GROUP || !trans.APPLY ||
-            !QUtil.isValidApply(trans.APPLY, this.datasetKind))) { return false; }
+            !QUtil.isValidApply(trans.APPLY, this.datasetKind))) { return false;
+        } else if (trans) {
+            let field = trans.GROUP[0].split("_");
+            idKey = field[0];
+        }
 
         const opts = q.OPTIONS;
         if (opts === null || !Array.isArray(opts.COLUMNS)
@@ -31,10 +36,11 @@ export default class QueryController {
             || opts.COLUMNS.some((e: any) => typeof e !== "string")) {
             return false;
         }
-        let idKey: string = "";
         for (let col of opts.COLUMNS) {
+            Log.trace("col " + col.toString());
+            if (q.TRANSFORMATIONS && QUtil.checkColumnsTrans(q, col)) { continue; }
+            if (q.TRANSFORMATIONS && !QUtil.checkColumnsTrans(q, col)) { return false; }
             if (col.indexOf("_") !== -1) {
-                if (q.TRANSFORMATIONS && !QUtil.checkColumnsTrans(q, col)) { return false; }
                 let fields = col.split("_");
                 let k: string = fields[0];
                 if (!QUtil.isValidStringField(this.datasetKind, fields[1]) &&

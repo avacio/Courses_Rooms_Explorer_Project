@@ -243,7 +243,7 @@ export function isValidOrder(q: any, qc: QueryController): boolean {
                             && !isValidMathField(qc.getKind(), fields[1]))) {
                             return false;
                         }
-                    } else if (!isValidFieldTrans(q, k)) {
+                    } else if (q.TRANSFORMATIONS && !isValidFieldTrans(q, k)) {
                         return false;
                     }
             }
@@ -253,12 +253,10 @@ export function isValidOrder(q: any, qc: QueryController): boolean {
 }
 
 function isValidFieldTrans(q: any, field: string): boolean {
-    if (q.TRANSFORMATIONS) {
-        let i = 0;
-        while (i < Object.keys(q.TRANSFORMATIONS.APPLY).length) {
-            if (Object.keys(q.TRANSFORMATIONS.APPLY[i]).toString() === field) { return true; }
-            i++;
-        }
+    let i = 0;
+    while (i < Object.keys(q.TRANSFORMATIONS.APPLY).length) {
+        if (Object.keys(q.TRANSFORMATIONS.APPLY[i]).toString() === field) { return true; }
+        i++;
     }
     return false;
 }

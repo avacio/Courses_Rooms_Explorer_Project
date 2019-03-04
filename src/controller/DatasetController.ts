@@ -108,7 +108,7 @@ export function readBuildings(data: string): string[] {
         for (let attr of links[0].attrs) {
             if (attr.name === "href") { return attr.value; }
         }
-        throw new InsightError("can't find href"); // TODO
+        // throw new InsightError("can't find href"); // TODO
     });
 }
 export function parseElements(node: any, attributes: any[]): any {

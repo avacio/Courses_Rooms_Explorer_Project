@@ -1,0 +1,45 @@
+{
+    "title": "valid",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 300
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "test",
+                "rooms_shortname"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "test"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_shortname"
+            ],
+            "APPLY": [
+                {
+                    "test": {
+                        "MIN": "rooms_lat"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+"result":[{"test":49.2661,"rooms_shortname":"HEBB"},{"test":49.26236,"rooms_shortname":"LSC"},{"test":49.26047,"rooms_shortname":"OSBO"}]
+}
