@@ -1,6 +1,7 @@
 import Log from "../Util";
 import {InsightError} from "./IInsightFacade";
 export * from "./QueryApplyFunctions";
+import {Decimal} from "decimal.js";
 
 export function handleGroup(data: any[], group: any[]): any {
     let groups: any = new Map();
@@ -67,6 +68,12 @@ export function groupHelper(data: any[], group: string[]): any {
     Log.trace("a: " + JSON.stringify(a));
     return handleGroup([].concat.apply([], a), newGroup2);
 }
+
+// export function groupHelper2(data: any[], group: string[]): any {
+//     let firstKey: any[] = [];
+//     firstKey.push(data[0]);
+//     let a = handleGroup(data, firstKey);
+// }
 
 export function handleApply(data: any, apply: any): any {
     // Log.trace("apply: " + JSON.stringify(apply)); // [{"maxSeats":{"MAX":"rooms_seats"}}]
@@ -152,15 +159,22 @@ export function handleMIN(data: any, key: any, applyKey: any): any {
 
 export function handleAVG(data: any, key: any, applyKey: any): any {
     for (let group of data) {
-        let sum: number = 0;
+        // let sum: number = 0;
+        let sum = new Decimal(0);
         let count: number = 0;
+        // let count = new Decimal(0);
         for (let section of group) {
-            sum += section[key.toString()];
+            // sum += section[key.toString()];
+            let val = new Decimal(section[key.toString()]);
+            sum = Decimal.add(sum, val);
             count++;
+            // let one = new Decimal(1);
+            // count.add(one);
         }
-        let avg: number = sum / count;
+        let avg: number = sum.toNumber() / count;
         for (let s of group) {
-            avg = Math.round(avg * 100) / 100;
+            // avg = Math.round(avg * 100) / 100;
+            avg = Number(avg.toFixed(2));
             s[applyKey] = avg;
         }
     }
@@ -173,13 +187,17 @@ export function handleAVG(data: any, key: any, applyKey: any): any {
 
 export function handleSUM(data: any, key: any, applyKey: any): any {
     for (let group of data) {
-        let sum = 0;
+        // let sum = 0;
+        let sum = new Decimal(0);
         for (let section of group) {
-            sum += section[key.toString()];
+            // sum += section[key.toString()];
+            let val = new Decimal(section[key.toString()]);
+            sum = Decimal.add(sum, val);
         }
         for (let s of group) {
             // sum = Math.round(sum * 100) / 100;
-            s[applyKey] = sum;
+            let totalSum = sum.toNumber();
+            s[applyKey] = Number(totalSum.toFixed(2));
         }
     }
     let result: any[] = [];
