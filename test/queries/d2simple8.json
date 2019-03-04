@@ -11,7 +11,7 @@
                 "wrong_shortname"
             ],
             "ORDER": {
-                "dir": "DOWN",
+                "dir": "UP",
                 "keys": ["wrong_shortname"]
             }}
     },

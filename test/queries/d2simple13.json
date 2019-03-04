@@ -1,5 +1,5 @@
 {
-    "title": "keys in COLUMNS must be in GROUP or APPLY when TRANSFORMATIONS is present",
+    "title": "extra keys in TRANSFORMATIONS",
     "query": {
         "WHERE": {
             "AND": [
@@ -18,12 +18,12 @@
         "OPTIONS": {
             "COLUMNS": [
                 "rooms_shortname",
-                "rooms_seats"
+                "minSeats"
             ],
             "ORDER": {
                 "dir": "DOWN",
                 "keys": [
-                    "rooms_seats"
+                    "minSeats"
                 ]
             }
         },
@@ -33,8 +33,14 @@
             ],
             "APPLY": [
                 {
-                    "seats": {
-                        "MAX": "rooms_seats"
+                    "minSeats": {
+                        "MIN": "rooms_seats"
+                    }
+                }],
+            "TEST": [
+                {
+                    "minSeats": {
+                        "MIN": "rooms_seats"
                     }
                 }
             ]

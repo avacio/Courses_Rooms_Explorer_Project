@@ -1,5 +1,5 @@
 {
-    "title": "keys in COLUMNS must be in GROUP or APPLY when TRANSFORMATIONS is present",
+    "title": "not all APPLY things in COLUMNS, but valid",
     "query": {
         "WHERE": {
             "AND": [
@@ -18,12 +18,12 @@
         "OPTIONS": {
             "COLUMNS": [
                 "rooms_shortname",
-                "rooms_seats"
+                "minSeats"
             ],
             "ORDER": {
                 "dir": "DOWN",
                 "keys": [
-                    "rooms_seats"
+                    "minSeats"
                 ]
             }
         },
@@ -33,13 +33,31 @@
             ],
             "APPLY": [
                 {
-                    "seats": {
+                    "minSeats": {
+                        "MIN": "rooms_seats"
+                    }
+                },
+                {
+                    "maxSeats": {
                         "MAX": "rooms_seats"
                     }
                 }
             ]
         }
     },
-    "isQueryValid": false,
-    "result": "InsightError"
+    "isQueryValid": true,
+        "result": [
+            {
+                "rooms_shortname": "OSBO",
+                "minSeats": 442
+            },
+            {
+                "rooms_shortname": "HEBB",
+                "minSeats": 375
+            },
+            {
+                "rooms_shortname": "LSC",
+                "minSeats": 350
+            }
+        ]
 }

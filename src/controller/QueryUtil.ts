@@ -241,3 +241,53 @@ export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): a
     }
     return data;
 }
+
+export function isValidOrder(q: any, qc: QueryController): boolean {
+    const opts = q.OPTIONS;
+    if (opts.ORDER) {
+        if ((typeof opts.ORDER === "string" && opts.COLUMNS.indexOf(opts.ORDER) === -1)
+            || Array.isArray(opts.ORDER)) {
+            Log.trace("INVALID ORDER");
+            return false;
+        }
+        if (opts.ORDER.keys && Array.isArray(opts.ORDER.keys)) {
+            for (let k of opts.ORDER.keys) {
+                let fields = k.split("_");
+                if (fields[0] !== k) {
+                    Log.trace("ORDER KEYS " + fields[1]);
+                    if (opts.COLUMNS.indexOf(k) === -1 || (!isValidStringField(qc.getKind(), fields[1])
+                        && !isValidMathField(qc.getKind(), fields[1]))) {
+                        Log.trace("INVALID ORDER");
+                        return false;
+                    }
+                } else {
+                    if (!isValidFieldTrans(q, k)) { return false; }
+                }
+            }
+        }
+    }
+    return true;
+}
+
+function isValidFieldTrans(q: any, field: string): boolean {
+    if (q.TRANSFORMATIONS) {
+        let i = 0;
+        while (i < Object.keys(q.TRANSFORMATIONS.APPLY).length) {
+            if (Object.keys(q.TRANSFORMATIONS.APPLY[i]).toString() === field) { return true; }
+            i++;
+        }
+    }
+    return false;
+}
+
+export function checkColumnsTrans(q: any, field: string): boolean {
+    for (let trans of q.TRANSFORMATIONS.GROUP) {
+        if (trans === field) { return true; }
+    }
+    let i = 0;
+    while (i < Object.keys(q.TRANSFORMATIONS.APPLY).length) {
+        if (Object.keys(q.TRANSFORMATIONS.APPLY[i]).toString() === field) { return true; }
+        i++;
+    }
+    return false;
+}

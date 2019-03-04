@@ -1,5 +1,5 @@
 {
-    "title": "d2 rooms trans",
+    "title": "invalid keys in OPTIONS",
     "query": {
         "WHERE": {
             "AND": [{
@@ -17,7 +17,8 @@
                 "rooms_shortname",
                 "maxSeats"
             ],
-            "ORDER": "maxSeats"
+            "ORDER": "maxSeats",
+            "TEST": ""
         },
         "TRANSFORMATIONS": {
             "GROUP": ["rooms_shortname"],
@@ -28,15 +29,6 @@
             }]
         }
     },
-    "isQueryValid": true,
-    "result": [{
-        "rooms_shortname": "LSC",
-        "maxSeats": 350
-    }, {
-        "rooms_shortname": "HEBB",
-        "maxSeats": 375
-    }, {
-        "rooms_shortname": "OSBO",
-        "maxSeats": 442
-    }]
+    "isQueryValid": false,
+    "result": "InsightError"
 }

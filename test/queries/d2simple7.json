@@ -12,9 +12,9 @@
             ],
             "ORDER": {
                 "dir": "DOWN",
-                "keys": ["rooms_year"]
+                "keys": ["rooms_shortname"]
             }}
     },
-    "isQueryValid": false,
-    "result": "InsightError"
+    "isQueryValid": true,
+    "result": [{"rooms_shortname":"DMP"},{"rooms_shortname":"DMP"},{"rooms_shortname":"DMP"},{"rooms_shortname":"DMP"},{"rooms_shortname":"DMP"}]
 }
