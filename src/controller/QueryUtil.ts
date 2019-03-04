@@ -55,10 +55,7 @@ export function union(data: any[]): any[] {
 
 export function handleUnion(x: any[], rsf: any[]): any[] {
     for (let i of x ) {
-        if (!rsf.includes(i, 0)) {
-            rsf.push(i);
-        }
-    }
+        if (!rsf.includes(i, 0)) { rsf.push(i); } }
     return rsf;
 }
 
@@ -74,11 +71,7 @@ export function intersect(data: any[]): any[] {
 
 export function handleIntersect(x: any[], rsf: any[]): any[] {
     let z: any[] = [];
-    for (let i of x) {
-        if (rsf.includes(i, 0)) {
-            z.push(i);
-        }
-    }
+    for (let i of x) { if (rsf.includes(i, 0)) { z.push(i); } }
     return z;
 }
 
@@ -150,27 +143,21 @@ export function organizeResults(data: any[], columns: string[]): any[] {
 // makes one line with given column keys
 export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {[key: string]: any} {
     const filtered: {[key: string]: any} = {};
-    for (let k of keys) {
-        filtered[k] = obj[k];
-    }
+    for (let k of keys) { filtered[k] = obj[k]; }
     return filtered;
 }
 
 // assumes that only relevant queried sections are in data field
-// if ORDER is string then it is "UP" or "DOWN"
-// if ORDER is string[] it will be a set of valid keys
-// export function sortResults(data: any[], order: string | string[]): any {
+// if ORDER is string then it is "UP" or "DOWN" // if ORDER is string[] it will be a set of valid keys
 export function sortResults(data: any[], order: any): any {
     const sortKeys = (typeof order === "string" ? [order] : order.keys);
     const sortDir = (typeof order === "string" ? "UP" : order.dir); // default set direction to UP
-
     const before = (sortDir === "UP" ? -1 : 1); // increasing order if before = -1
     const after = -before;
     data.sort((i1: any, i2: any) => {
         for (let k of sortKeys) {
             let val1 = i1[k];
             let val2 = i2[k];
-
             if (val1 < val2) {
                 return before;
             } else if (val1 > val2) {
@@ -260,9 +247,7 @@ export function isValidOrder(q: any, qc: QueryController): boolean {
                         Log.trace("INVALID ORDER");
                         return false;
                     }
-                } else {
-                    if (!isValidFieldTrans(q, k)) { return false; }
-                }
+                } else if (!isValidFieldTrans(q, k)) { return false; }
             }
         }
     }
@@ -281,13 +266,30 @@ function isValidFieldTrans(q: any, field: string): boolean {
 }
 
 export function checkColumnsTrans(q: any, field: string): boolean {
-    for (let trans of q.TRANSFORMATIONS.GROUP) {
-        if (trans === field) { return true; }
-    }
+    for (let trans of q.TRANSFORMATIONS.GROUP) { if (trans === field) { return true; } }
     let i = 0;
     while (i < Object.keys(q.TRANSFORMATIONS.APPLY).length) {
         if (Object.keys(q.TRANSFORMATIONS.APPLY[i]).toString() === field) { return true; }
         i++;
     }
     return false;
+}
+
+export function isValidApply(a: any, kind: InsightDatasetKind): boolean {
+    let i = 0;
+    while (i < Object.keys(a).length) {
+        if (!checkApplyFieldType(Object.values(a[i]), kind)) { return false; }
+        i++;
+    }
+    return true;
+}
+
+function checkApplyFieldType(obj: {[key: string]: any}, kind: InsightDatasetKind): boolean {
+    let k = Object.keys(obj[0]).toString();
+    if (k === "MAX" || k === "MIN" || k === "SUM" || k === "AVG") {
+        let v = Object.values(obj[0]).toString();
+        let field = v.split("_");
+        return isValidMathField(kind, field[1]);
+    }
+    return true;
 }
