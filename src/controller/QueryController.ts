@@ -64,10 +64,12 @@ export default class QueryController {
             if (filtered.length === 0) { return []; }
 
             Log.trace("OBJ TRANS" + JSON.stringify(obj.TRANSFORMATIONS));
+            // if (obj.TRANSFORMATIONS && obj.TRANSFORMATIONS.APPLY.length !== 0) {
             if (obj.TRANSFORMATIONS) {
                 Log.trace("has TRANS");
-                let trans = TransUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP) ;
+                let trans = TransUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP);
                 filtered = TransUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
+                Log.trace(JSON.stringify(filtered));
             }
             if (obj.OPTIONS.ORDER) {
                 Log.trace("has ORDER");

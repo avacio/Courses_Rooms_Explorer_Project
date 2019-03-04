@@ -68,7 +68,15 @@ export function groupHelper(data: any[], group: string[]): any {
     return handleGroup([].concat.apply([], a), newGroup2);
 }
 
-export function handleApply(data: any, apply: any): any {
+export function handleApply(data: any[], apply: any[]): any {
+    if (apply.length === 0) {
+        Log.trace("empty apply, still valid");
+        let result: any[] = [];
+        for (let i of data) {
+            result.push(i[0]);
+        }
+        return result;
+    }
     // Log.trace("apply: " + JSON.stringify(apply)); // [{"maxSeats":{"MAX":"rooms_seats"}}]
     // let a = Object.values(apply)[0]; // first in array of apply values {"maxSeats":{"MAX":"rooms_seats"}}
     for (let a of Object.values(apply)) {
