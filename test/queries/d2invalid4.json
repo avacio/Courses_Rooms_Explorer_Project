@@ -1,5 +1,5 @@
 {
-    "title": "d2 count, math field VALID",
+    "title": "invalid order -- direction",
     "query": {
         "WHERE": {
             "AND": [
@@ -18,12 +18,12 @@
         "OPTIONS": {
             "COLUMNS": [
                 "rooms_shortname",
-                "count"
+                "test"
             ],
             "ORDER": {
-                "dir": "DOWN",
+                "dir": "",
                 "keys": [
-                    "count"
+                    "test"
                 ]
             }
         },
@@ -33,13 +33,13 @@
             ],
             "APPLY": [
                 {
-                    "count": {
-                        "COUNT": "rooms_seats"
+                    "test": {
+                        "MIN": "rooms_lat"
                     }
                 }
             ]
         }
     },
-    "isQueryValid": true,
-    "result":[{"rooms_shortname":"HEBB","count":1},{"rooms_shortname":"LSC","count":1},{"rooms_shortname":"OSBO","count":1}]
+    "isQueryValid": false,
+    "result": "InsightError"
 }
