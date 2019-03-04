@@ -2,12 +2,14 @@ import Log from "../Util";
 import {InsightError} from "./IInsightFacade";
 export * from "./QueryApplyFunctions";
 
-export function handleGroup(data: any[], group: string[]): any {
+export function handleGroup(data: any[], group: any[]): any {
     let groups: any = new Map();
     let groupKeys: any = Object.values(group);
-    // Log.trace("asldfjklakdsjfla");
-    // Log.trace(groupKeys);
-    // let groups: Map<any, any[]>;
+    Log.trace("group in handleGroup: " + JSON.stringify(group));
+    if (groupKeys.length > 1) {
+        return groupHelper(data, groupKeys);
+    }
+    Log.trace("groupKeys.length(): " + groupKeys.length);
     for (let i of data) {
         let keyValues: any[] = []; // maybe make map
         for (let key of groupKeys) {
@@ -49,6 +51,23 @@ export function handleGroup(data: any[], group: string[]): any {
     // Log.trace("groupsLLLL: " + Object.values(groups.values())[0]);
     return result;
 }
+
+export function groupHelper(data: any[], group: string[]): any {
+    Log.trace("GROUPHELPER");
+    let newGroup: any[] = [];
+    Log.trace("group in group helper: " + JSON.stringify(group));
+    Log.trace("group[0]: " + group[0]);
+    Log.trace("group[1]: " + group[1]);
+    newGroup.push(group[0]);
+    let newGroup2: any[] = [];
+    Log.trace("newGroup: " + JSON.stringify(newGroup));
+    newGroup2.push(group[1]);
+    Log.trace("newGroup2: " + JSON.stringify(newGroup2));
+    let a = handleGroup(data, newGroup);
+    Log.trace("a: " + JSON.stringify(a));
+    return handleGroup([].concat.apply([], a), newGroup2);
+}
+
 export function handleApply(data: any, apply: any): any {
     // Log.trace("apply: " + JSON.stringify(apply)); // [{"maxSeats":{"MAX":"rooms_seats"}}]
     // let a = Object.values(apply)[0]; // first in array of apply values {"maxSeats":{"MAX":"rooms_seats"}}
