@@ -22,9 +22,8 @@ export default class QueryController {
         if (q == null) { return false; }
 
         const trans = q.TRANSFORMATIONS;
-        if (trans && (Object.keys(trans).length !== 2 || !trans.GROUP || !trans.APPLY)) {
-            return false;
-        }
+        if (trans && (Object.keys(trans).length !== 2 || !trans.GROUP || !trans.APPLY ||
+            !QUtil.isValidApply(trans.APPLY, this.datasetKind))) { return false; }
 
         const opts = q.OPTIONS;
         if (opts === null || !Array.isArray(opts.COLUMNS)
