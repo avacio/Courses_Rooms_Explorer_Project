@@ -225,23 +225,27 @@ export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): a
 
 export function isValidOrder(q: any, qc: QueryController): boolean {
     const opts = q.OPTIONS;
-    if (opts.ORDER) {
-        if ((typeof opts.ORDER === "string" && opts.COLUMNS.indexOf(opts.ORDER) === -1)
-            || Array.isArray(opts.ORDER)) {
-            Log.trace("INVALID ORDER");
-            return false;
-        }
-        if (opts.ORDER.keys && Array.isArray(opts.ORDER.keys)) {
-            for (let k of opts.ORDER.keys) {
-                let fields = k.split("_");
-                if (fields[0] !== k) {
-                    Log.trace("ORDER KEYS " + fields[1]);
-                    if (opts.COLUMNS.indexOf(k) === -1 || (!isValidStringField(qc.getKind(), fields[1])
-                        && !isValidMathField(qc.getKind(), fields[1]))) {
-                        Log.trace("INVALID ORDER");
+    const order = opts.ORDER;
+    if (order) {
+        if (typeof order === "string") {
+            if (opts.COLUMNS.indexOf(order) === -1 || Array.isArray(order)) {
+                return false;
+            }
+        } else {
+            if (Object.keys(order).length !== 2 || !order.dir || !order.keys || !Array.isArray(order.keys) ||
+               order.keys.length === 0 || (order.dir !== "DOWN" && order.dir !== "UP")) {
+                return false;
+            }
+            for (let k of order.keys) {
+                    let fields = k.split("_");
+                    if (fields[0] !== k) {
+                        if (opts.COLUMNS.indexOf(k) === -1 || (!isValidStringField(qc.getKind(), fields[1])
+                            && !isValidMathField(qc.getKind(), fields[1]))) {
+                            return false;
+                        }
+                    } else if (!isValidFieldTrans(q, k)) {
                         return false;
                     }
-                } else if (!isValidFieldTrans(q, k)) { return false; }
             }
         }
     }
