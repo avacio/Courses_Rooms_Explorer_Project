@@ -1,7 +1,8 @@
 import Log from "../Util";
 import {InsightError} from "./IInsightFacade";
-export * from "./QueryApplyFunctions";
 import {Decimal} from "decimal.js";
+
+export * from "./QueryApplyFunctions";
 
 export function handleGroup(data: any[], group: any[]): any {
     let groups: any = new Map();
@@ -80,30 +81,34 @@ export function handleApply(data: any[], apply: any[]): any {
     }
     // Log.trace("apply: " + JSON.stringify(apply)); // [{"maxSeats":{"MAX":"rooms_seats"}}]
     // let a = Object.values(apply)[0]; // first in array of apply values {"maxSeats":{"MAX":"rooms_seats"}}
-    for (let a of Object.values(apply)) {
+    Log.trace("Object.vales(apply): " + JSON.stringify(Object.values(apply)));
+    Log.trace("apply: " + JSON.stringify(apply[0]));
+    let res: any[] = [];
+    for (let a of apply) {
         let applyKey = Object.keys(a); // maxSeats
-        // Log.trace("in apply: " + JSON.stringify(a));
-        // Log.trace("should be maxSeats: " + applyKey);
+        Log.trace("in apply: " + JSON.stringify(a));
+        Log.trace("should be maxSeats: " + applyKey);
         let t = Object.values(a)[0]; // inside maxSeats {"MAX":"rooms_seats"}
         let token = Object.keys(t)[0]; // MAX
-        // Log.trace("in maxSeats: " + JSON.stringify(t));
-        // Log.trace("should be MAX: " + token);
+        Log.trace("in maxSeats: " + JSON.stringify(t));
+        Log.trace("should be MAX: " + token);
         let key = Object.values(t)[0]; // rooms_seats
-        // Log.trace("should be rooms_seats: " + key);
+        Log.trace("should be rooms_seats: " + key);
         if (token === "MAX") {
-            return handleMAX(data, key, applyKey);
+            res = handleMAX(data, key, applyKey);
         } else if (token === "MIN") {
-            return handleMIN(data, key, applyKey);
+            res = handleMIN(data, key, applyKey);
         } else if (token === "AVG") {
-            return handleAVG(data, key, applyKey);
+            res = handleAVG(data, key, applyKey);
         } else if (token === "SUM") {
-            return handleSUM(data, key, applyKey);
+            res = handleSUM(data, key, applyKey);
         } else if (token === "COUNT") {
-            return handleCOUNT(data, key, applyKey);
+            res = handleCOUNT(data, key, applyKey);
         } else {
             return new InsightError("invalid apply token");
         }
     }
+    return res;
 }
 
 export function handleMAX(data: any, key: any, applyKey: any): any {
@@ -136,6 +141,7 @@ export function handleMAX(data: any, key: any, applyKey: any): any {
     for (let i of data) {
         result.push(i[0]);
     }
+    Log.trace("max result: " + JSON.stringify(result));
     return result;
 }
 
@@ -155,7 +161,9 @@ export function handleMIN(data: any, key: any, applyKey: any): any {
     let result: any[] = [];
     for (let i of data) {
         result.push(i[0]);
+        // result = i[0];
     }
+    Log.trace("min result: " + JSON.stringify(result));
     return result;
 }
 
@@ -163,17 +171,18 @@ export function handleAVG(data: any, key: any, applyKey: any): any {
     for (let group of data) {
         // let sum: number = 0;
         let sum = new Decimal(0);
-        let count: number = 0;
-        // let count = new Decimal(0);
+        // let count: number = 0;
+        let count = new Decimal(0);
         for (let section of group) {
             // sum += section[key.toString()];
             let val = new Decimal(section[key.toString()]);
             sum = Decimal.add(sum, val);
-            count++;
+            // count++;
             // let one = new Decimal(1);
-            // count.add(one);
+            // count.add(1);
+            count = Decimal.add(count, 1);
         }
-        let avg: number = sum.toNumber() / count;
+        let avg: number = sum.toNumber() / count.toNumber();
         for (let s of group) {
             // avg = Math.round(avg * 100) / 100;
             avg = Number(avg.toFixed(2));
@@ -211,14 +220,18 @@ export function handleSUM(data: any, key: any, applyKey: any): any {
 
 export function handleCOUNT(data: any, key: any, applyKey: any): any {
     for (let group of data) {
-        let count: number = 0;
+        // let count: number = 0;
+        let count = new Decimal(0);
         for (let section of group) {
             if (section[key.toString()]) {
-                count++;
+                // count++;
+                // let one = new Decimal(1);
+                // count.add(1);
+                count = Decimal.add(count, 1);
             }
         }
         for (let s of group) {
-            s[applyKey] = count;
+            s[applyKey] = count.toNumber();
         }
     }
     let result: any[] = [];

@@ -139,7 +139,7 @@ export function organizeResults(data: any[], columns: string[]): any[] {
 // makes one line with given column keys
 export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {[key: string]: any} {
     const filtered: {[key: string]: any} = {};
-    Log.trace("FOF " + JSON.stringify(obj));
+    // Log.trace("FOF " + JSON.stringify(obj));
     for (let k of keys) { filtered[k] = obj[k]; }
     return filtered;
 }
