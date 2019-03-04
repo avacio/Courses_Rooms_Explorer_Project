@@ -241,3 +241,32 @@ export function handleRoomsMATH(op: any, mfield: any, num: any, dataset: any): a
     }
     return data;
 }
+
+export function isValidOrder(q: any, qc: QueryController): boolean {
+    const opts = q.OPTIONS;
+    if (opts.ORDER) {
+        if ((typeof opts.ORDER === "string" && opts.COLUMNS.indexOf(opts.ORDER) === -1)
+            || Array.isArray(opts.ORDER)) {
+            Log.trace("INVALID ORDER");
+            return false;
+        }
+        if (opts.ORDER.keys && Array.isArray(opts.ORDER.keys)) {
+            for (let k of opts.ORDER.keys) {
+                let fields = k.split("_");
+                Log.trace("ORDER KEYS " + fields[1]);
+                if (opts.COLUMNS.indexOf(k) === -1 || (!isValidStringField(qc.getKind(), fields[1])
+                    && !isValidMathField(qc.getKind(), fields[1]) && !isValidFieldTrans(q, k))) {
+                    Log.trace("INVALID ORDER");
+                    return false; }
+            }
+        }
+    }
+    return true;
+}
+
+function isValidFieldTrans(q: any, field: string): boolean {
+    if (q.TRANSFORMATIONS) {
+        if (JSON.stringify(q.TRANSFORMATIONS).indexOf(field) !== -1) { return true; }
+    }
+    return false;
+}

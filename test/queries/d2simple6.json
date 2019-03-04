@@ -1,5 +1,5 @@
 {
-    "title": "d2 rooms no trans -- invalid order",
+    "title": "d2 -- all ORDER keys must be in COLUMNS",
     "query": {
         "WHERE": {
             "IS": {

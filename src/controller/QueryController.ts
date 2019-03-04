@@ -23,7 +23,7 @@ export default class QueryController {
 
         const opts = q.OPTIONS;
         if (opts === null || !Array.isArray(opts.COLUMNS)
-            || opts.COLUMNS.length < 1 || opts.length > 2
+            || opts.COLUMNS.length < 1 || Object.keys(opts).length > 2
             || opts.COLUMNS.some((e: any) => typeof e !== "string")) {
             return false;
         }
@@ -47,24 +47,12 @@ export default class QueryController {
         }
         this.id = idKey;
         this.datasetKind = this.datasetController.getDataKind(this.id);
-        if (opts.ORDER) {
-            if ((typeof opts.ORDER === "string" && opts.COLUMNS.indexOf(opts.ORDER) === -1)
-                || Array.isArray(opts.ORDER)) {
-                Log.trace("INVALID ORDER");
-                return false;
-            }
-            if (opts.ORDER.keys && Array.isArray(opts.ORDER.keys)) {
-                for (let k of opts.ORDER.keys) {
-                    let fields = k.split("_");
-                    Log.trace("ORDER KEYS " + fields[1]);
-                    if (opts.COLUMNS.indexOf(k) === -1 || (!QUtil.isValidStringField(this.datasetKind, fields[1])
-                        && !QUtil.isValidMathField(this.datasetKind, fields[1]))) {
-                        Log.trace("INVALID ORDER");
-                        return false; }
-                }
-            }
+
+        const trans = q.TRANSFORMATIONS;
+        if (trans && (Object.keys(trans).length !== 2 || !trans.GROUP || !trans.APPLY)) {
+            return false;
         }
-        return true;
+        return QUtil.isValidOrder(q, this);
     }
 
     public parseQuery(obj: any): any[] {
@@ -284,10 +272,7 @@ export default class QueryController {
         }
     }
 
-    public getQueryID(): string {
-        return this.id;
-    }
-    public getData(): any {
-        return this.data;
-    }
+    public getQueryID(): string { return this.id; }
+    public getData(): any { return this.data; }
+    public getKind(): any { return this.datasetKind; }
 }

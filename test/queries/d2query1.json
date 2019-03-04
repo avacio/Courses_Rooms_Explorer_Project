@@ -1,5 +1,5 @@
 {
-    "title": "keys in COLUMNS must be in GROUP or APPLY when TRANSFORMATIONS is present",
+    "title": "valid query",
     "query": {
         "WHERE": {
             "AND": [
@@ -29,7 +29,8 @@
         },
         "TRANSFORMATIONS": {
             "GROUP": [
-                "rooms_shortname"
+                "rooms_shortname",
+                "rooms_seats"
             ],
             "APPLY": [
                 {
@@ -40,6 +41,6 @@
             ]
         }
     },
-    "isQueryValid": false,
-    "result": "InsightError"
-}
+    "isQueryValid": true,
+    "result":[{"rooms_shortname":"OSBO","rooms_seats":442},{"rooms_shortname":"HEBB","rooms_seats":375},{"rooms_shortname":"LSC","rooms_seats":350}]
+     }
