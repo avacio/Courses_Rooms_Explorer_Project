@@ -1,4 +1,5 @@
 import Log from "../Util";
+import {InsightError} from "./IInsightFacade";
 export * from "./QueryApplyFunctions";
 
 export function handleGroup(data: any[], group: string[]): any {
@@ -71,6 +72,8 @@ export function handleApply(data: any, apply: any): any {
             return handleSUM(data, key, applyKey);
         } else if (token === "COUNT") {
             return handleCOUNT(data, key, applyKey);
+        } else {
+            return new InsightError("invalid apply token");
         }
     }
 }
@@ -93,6 +96,7 @@ export function handleMAX(data: any, key: any, applyKey: any): any {
         Log.trace("max: " + max);
         Log.trace("each group: " + JSON.stringify(group));
         for (let s of group) {
+            // max = Math.round(max * 100) / 100;
             s[applyKey] = max;
             // Log.trace("s: " + JSON.stringify(s));
         }
@@ -116,6 +120,7 @@ export function handleMIN(data: any, key: any, applyKey: any): any {
             }
         }
         for (let s of group) {
+            // min = Math.round(min * 100) / 100;
             s[applyKey] = min;
         }
     }
@@ -136,6 +141,7 @@ export function handleAVG(data: any, key: any, applyKey: any): any {
         }
         let avg: number = sum / count;
         for (let s of group) {
+            avg = Math.round(avg * 100) / 100;
             s[applyKey] = avg;
         }
     }
@@ -153,6 +159,7 @@ export function handleSUM(data: any, key: any, applyKey: any): any {
             sum += section[key.toString()];
         }
         for (let s of group) {
+            // sum = Math.round(sum * 100) / 100;
             s[applyKey] = sum;
         }
     }
