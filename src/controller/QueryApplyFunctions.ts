@@ -49,7 +49,11 @@ export function handleGroup(data: any[], group: string[]): any {
     // Log.trace("groupsLLLL: " + Object.values(groups.values())[0]);
     return result;
 }
-export function handleApply(data: any, apply: any): any {
+export function handleApply(data: any[], apply: any[]): any {
+    if (apply.length === 0) {
+        Log.trace("empty apply, still valid");
+        return data;
+    }
     // Log.trace("apply: " + JSON.stringify(apply)); // [{"maxSeats":{"MAX":"rooms_seats"}}]
     // let a = Object.values(apply)[0]; // first in array of apply values {"maxSeats":{"MAX":"rooms_seats"}}
     for (let a of Object.values(apply)) {

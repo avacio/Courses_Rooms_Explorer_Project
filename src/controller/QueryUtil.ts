@@ -22,13 +22,9 @@ export function handleNOT(qc: QueryController, filters: any): any {
 export function handleAND(qc: QueryController, filters: any): any {
     try {
         let data: any[] = [];
-        for (let filter of filters) {
-            data.push(qc.handleWHERE(filter));
-        }
+        for (let filter of filters) { data.push(qc.handleWHERE(filter)); }
         return intersect(data);
-    } catch (error) {
-        throw new InsightError("AND");
-    }
+    } catch (error) { throw new InsightError("AND"); }
 }
 
 export function handleOR(qc: QueryController, filters: any): any {
@@ -143,7 +139,12 @@ export function organizeResults(data: any[], columns: string[]): any[] {
 // makes one line with given column keys
 export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {[key: string]: any} {
     const filtered: {[key: string]: any} = {};
-    for (let k of keys) { filtered[k] = obj[k]; }
+    for (let k of keys) {
+        Log.trace("KEY " + k);
+        // Log.trace("obj[k] " + JSON.stringify(obj[k])); // Log.trace(JSON.stringify(obj));
+        // Log.trace("values " + JSON.stringify(Object.values(obj)[obj.indexOf(k)]));
+        filtered[k] = obj[k]; }
+    // Log.trace(JSON.stringify(filtered));
     return filtered;
 }
 
@@ -158,11 +159,8 @@ export function sortResults(data: any[], order: any): any {
         for (let k of sortKeys) {
             let val1 = i1[k];
             let val2 = i2[k];
-            if (val1 < val2) {
-                return before;
-            } else if (val1 > val2) {
-                return after;
-            }
+            if (val1 < val2) { return before;
+            } else if (val1 > val2) { return after; }
         }
         return 0;
     });
