@@ -22,13 +22,9 @@ export function handleNOT(qc: QueryController, filters: any): any {
 export function handleAND(qc: QueryController, filters: any): any {
     try {
         let data: any[] = [];
-        for (let filter of filters) {
-            data.push(qc.handleWHERE(filter));
-        }
+        for (let filter of filters) { data.push(qc.handleWHERE(filter)); }
         return intersect(data);
-    } catch (error) {
-        throw new InsightError("AND");
-    }
+    } catch (error) { throw new InsightError("AND"); }
 }
 
 export function handleOR(qc: QueryController, filters: any): any {
@@ -143,6 +139,7 @@ export function organizeResults(data: any[], columns: string[]): any[] {
 // makes one line with given column keys
 export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {[key: string]: any} {
     const filtered: {[key: string]: any} = {};
+    Log.trace("FOF " + JSON.stringify(obj));
     for (let k of keys) { filtered[k] = obj[k]; }
     return filtered;
 }
@@ -158,11 +155,8 @@ export function sortResults(data: any[], order: any): any {
         for (let k of sortKeys) {
             let val1 = i1[k];
             let val2 = i2[k];
-            if (val1 < val2) {
-                return before;
-            } else if (val1 > val2) {
-                return after;
-            }
+            if (val1 < val2) { return before;
+            } else if (val1 > val2) { return after; }
         }
         return 0;
     });
