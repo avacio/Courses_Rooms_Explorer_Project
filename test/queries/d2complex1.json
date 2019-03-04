@@ -1,0 +1,51 @@
+{
+    "title": "valid query multiple apply rules",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 300
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_shortname",
+                "sumSeats",
+                "countSeats"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "sumSeats"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_shortname"
+            ],
+            "APPLY": [
+                {
+                    "sumSeats": {
+                        "SUM": "rooms_seats"
+                    }
+                },
+                {
+                    "countSeats": {
+                        "COUNT": "rooms_seats"
+                    }
+                }
+
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"rooms_shortname":"LSC","sumSeats":700,"countSeats":1},{"rooms_shortname":"OSBO","sumSeats":442,"countSeats":1},{"rooms_shortname":"HEBB","sumSeats":375,"countSeats":1}]}
