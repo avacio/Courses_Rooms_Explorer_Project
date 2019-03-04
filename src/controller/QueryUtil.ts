@@ -139,12 +139,8 @@ export function organizeResults(data: any[], columns: string[]): any[] {
 // makes one line with given column keys
 export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {[key: string]: any} {
     const filtered: {[key: string]: any} = {};
-    for (let k of keys) {
-        Log.trace("KEY " + k);
-        // Log.trace("obj[k] " + JSON.stringify(obj[k])); // Log.trace(JSON.stringify(obj));
-        // Log.trace("values " + JSON.stringify(Object.values(obj)[obj.indexOf(k)]));
-        filtered[k] = obj[k]; }
-    // Log.trace(JSON.stringify(filtered));
+    Log.trace("FOF " + JSON.stringify(obj));
+    for (let k of keys) { filtered[k] = obj[k]; }
     return filtered;
 }
 

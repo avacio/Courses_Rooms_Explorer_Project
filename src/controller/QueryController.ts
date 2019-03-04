@@ -69,6 +69,7 @@ export default class QueryController {
                 Log.trace("has TRANS");
                 let trans = TransUtil.handleGroup(filtered, obj.TRANSFORMATIONS.GROUP);
                 filtered = TransUtil.handleApply(trans, obj.TRANSFORMATIONS.APPLY);
+                Log.trace(JSON.stringify(filtered));
             }
             if (obj.OPTIONS.ORDER) {
                 Log.trace("has ORDER");
