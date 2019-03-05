@@ -98,8 +98,8 @@ export function handleApply(data: any[], apply: any[]): any {
             res = handleSUM(data, key, applyKey);
         } else if (token === "COUNT") {
             res = handleCOUNT(data, key, applyKey);
-        } else {
-            return new InsightError("invalid apply token");
+        // } else {
+            // return new InsightError("invalid apply token");
         }
     }
     return res;
