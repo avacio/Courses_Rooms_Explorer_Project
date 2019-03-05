@@ -41,20 +41,18 @@
         }
     },
     "isQueryValid": true,
-    "result": {
-        "result": [
-            {
-                "rooms_shortname": "OSBO",
-                "minSeats": 442
-            },
-            {
-                "rooms_shortname": "HEBB",
-                "minSeats": 375
-            },
-            {
-                "rooms_shortname": "LSC",
-                "minSeats": 350
-            }
-        ]
-    }
+    "result": [
+        {
+            "rooms_shortname": "OSBO",
+            "minSeats": 442
+        },
+        {
+            "rooms_shortname": "HEBB",
+            "minSeats": 375
+        },
+        {
+            "rooms_shortname": "LSC",
+            "minSeats": 350
+        }
+    ]
 }

@@ -141,7 +141,8 @@ export function handleMAX(data: any, key: any, applyKey: any): any {
 
 export function handleMIN(data: any, key: any, applyKey: any): any {
     for (let group of data) {
-        let min: number = Number.MAX_VALUE;
+        // let min: number = Number.MAX_VALUE;
+        let min: number = Number.MAX_SAFE_INTEGER;
         for (let section of group) {
             if (section[key.toString()] < min) {
                 min = section[key.toString()];
@@ -196,8 +197,10 @@ export function handleSUM(data: any, key: any, applyKey: any): any {
         let sum = new Decimal(0);
         for (let section of group) {
             // sum += section[key.toString()];
-            let val = new Decimal(section[key.toString()]);
-            sum = Decimal.add(sum, val);
+
+            // let val = new Decimal(section[key.toString()]);
+            // sum = Decimal.add(sum, val);
+            sum = sum.add(section[key.toString()]);
         }
         for (let s of group) {
             // sum = Math.round(sum * 100) / 100;

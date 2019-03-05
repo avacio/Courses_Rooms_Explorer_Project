@@ -1,0 +1,236 @@
+{
+    "title": "d2 count, math field VALID",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 10
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_shortname",
+                "count",
+                "sum"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_shortname"
+            ],
+            "APPLY": [
+                {
+                    "count": {
+                        "COUNT": "rooms_href"
+                    }
+                },
+                {
+                    "sum": {
+                        "SUM": "rooms_seats"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "rooms_shortname": "ALRD",
+            "count": 5,
+            "sum": 228
+        },
+        {
+            "rooms_shortname": "ANSO",
+            "count": 3,
+            "sum": 96
+        },
+        {
+            "rooms_shortname": "AUDX",
+            "count": 2,
+            "sum": 41
+        },
+        {
+            "rooms_shortname": "BIOL",
+            "count": 3,
+            "sum": 108
+        },
+        {
+            "rooms_shortname": "BRKX",
+            "count": 2,
+            "sum": 94
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "count": 34,
+            "sum": 1473
+        },
+        {
+            "rooms_shortname": "CHBE",
+            "count": 3,
+            "sum": 354
+        },
+        {
+            "rooms_shortname": "CEME",
+            "count": 6,
+            "sum": 289
+        },
+        {
+            "rooms_shortname": "EOSM",
+            "count": 1,
+            "sum": 50
+        },
+        {
+            "rooms_shortname": "ESB",
+            "count": 1,
+            "sum": 80
+        },
+        {
+            "rooms_shortname": "FNH",
+            "count": 1,
+            "sum": 28
+        },
+        {
+            "rooms_shortname": "FSC",
+            "count": 8,
+            "sum": 272
+        },
+        {
+            "rooms_shortname": "FORW",
+            "count": 3,
+            "sum": 142
+        },
+        {
+            "rooms_shortname": "LASR",
+            "count": 3,
+            "sum": 120
+        },
+        {
+            "rooms_shortname": "FRDM",
+            "count": 1,
+            "sum": 160
+        },
+        {
+            "rooms_shortname": "GEOG",
+            "count": 7,
+            "sum": 394
+        },
+        {
+            "rooms_shortname": "HEBB",
+            "count": 4,
+            "sum": 537
+        },
+        {
+            "rooms_shortname": "HENN",
+            "count": 3,
+            "sum": 96
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "count": 28,
+            "sum": 1546
+        },
+        {
+            "rooms_shortname": "DMP",
+            "count": 5,
+            "sum": 440
+        },
+        {
+            "rooms_shortname": "IONA",
+            "count": 2,
+            "sum": 150
+        },
+        {
+            "rooms_shortname": "IBLC",
+            "count": 10,
+            "sum": 480
+        },
+        {
+            "rooms_shortname": "SOWK",
+            "count": 3,
+            "sum": 44
+        },
+        {
+            "rooms_shortname": "LSK",
+            "count": 4,
+            "sum": 505
+        },
+        {
+            "rooms_shortname": "LSC",
+            "count": 3,
+            "sum": 825
+        },
+        {
+            "rooms_shortname": "MCLD",
+            "count": 6,
+            "sum": 503
+        },
+        {
+            "rooms_shortname": "MCML",
+            "count": 5,
+            "sum": 207
+        },
+        {
+            "rooms_shortname": "MATH",
+            "count": 3,
+            "sum": 156
+        },
+        {
+            "rooms_shortname": "SCRF",
+            "count": 21,
+            "sum": 724
+        },
+        {
+            "rooms_shortname": "ORCH",
+            "count": 9,
+            "sum": 263
+        },
+        {
+            "rooms_shortname": "PHRM",
+            "count": 4,
+            "sum": 489
+        },
+        {
+            "rooms_shortname": "PCOH",
+            "count": 7,
+            "sum": 216
+        },
+        {
+            "rooms_shortname": "OSBO",
+            "count": 2,
+            "sum": 482
+        },
+        {
+            "rooms_shortname": "SPPH",
+            "count": 6,
+            "sum": 166
+        },
+        {
+            "rooms_shortname": "SRC",
+            "count": 3,
+            "sum": 897
+        },
+        {
+            "rooms_shortname": "UCLL",
+            "count": 3,
+            "sum": 133
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "count": 22,
+            "sum": 1421
+        },
+        {
+            "rooms_shortname": "WOOD",
+            "count": 10,
+            "sum": 562
+        }
+    ]
+}
