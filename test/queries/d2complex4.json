@@ -1,0 +1,57 @@
+{
+    "title": "valid query apply sum avg min 3 apply rules",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 200
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_shortname",
+                "sumLon",
+                "avgLat",
+                "minLon"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "sumLon"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_shortname"
+            ],
+            "APPLY": [
+                {
+                    "sumLon": {
+                        "SUM": "rooms_lon"
+                    }
+                },
+                {
+                    "avgLat": {
+                        "AVG": "rooms_lat"
+                    }
+                },
+                {
+                    "minLon": {
+                        "MIN": "rooms_lon"
+                    }
+                }
+
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"rooms_shortname":"PHRM","sumLon":-123.24,"avgLat":49.26,"minLon":-123.24342},{"rooms_shortname":"OSBO","sumLon":-123.24,"avgLat":49.26,"minLon":-123.24467},{"rooms_shortname":"HEBB","sumLon":-123.25,"avgLat":49.27,"minLon":-123.25165},{"rooms_shortname":"ANGU","sumLon":-123.25,"avgLat":49.26,"minLon":-123.25364},{"rooms_shortname":"LSK","sumLon":-123.26,"avgLat":49.27,"minLon":-123.25533},{"rooms_shortname":"LSC","sumLon":-246.49,"avgLat":49.26,"minLon":-123.24494},{"rooms_shortname":"SRC","sumLon":-369.75,"avgLat":49.27,"minLon":-123.24894}]}

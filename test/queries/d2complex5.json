@@ -1,0 +1,1730 @@
+{
+    "title": "valid query 4 apply rules count",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 5
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_number",
+                "sumLon",
+                "avgLat",
+                "minLon",
+                "countTest"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "sumLon"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_number"
+            ],
+            "APPLY": [
+                {
+                    "sumLon": {
+                        "SUM": "rooms_lon"
+                    }
+                },
+                {
+                    "avgLat": {
+                        "AVG": "rooms_lat"
+                    }
+                },
+                {
+                    "minLon": {
+                        "MIN": "rooms_lon"
+                    }
+                },
+                {
+                    "countTest": {
+                        "COUNT": "rooms_lon"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "rooms_number": "3115",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3208",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "203A",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24467,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1101",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1201",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3112",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3114",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "A",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24467,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3116",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3118",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3120",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3122",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3124",
+            "sumLon": -123.24,
+            "avgLat": 49.26,
+            "minLon": -123.24342,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1004",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "106",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "G44",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "108",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "109",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "G41",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "112",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25318,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "113",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25318,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B75",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "220C",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.24894,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "135",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25198,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "220B",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.24894,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "143",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24842,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "220A",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.24894,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "153",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.24608,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "154",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "155",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "156",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B151",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24842,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "158",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "160",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "182",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "185",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "191",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "192",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "193",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "194",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "195",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B138",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24842,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B136",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24842,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B112",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24842,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B108",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24842,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "204",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "206",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "207",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "208",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "209",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "210",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "4",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "204A",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360M",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "220",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24935,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "221",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "222",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "228",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24935,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "232",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "234",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "235",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "237",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "241",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360L",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "243",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360K",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "256",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "260",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "261",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "263",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "264",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "265",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "266",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.2521,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "291",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "292",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "293",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "295",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "296",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360J",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "302",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25374,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "303",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25179,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "304",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25374,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "305",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "306",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "307",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "308",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "309",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360H",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "317",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25179,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360G",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360F",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "332",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "334",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "335",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "339",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "343",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "345",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "347",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "350",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "354",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "358",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "405",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "406",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "407",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "408",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "409",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "410",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "432",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "434",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "435",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "437",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360E",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360D",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "519",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25179,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "633",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25042,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360C",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360B",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "360A",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25027,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1005",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "098",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "039",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1020",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1021",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1022",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1023",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1024",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "5",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "10",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25165,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1202",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24894,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1204",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24894,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1206",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24894,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1210",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24894,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1212",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24894,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "037",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D325",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1328",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.2531,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1402",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24886,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1503",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25249,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1611",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24886,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1613",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24886,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1615",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24886,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1617",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24886,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "2012",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25224,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "2200",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25249,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "2365",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25237,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "2367",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25237,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "2519",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.25249,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3002",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24944,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3016",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24944,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3058",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24944,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "3074",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24944,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "12",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25165,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "13",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25165,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "30",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24959,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "100",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25165,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "G65",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "G59",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "G57",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "G55",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "G53",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "4002",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24944,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "4004",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24944,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "4016",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24944,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "4058",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24944,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "4068",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24944,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B101",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25318,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "A202",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "A203",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B141",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B142",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B208",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B213",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B215",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B216",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B219",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B312",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B313",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B315",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B316",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B318",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "B319",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D201",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D204",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D205",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D207",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D209",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D214",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D216",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D217",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D218",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D219",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D221",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D222",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D228",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D229",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D306",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D315",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D319",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "D323",
+            "sumLon": -123.25,
+            "avgLat": 49.27,
+            "minLon": -123.25468,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "G66",
+            "sumLon": -123.25,
+            "avgLat": 49.26,
+            "minLon": -123.24673,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1302",
+            "sumLon": -123.26,
+            "avgLat": 49.26,
+            "minLon": -123.2559,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "104",
+            "sumLon": -123.26,
+            "avgLat": 49.27,
+            "minLon": -123.255534,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1011",
+            "sumLon": -123.26,
+            "avgLat": 49.26,
+            "minLon": -123.2559,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "1009",
+            "sumLon": -123.26,
+            "avgLat": 49.26,
+            "minLon": -123.2559,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "142",
+            "sumLon": -123.26,
+            "avgLat": 49.27,
+            "minLon": -123.25655,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "147",
+            "sumLon": -123.26,
+            "avgLat": 49.27,
+            "minLon": -123.25623,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "5C",
+            "sumLon": -123.26,
+            "avgLat": 49.27,
+            "minLon": -123.25583,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "462",
+            "sumLon": -123.26,
+            "avgLat": 49.27,
+            "minLon": -123.25533,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "212",
+            "sumLon": -123.26,
+            "avgLat": 49.27,
+            "minLon": -123.25623,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "326",
+            "sumLon": -123.26,
+            "avgLat": 49.26,
+            "minLon": -123.25505,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "324",
+            "sumLon": -123.26,
+            "avgLat": 49.26,
+            "minLon": -123.25505,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "211",
+            "sumLon": -123.26,
+            "avgLat": 49.27,
+            "minLon": -123.25583,
+            "countTest": 1
+        },
+        {
+            "rooms_number": "310",
+            "sumLon": -246.5,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "254",
+            "sumLon": -246.5,
+            "avgLat": 49.26,
+            "minLon": -123.25364,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "103",
+            "sumLon": -246.5,
+            "avgLat": 49.27,
+            "minLon": -123.25692,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "1215",
+            "sumLon": -246.5,
+            "avgLat": 49.26,
+            "minLon": -123.2559,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "110",
+            "sumLon": -246.5,
+            "avgLat": 49.26,
+            "minLon": -123.25431,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "122",
+            "sumLon": -246.51,
+            "avgLat": 49.26,
+            "minLon": -123.25505,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "157",
+            "sumLon": -246.51,
+            "avgLat": 49.27,
+            "minLon": -123.25655,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "242",
+            "sumLon": -246.51,
+            "avgLat": 49.26,
+            "minLon": -123.25623,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "214",
+            "sumLon": -246.51,
+            "avgLat": 49.26,
+            "minLon": -123.25623,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "105",
+            "sumLon": -246.51,
+            "avgLat": 49.27,
+            "minLon": -123.25431,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "107",
+            "sumLon": -246.51,
+            "avgLat": 49.27,
+            "minLon": -123.25692,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "460",
+            "sumLon": -246.51,
+            "avgLat": 49.27,
+            "minLon": -123.25533,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "121",
+            "sumLon": -246.51,
+            "avgLat": 49.27,
+            "minLon": -123.25431,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "205",
+            "sumLon": -246.51,
+            "avgLat": 49.27,
+            "minLon": -123.25741,
+            "countTest": 2
+        },
+        {
+            "rooms_number": "1002",
+            "sumLon": -369.75,
+            "avgLat": 49.26,
+            "minLon": -123.2559,
+            "countTest": 3
+        },
+        {
+            "rooms_number": "301",
+            "sumLon": -369.75,
+            "avgLat": 49.27,
+            "minLon": -123.25374,
+            "countTest": 3
+        },
+        {
+            "rooms_number": "1001",
+            "sumLon": -369.75,
+            "avgLat": 49.26,
+            "minLon": -123.2559,
+            "countTest": 3
+        },
+        {
+            "rooms_number": "200",
+            "sumLon": -369.76,
+            "avgLat": 49.27,
+            "minLon": -123.25623,
+            "countTest": 3
+        },
+        {
+            "rooms_number": "202",
+            "sumLon": -369.76,
+            "avgLat": 49.27,
+            "minLon": -123.25741,
+            "countTest": 3
+        },
+        {
+            "rooms_number": "102",
+            "sumLon": -369.76,
+            "avgLat": 49.27,
+            "minLon": -123.25583,
+            "countTest": 3
+        },
+        {
+            "rooms_number": "203",
+            "sumLon": -369.77,
+            "avgLat": 49.27,
+            "minLon": -123.25741,
+            "countTest": 3
+        },
+        {
+            "rooms_number": "1003",
+            "sumLon": -493,
+            "avgLat": 49.26,
+            "minLon": -123.2559,
+            "countTest": 4
+        },
+        {
+            "rooms_number": "201",
+            "sumLon": -493.01,
+            "avgLat": 49.26,
+            "minLon": -123.25623,
+            "countTest": 4
+        },
+        {
+            "rooms_number": "101",
+            "sumLon": -493.01,
+            "avgLat": 49.26,
+            "minLon": -123.25692,
+            "countTest": 4
+        }
+    ]
+}

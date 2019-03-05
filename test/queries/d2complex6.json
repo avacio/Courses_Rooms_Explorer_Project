@@ -1,0 +1,127 @@
+{
+    "title": "valid query 4 apply rules count",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 100
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_shortname",
+                "count",
+                "countSeats"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "count"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_shortname"
+            ],
+            "APPLY": [
+                {
+                    "count": {
+                        "COUNT": "rooms_shortname"
+                    }
+                },
+                {
+                    "countSeats": {
+                        "COUNT": "rooms_seats"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "rooms_shortname": "LSK",
+            "count": 1,
+            "countSeats": 2
+        },
+        {
+            "rooms_shortname": "BUCH",
+            "count": 1,
+            "countSeats": 1
+        },
+        {
+            "rooms_shortname": "FRDM",
+            "count": 1,
+            "countSeats": 1
+        },
+        {
+            "rooms_shortname": "HEBB",
+            "count": 1,
+            "countSeats": 1
+        },
+        {
+            "rooms_shortname": "ANGU",
+            "count": 1,
+            "countSeats": 1
+        },
+        {
+            "rooms_shortname": "DMP",
+            "count": 1,
+            "countSeats": 2
+        },
+        {
+            "rooms_shortname": "IBLC",
+            "count": 1,
+            "countSeats": 2
+        },
+        {
+            "rooms_shortname": "CHBE",
+            "count": 1,
+            "countSeats": 1
+        },
+        {
+            "rooms_shortname": "LSC",
+            "count": 1,
+            "countSeats": 2
+        },
+        {
+            "rooms_shortname": "MCLD",
+            "count": 1,
+            "countSeats": 2
+        },
+        {
+            "rooms_shortname": "PHRM",
+            "count": 1,
+            "countSeats": 2
+        },
+        {
+            "rooms_shortname": "OSBO",
+            "count": 1,
+            "countSeats": 1
+        },
+        {
+            "rooms_shortname": "SRC",
+            "count": 1,
+            "countSeats": 1
+        },
+        {
+            "rooms_shortname": "SWNG",
+            "count": 1,
+            "countSeats": 3
+        },
+        {
+            "rooms_shortname": "WOOD",
+            "count": 1,
+            "countSeats": 1
+        }
+    ]
+}

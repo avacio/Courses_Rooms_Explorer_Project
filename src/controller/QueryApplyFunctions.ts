@@ -33,18 +33,12 @@ export function handleGroup(data: any[], group: any[]): any {
                 b.push(i);
                 groups.set(val, b);
             }
-            // Log.trace("i: " + JSON.stringify(i));
-            // Log.trace("group values: " + JSON.stringify(groups.get(val.toString())));
-        } // idk if this will work for multiple group keys must fix!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        }
     }
-    // Log.trace("populated groups: " + JSON.stringify(groups));
-    // Log.trace("idk what to write here: " + Object.values(groups)[0]);
-    // Log.trace("idk what to write here: " + groups.get());
     let result: any[] = [];
     for (let g of groups.values()) {
         // Log.trace("g.values(): " + JSON.stringify(Object.values(g)));
         // Log.trace("sldfk: " + JSON.stringify(g));
-        // result.push(g.values()); // super wrong
         result.push(Object.values(g));
         // Log.trace("this is what im adding to result: " + JSON.stringify(Object.values(g)));
         // result.push();
@@ -219,19 +213,22 @@ export function handleSUM(data: any, key: any, applyKey: any): any {
 }
 
 export function handleCOUNT(data: any, key: any, applyKey: any): any {
+    // let count: number = 0;
     for (let group of data) {
-        // let count: number = 0;
-        let count = new Decimal(0);
+        let count: number = 0;
+        let keyValues: any[] = [];
+        // for (let j of group) {
+        //     keyValues.push(j[key.toString()]);
+        // }
         for (let section of group) {
-            if (section[key.toString()]) {
-                // count++;
-                // let one = new Decimal(1);
-                // count.add(1);
-                count = Decimal.add(count, 1);
-            }
+            // if (section[key.toString()]) {
+            //     count++;
+            // }
+            keyValues.push(section[key.toString()]);
         }
+        let unique: any[] = keyValues.filter((val, i, arr) => arr.indexOf(val) === i);
         for (let s of group) {
-            s[applyKey] = count.toNumber();
+            s[applyKey] = unique.length;
         }
     }
     let result: any[] = [];
