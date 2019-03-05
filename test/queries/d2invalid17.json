@@ -1,0 +1,48 @@
+{
+    "title": "invalid duplicate apply key test",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "rooms_furniture": "*Tables*"
+                    }
+                },
+                {
+                    "GT": {
+                        "rooms_seats": 300
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "test"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": [
+                    "test"
+                ]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_shortname"
+            ],
+            "APPLY": [
+                {
+                    "test": {
+                        "MAX": "rooms_seats"
+                    }},
+                {
+                    "test": {
+                        "MIN": "rooms_seats"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

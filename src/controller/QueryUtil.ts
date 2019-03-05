@@ -272,8 +272,11 @@ export function checkColumnsTrans(q: any, field: string): boolean {
 
 export function isValidApply(a: any, kind: InsightDatasetKind): boolean {
     let i = 0;
+    let keys: string[] = [];
     while (i < Object.keys(a).length) {
+        if (keys.includes(Object.keys(a[i]).toString())) { return false; } // duplicate keys
         if (!checkApplyFieldType(Object.values(a[i]), kind)) { return false; }
+        keys.push(Object.keys(a[i]).toString());
         i++;
     }
     return true;
