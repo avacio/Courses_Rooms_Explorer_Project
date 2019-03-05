@@ -139,7 +139,6 @@ export function organizeResults(data: any[], columns: string[]): any[] {
 // makes one line with given column keys
 export function filterObjectFields(obj: {[key: string]: any}, keys: string[]): {[key: string]: any} {
     const filtered: {[key: string]: any} = {};
-    // Log.trace("FOF " + JSON.stringify(obj));
     for (let k of keys) { filtered[k] = obj[k]; }
     return filtered;
 }
@@ -286,6 +285,5 @@ function checkApplyFieldType(obj: {[key: string]: any}, kind: InsightDatasetKind
         let v = Object.values(obj[0]).toString();
         let field = v.split("_");
         return isValidMathField(kind, field[1]);
-    }
-    return true;
+    } else { return k === "COUNT"; }
 }
