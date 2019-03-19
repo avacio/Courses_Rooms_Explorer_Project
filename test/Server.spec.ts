@@ -71,7 +71,7 @@ describe("Facade D3", function () {
                     expect(res.status).to.be.equal(200);
                 })
                 .catch(function (err: any) {
-                    Log.trace("err: " + err);
+                    Log.trace("caught err: " + err);
                     // some logging here please!
                     expect.fail();
                 });
@@ -153,7 +153,7 @@ describe("Facade D3", function () {
     //             expect.fail();
     //         });
     // });
-    it("DEL 204", function () {
+    it("DEL 200 rooms", function () {
         return chai.request(serverURL)
             .del("/dataset/rooms")
             .then(function (res: any) {
@@ -161,20 +161,57 @@ describe("Facade D3", function () {
                 expect(res.status).to.equal(200);
             })
             .catch(function (err: any) {
-                Log.trace("catch:");
+                Log.trace("catch:" + err);
                 expect.fail();
             });
     });
 
-    it("DEL 204", function () {
+    it("DEL 200 courses", function () {
         return chai.request(serverURL)
             .del("/dataset/courses")
             .then(function (res: any) {
                 expect(res.status).to.equal(200);
             })
             .catch(function (err: any) {
-                Log.trace("catch:");
+                Log.trace("catch:" + err);
                 expect.fail();
+            });
+    });
+
+    it("DEL 200 rooms", function () {
+        return chai.request(serverURL)
+            .del("/dataset/rooms")
+            .then(function (res: any) {
+                Log.trace(res);
+                expect(res.status).to.equal(200);
+            })
+            .catch(function (err: any) {
+                Log.trace("catch:" + err);
+                // expect.fail();
+            });
+    });
+
+    it("POST 400", function () {
+        return chai.request(serverURL)
+            .post("/query")
+            .send({})
+            .then(function (res: any) {
+                Log.trace("then: " + res);
+                expect.fail();
+            })
+            .catch(function (err: any) {
+                Log.trace("catch: " + err.body);
+                expect(err.status).to.equal(400);
+            });
+    });
+
+    it("GET 200", function () {
+        return chai.request(serverURL)
+            .get("/datasets")
+            // .send({})
+            .then(function (res: any) {
+                Log.trace("then: " + res);
+                expect(res.status).to.equal(200);
             });
     });
 });
