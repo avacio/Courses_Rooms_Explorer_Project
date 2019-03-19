@@ -29,7 +29,14 @@ describe("Facade D3", function () {
         //         return chai.request(serverURL).put("/dataset/courses")
         //             .attach("body", fs.readFileSync("test/data/courses.zip"), "courses.zip");
         //     });
-        return server.start();
+        // return server.start();
+        return server.start().then((status) => {
+            if (status) {
+                Log.trace("Server start.");
+            }
+        }).catch((err: any) => {
+            Log.trace("Server down: " + err);
+        });
     });
 
     after(function () {
@@ -51,14 +58,17 @@ describe("Facade D3", function () {
     it("PUT test for courses dataset", function () {
         try {
             return chai.request(serverURL)
-                .put("dataset/courses")
-                .attach("body", fs.readFileSync("test/data/courses.zip"), "courses.zip")
-                .then(function (res: Response) {
+                .put("/dataset/courses")
+                // .attach("body", YOUR_COURSES_DATASET, COURSES_ZIP_FILENAME)
+                .attach("body", fs.readFileSync("./test/data/courses.zip"), "courses.zip")
+                // .then(function (res: Response) {
+                .then(function (res: any) {
                     // some logging here please!
                     Log.trace("Response: " + res.status);
                     expect(res.status).to.be.equal(204);
                 })
-                .catch(function (err) {
+                .catch(function (err: any) {
+                    Log.trace("err: " + err);
                     // some logging here please!
                     expect.fail();
                 });
@@ -67,6 +77,5 @@ describe("Facade D3", function () {
             expect.fail(err);
         }
     });
-
     // The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
 });
