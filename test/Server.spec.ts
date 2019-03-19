@@ -2,8 +2,16 @@ import Server from "../src/rest/Server";
 
 import InsightFacade from "../src/controller/InsightFacade";
 import chai = require("chai");
+import {expect} from "chai"; //
+// import * as fs from "fs";
+import * as fs from "fs-extra";
 
 import chaiHttp = require("chai-http");
+import Response = ChaiHttp.Response;
+import Log from "../src/Util"; //
+
+chai.use(chaiHttp);
+const serverURL = "http://localhost:4321";
 
 describe("Facade D3", function () {
 
@@ -16,10 +24,17 @@ describe("Facade D3", function () {
         facade = new InsightFacade();
         server = new Server(4321);
         // TODO: start server here once and handle errors properly
+        // return server.start().then((resolve) => expect(resolve))
+        //     .then(() => {
+        //         return chai.request(serverURL).put("/dataset/courses")
+        //             .attach("body", fs.readFileSync("test/data/courses.zip"), "courses.zip");
+        //     });
+        return server.start();
     });
 
     after(function () {
         // TODO: stop server here once!
+        return server.stop().then((resolve) => expect(resolve));
     });
 
     beforeEach(function () {
@@ -33,14 +48,14 @@ describe("Facade D3", function () {
     // TODO: read your courses and rooms datasets here once!
 
     // Hint on how to test PUT requests
-    /*
     it("PUT test for courses dataset", function () {
         try {
-            return chai.request(URL)
-                .put(YOUR_PUT_URL)
-                .attach("body", YOUR_COURSES_DATASET, COURSES_ZIP_FILENAME)
+            return chai.request(serverURL)
+                .put("dataset/courses")
+                .attach("body", fs.readFileSync("test/data/courses.zip"), "courses.zip")
                 .then(function (res: Response) {
                     // some logging here please!
+                    Log.trace("Response: " + res.status);
                     expect(res.status).to.be.equal(204);
                 })
                 .catch(function (err) {
@@ -49,9 +64,9 @@ describe("Facade D3", function () {
                 });
         } catch (err) {
             // and some more logging here!
+            expect.fail(err);
         }
     });
-    */
 
     // The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
 });

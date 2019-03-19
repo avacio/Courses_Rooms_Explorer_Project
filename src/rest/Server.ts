@@ -5,6 +5,7 @@
 import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
+import ServerController from "./ServerController";
 
 /**
  * This configures the REST endpoints for the server.
@@ -63,7 +64,12 @@ export default class Server {
                 // http://localhost:4321/echo/hello
                 that.rest.get("/echo/:msg", Server.echo);
 
-                // NOTE: your endpoints should go here
+                // NOTE: your endpoints should go here TODO
+                // that.rest.get("/public/.*", restify)
+                that.rest.put("/dataset/:id/:kind", ServerController.putDataset);
+                that.rest.del("/dataset/:id", ServerController.deleteDataset);
+                that.rest.post("/query", restify.bodyParser(), ServerController.postQuery);
+                that.rest.get("/datasets", ServerController.getDatasets);
 
                 // This must be the last endpoint!
                 that.rest.get("/.*", Server.getStatic);

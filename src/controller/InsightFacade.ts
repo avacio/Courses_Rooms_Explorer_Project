@@ -27,6 +27,7 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
+    // public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<any> {
         let self: InsightFacade = this;
         return new Promise(async function (resolve, reject) {
                 if (self.datasetController.containsDataset(id)) { // already contains, then reject
@@ -42,11 +43,11 @@ export default class InsightFacade implements IInsightFacade {
 
                 await new JSZip().loadAsync(content, {base64: true})
                     .then((zip) => InsightFacade.readZip(id, zip, kind).then(function (allData) {
-                        // Log.trace("ALLDATA LENGTH: " + allData.length);
                         if (allData !== null && allData.length !== 0) {
                                 // Log.trace("VALID, ADDED ADDDATASET: " + id);
                                 self.datasetController.addDataset(id, [].concat.apply([], allData), kind);
                                 return resolve(self.datasetController.getAllDataKeys());
+                                // return resolve({code: 201, body: {}});
                             } else {
                                 return reject(new InsightError ("REJECTED addDataset, allData insignificant: " + id));
                             }}));

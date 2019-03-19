@@ -4,6 +4,11 @@
  * You should not change this interface at all or the test suite will not work.
  */
 
+export interface InsightResponse { // TODO
+    code: number;
+    body: {};
+}
+
 export enum InsightDatasetKind {
     Courses = "courses",
     Rooms = "rooms",
