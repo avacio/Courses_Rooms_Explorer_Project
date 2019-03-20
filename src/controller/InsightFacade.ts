@@ -42,13 +42,12 @@ export default class InsightFacade implements IInsightFacade {
 
                 await new JSZip().loadAsync(content, {base64: true})
                     .then((zip) => InsightFacade.readZip(id, zip, kind).then(function (allData) {
-                        // Log.trace("ALLDATA LENGTH: " + allData.length);
                         if (allData !== null && allData.length !== 0) {
                                 // Log.trace("VALID, ADDED ADDDATASET: " + id);
                                 self.datasetController.addDataset(id, [].concat.apply([], allData), kind);
                                 return resolve(self.datasetController.getAllDataKeys());
                             } else {
-                                return reject(new InsightError ("REJECTED addDataset, allData insignificant: " + id));
+                            return reject(new InsightError ("REJECTED addDataset, allData insignificant: " + id));
                             }}));
         });
     }
@@ -56,7 +55,9 @@ export default class InsightFacade implements IInsightFacade {
     public removeDataset(id: string): Promise<string> {
         let self: InsightFacade = this;
         return new Promise(async function (resolve, reject) {
-                if (id === "" || id == null) {return reject (new InsightError ("invalid id")); }
+                if (id === "" || id == null) {
+                    return reject (new InsightError ("invalid id"));
+                }
                 if (self.datasetController.containsDataset(id)) {
                     self.datasetController.removeDataset(id);
                     return resolve(id);
@@ -76,11 +77,16 @@ export default class InsightFacade implements IInsightFacade {
                     return reject (new InsightError ("dataset has not been added"));
                 }
                 let results: any[] = self.queryController.parseQuery(query);
-                if (results.length > 5000) { reject (new ResultTooLargeError()); }
+                if (results.length > 5000) {
+                    reject (new ResultTooLargeError("Results too large."));
+                }
                 return resolve(results);
             } catch (error) {
-                if (error.message === "RTL") { reject (new ResultTooLargeError());
-                } else { reject (new InsightError ("performQuery error: " + error.message)); }
+                if (error.message === "RTL") {
+                    reject (new ResultTooLargeError("Results too large."));
+                } else {
+                    reject (new InsightError ("performQuery error: " + error.message));
+                }
             }
         });
     }
