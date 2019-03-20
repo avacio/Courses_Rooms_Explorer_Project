@@ -12,8 +12,10 @@ export default class ServerController {
         const rooms = fs.readFileSync(__dirname + "/../../test/data/rooms.zip").toString("base64");
 
         // Log.trace("initData courses: " + JSON.stringify(courses));
-        return ServerController.inf.addDataset("courses", courses, InsightDatasetKind.Courses)
-            .then(() => ServerController.inf.addDataset("rooms", rooms, InsightDatasetKind.Rooms));
+        // return ServerController.inf.addDataset("courses", courses, InsightDatasetKind.Courses)
+        //     .then(() => ServerController.inf.addDataset("rooms", rooms, InsightDatasetKind.Rooms));
+        return Promise.resolve(ServerController.inf.addDataset("courses", courses, InsightDatasetKind.Courses)
+            .then(() => ServerController.inf.addDataset("rooms", rooms, InsightDatasetKind.Rooms)));
     }
 
     // TODO
@@ -23,49 +25,29 @@ export default class ServerController {
 
     public static putDataset(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("in putDataset");
-        // try {
-        //     const id = req.params.id;
-        //     const kind = req.params.kind;
-        //     const newContent = req.body.content;
-        //     Log.trace("id: " + id + ", kind: " + kind + ", newContent: " + newContent);
-        //
-        //     // if (kind !== InsightDatasetKind.Courses || kind !== InsightDatasetKind.Rooms) {
-        //     if (kind !== "courses" || kind !== "rooms") {
-        //         Log.trace("input kind is not courses or rooms");
-        //         throw new InsightError("input kind is not courses or rooms");
-        //     }
-        //
-        //     let buffer: any = [];
-        //     req.on("data", (chunk: any) => { // TODO
-        //         buffer.push(chunk);
-        //     });
-        //
-        //     req.once("end", () => {
-        //         req.body = Buffer.concat(buffer).toString("base64");
-        //         // this.inf.addDataset(id, newContent, kind).then((r: InsightResponse) => {
-        //         ServerController.inf.addDataset(id, newContent, kind).then((r: any) => {
-        //             // res.json(r.code, r.body);
-        //             // res.send(200, {result: r});
-        //             res.json(200, {result: r});
-        //         });
-        //     });
-        // } catch (error) {
-        //     res.send(400, {error: error.message});
-        // }
-        // next();
-        const dataStr = new Buffer(req.params.body).toString("base64");
-        const id = req.params.id;
-        const kind = req.params.kind;
-        let insightKind = (kind === "courses") ? InsightDatasetKind.Courses :
+        try {
+            const data = new Buffer(req.params.body).toString("base64");
+            const id = req.params.id;
+            const kind = req.params.kind;
+            let insightKind = (kind === "courses") ? InsightDatasetKind.Courses :
             ((kind === "rooms") ? InsightDatasetKind.Rooms : kind);
-
-        Log.trace("insight kind for PUT: " + insightKind.toString());
-
-        ServerController.inf.addDataset(id, dataStr, insightKind).then (function (r: any) {
-            res.json(200, {result: r});
-        }).catch(function (e: any) {
-            res.json(400, {error: e.message});
-        });
+            //
+            // Log.trace("data: " + data.toString());
+            // Log.trace("data val: " + data);
+            //
+            // if (!data) { res.send(400, {error: "data is null"} );
+            // }
+            // Log.trace("id: " + id + ", kind: " + insightKind.toString());
+            ServerController.inf.addDataset(id, data, insightKind).then( (r: any) => {
+                res.json(200, {result: r});
+            }).catch( (e: any) => {
+                Log.trace("caught error in .catch");
+                // res.json(400, {error: e.message});
+                res.json(400, {error: e.message});
+            });
+        } catch (error) {
+            res.send(400, {error: error.message});
+        }
         return next();
     }
 
@@ -80,10 +62,10 @@ export default class ServerController {
             }).catch((error: any) => {
                 if (error instanceof NotFoundError) {
                     Log.trace("NotFoundError.");
-                    res.send(404, {error: error.message});
+                    res.json(404, {error: error.message});
                 } else {
                     Log.trace("InsightError / General.");
-                    res.send(400, {error: error.message});
+                    res.json(400, {error: error.message});
                 }
             });
         } catch (error) {
@@ -93,22 +75,25 @@ export default class ServerController {
                 res.send(400, {error: error.message});
             }
         }
-        next();
+        return next();
     }
 
     public static postQuery(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("in postQuery");
         try {
+            // const query: any = req.body; // TODO
             const query: any = req.params; // TODO
             ServerController.inf.performQuery(query).then((r: any) => {
-                // res.json(r.code, r.body);
                 // res.send(200, {result: r});
                 res.json(200, {result: r});
+            }).catch((error: any) => {
+                Log.trace("caught error in .catch");
+                res.json(400, {error: error.message});
             });
         } catch (error) {
             res.send(400, {error: error.message});
         }
-        next();
+        return next();
     }
 
     public static getDatasets(req: restify.Request, res: restify.Response, next: restify.Next) {

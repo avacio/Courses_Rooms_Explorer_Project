@@ -4,11 +4,6 @@
  * You should not change this interface at all or the test suite will not work.
  */
 
-export interface InsightResponse {
-    code: number;
-    body: {};
-}
-
 export enum InsightDatasetKind {
     Courses = "courses",
     Rooms = "rooms",
@@ -67,7 +62,6 @@ export interface IInsightFacade {
      * be successfully answered.
      */
     addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]>;
-    // addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<InsightResponse>;
 
     /**
      * Remove a dataset from UBCInsight.
@@ -87,7 +81,6 @@ export interface IInsightFacade {
      * that subsequent queries for that id should fail unless a new addDataset happens first.
      */
     removeDataset(id: string): Promise<string>;
-    // removeDataset(id: string): Promise<InsightResponse>;
 
     /**
      * Perform a query on UBCInsight.
@@ -104,7 +97,6 @@ export interface IInsightFacade {
      * The promise should reject with an InsightError describing the error.
      */
     performQuery(query: any): Promise<any[]>;
-    // performQuery(query: any): Promise<InsightResponse>;
 
     /**
      * List all currently added datasets, their types, and number of rows.
@@ -113,5 +105,4 @@ export interface IInsightFacade {
      * The promise should fulfill an array of currently added InsightDatasets, and will only fulfill.
      */
     listDatasets(): Promise<InsightDataset[]>;
-    // listDatasets(): Promise<InsightResponse>;
 }

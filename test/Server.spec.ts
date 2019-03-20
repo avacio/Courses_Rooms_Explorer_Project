@@ -11,7 +11,8 @@ import Log from "../src/Util";
 chai.use(chaiHttp);
 const serverURL = "http://localhost:4321";
 const path = __dirname + "/../test/data/";
-/*
+// const path = __dirname + "/../../data/";
+
 describe("Facade D3", function () {
 
     let facade: InsightFacade = null;
@@ -20,7 +21,7 @@ describe("Facade D3", function () {
     chai.use(chaiHttp);
 
     before(function () {
-        facade = new InsightFacade();
+        facade = new InsightFacade(); // TODO
         server = new Server(4321);
         // TODO: start server here once and handle errors properly
         // return server.start().then((resolve) => expect(resolve))
@@ -30,8 +31,10 @@ describe("Facade D3", function () {
         //     });
         // return server.start();
 
-        Server.initData().then(() => server.start())
-        // return server.start()
+        // Log.trace("path exists: " + fs.existsSync(path));
+        // Log.trace("courses zip exists: " + fs.existsSync(path + "courses.zip"));
+        // Server.initData().then(() => server.start())
+        return server.start()
         .then((status) => {
             if (status) {
                 Log.trace("Server start.");
@@ -43,7 +46,9 @@ describe("Facade D3", function () {
 
     after(function () {
         // TODO: stop server here once!
-        return server.stop().then((resolve) => expect(resolve));
+        return server.stop();
+        // return server.stop().then((resolve) => expect(resolve));
+        // await server.stop().then((resolve) => expect(resolve));
         // return server.stop().then((status) => {
         //     if (status) { Log.trace("Server stopped."); }
         // });
@@ -64,8 +69,9 @@ describe("Facade D3", function () {
     // Hint on how to test PUT requests
     it("PUT test for courses dataset", function () {
         try {
+            // Log.trace(JSON.stringify(fs.readFileSync(path + "courses.zip")));
             return chai.request(serverURL)
-                .put("/dataset/courses")
+                .put("/dataset/courses/courses")
                 // .attach("body", YOUR_COURSES_DATASET, COURSES_ZIP_FILENAME)
                 .attach("body", fs.readFileSync(path + "courses.zip"), "courses.zip")
                 // .then(function (res: Response) {
@@ -86,18 +92,15 @@ describe("Facade D3", function () {
     it("PUT test for rooms dataset", function () {
         try {
             return chai.request(serverURL)
-                .put("/dataset/rooms")
+                .put("/dataset/rooms/rooms")
                 // .attach("body", YOUR_COURSES_DATASET, COURSES_ZIP_FILENAME)
                 .attach("body", fs.readFileSync(path + "rooms.zip"), "rooms.zip")
-                // .then(function (res: Response) {
                 .then(function (res: any) {
-                    // some logging here please!
                     Log.trace("Response: " + res.status);
                     expect(res.status).to.be.equal(200);
                 })
                 .catch(function (err: any) {
                     Log.trace("err: " + err);
-                    // some logging here please!
                     expect.fail();
                 });
         } catch (err) {
@@ -106,30 +109,28 @@ describe("Facade D3", function () {
         }
     });
 
-    it("PUT test: FAIL", function () {
-        try {
-            return chai.request(serverURL)
-                .put("/dataset/FAIL")
-                .attach("body", fs.readFileSync(path + "courses.zip"), "courses.zip")
-                .then(function (res: any) {
-                    Log.trace("Response: " + res.status);
-                    expect(res.status).to.be.equal(400);
-                })
-                .catch(function (err: any) {
-                    Log.trace("err: " + err);
-                    // some logging here please!
-                    expect.fail();
-                });
-        } catch (err) {
-            // and some more logging here!
-            expect.fail(err);
-        }
-    });
+    // it("PUT test: FAIL, unknown id", function () {
+    //     try {
+    //         return chai.request(serverURL)
+    //             .put("/dataset/FAIL/rooms")
+    //             .attach("body", fs.readFileSync(path + "courses.zip"), "courses.zip")
+    //             .then(function (res: any) {
+    //                 Log.trace("Response: " + res.status);
+    //                 expect(res.status).to.be.equal(400);
+    //             })
+    //             .catch(function (err: any) {
+    //                 Log.trace("err: " + err);
+    //                 expect.fail();
+    //             });
+    //     } catch (err) {
+    //         expect.fail(err);
+    //     }
+    // });
 
     it("PUT 200: the operation was successful and the id already existed", function () {
         this.timeout(20000);
         return chai.request(serverURL)
-            .put("/dataset/courses")
+            .put("/dataset/courses/courses")
             .attach("body", fs.readFileSync(path + "courses.zip"), "courses.zip")
             .then((res) => {
                 expect(res.status).to.eq(200);
@@ -167,44 +168,6 @@ describe("Facade D3", function () {
     //             expect.fail();
     //         });
     // });
-    it("DEL 200 rooms -- already deleted before", function () {
-        return chai.request(serverURL)
-            .del("/dataset/rooms")
-            .then(function (res: any) {
-                Log.trace(res);
-                expect(res.status).to.equal(200);
-            })
-            .catch(function (err: any) {
-                Log.trace("catch:" + err);
-                expect.fail();
-            });
-    });
-
-    it("DEL 200 courses", function () {
-        return chai.request(serverURL)
-            .del("/dataset/courses")
-            .then(function (res: any) {
-                Log.trace("res: " + JSON.stringify(res));
-                expect(res.status).to.equal(200);
-            })
-            .catch(function (err: any) {
-                Log.trace("catch:" + err);
-                expect.fail();
-            });
-    });
-
-    it("DEL 200 rooms", function () {
-        return chai.request(serverURL)
-            .del("/dataset/rooms")
-            .then(function (res: any) {
-                Log.trace("res: " + JSON.stringify(res));
-                expect(res.status).to.equal(200);
-            })
-            .catch(function (err: any) {
-                Log.trace("catch:" + err);
-                // expect.fail();
-            });
-    });
 
     it("POST 400", function () {
         return chai.request(serverURL)
@@ -230,10 +193,10 @@ describe("Facade D3", function () {
             });
     });
 
-    it("PUT 400 Should fail with an unknown ID", function () {
+    it("PUT 400 with invalid kind", function () {
         this.timeout(20000);
         return chai.request(serverURL)
-            .put("/dataset/fake")
+            .put("/dataset/rooms/fake")
             .attach("body", fs.readFileSync(path + "rooms.zip"), "rooms.zip")
             .then((res) => {
                 expect.fail(res);
@@ -241,17 +204,6 @@ describe("Facade D3", function () {
                 expect(err.status).to.eq(400);
                 expect(Object.keys(err.response.body)).to.deep.eq(["error"]);
                 expect(typeof err.response.body.error).to.eq("string");
-            });
-    });
-
-    it("Should successfully delete", () => {
-        return chai.request(serverURL)
-            .del("/dataset/rooms")
-            .then((res) => {
-                expect(res).to.have.status(200);
-            })
-            .catch((err) => {
-                expect.fail(err);
             });
     });
 
@@ -267,10 +219,10 @@ describe("Facade D3", function () {
             .then((res) => {
                 expect.fail(res);
             }, (err) => {
-                expect(err.status).to.eq(424);
-                expect(err.response.body).to.deep.eq({
-                    missing: ["fake"]
-                });
+                expect(err.status).to.eq(400);
+                // expect(err.response.body).to.deep.eq({
+                //     missing: ["fake"]
+                // });
             });
     });
 
@@ -322,6 +274,44 @@ describe("Facade D3", function () {
     //             expect.fail(err);
     //         });
     // });
-});
 
-*/
+    it("DEL 200 courses", function () {
+        return chai.request(serverURL)
+            .del("/dataset/courses")
+            .then(function (res: any) {
+                Log.trace("res: " + JSON.stringify(res));
+                expect(res.status).to.equal(200);
+            })
+            .catch(function (err: any) {
+                Log.trace("catch:" + err);
+                expect.fail();
+            });
+    });
+
+    it("DEL 200 rooms", function () {
+        return chai.request(serverURL)
+            .del("/dataset/rooms")
+            .then(function (res: any) {
+                Log.trace("res: " + JSON.stringify(res));
+                expect(res.status).to.equal(200);
+            })
+            .catch(function (err: any) {
+                Log.trace("catch:" + err);
+                // expect.fail();
+            });
+    });
+
+    it("DEL 404 rooms -- already deleted before", function () {
+        return chai.request(serverURL)
+            .del("/dataset/rooms")
+            .then(function (res: any) {
+                Log.trace(res);
+                expect(res.status).to.equal(404);
+            })
+            .catch(function (err: any) {
+                Log.trace("catch:" + err);
+                expect(err.status).to.equal(404);
+                // expect.fail();
+            });
+    });
+});

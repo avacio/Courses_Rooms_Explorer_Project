@@ -3,7 +3,7 @@ import {
     IInsightFacade,
     InsightDataset,
     InsightDatasetKind,
-    InsightError, InsightResponse,
+    InsightError,
     NotFoundError,
     ResultTooLargeError
 } from "./IInsightFacade";
@@ -27,21 +27,17 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-    // public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<InsightResponse> {
         let self: InsightFacade = this;
         return new Promise(async function (resolve, reject) {
                 if (self.datasetController.containsDataset(id)) { // already contains, then reject
                     return reject(new InsightError("ID ALREADY ADDED BEFORE" + id));
-                    // return reject({code: 400, body: {error: "ID already added: " + id}});
                 }
                 if (content == null || kind == null || content === "" || id === "" || id == null ||
                     ((kind !== InsightDatasetKind.Courses) && (kind !== InsightDatasetKind.Rooms))) {
                     return reject(new InsightError ("INVALID, REJECTED ADDDATASET, content null: " + id));
-                    // return reject({code: 400, body: {error: "Rejected dataset: " + id}});
                 }
                 if (content.substring(0, 4) !== "UEsD") {
                     return reject(new InsightError("INPUT dataset is not a zip: " + id));
-                    // return reject({code: 400, body: {error: "Input is not a zip: " + id}});
                 }
 
                 await new JSZip().loadAsync(content, {base64: true})
@@ -50,71 +46,55 @@ export default class InsightFacade implements IInsightFacade {
                                 // Log.trace("VALID, ADDED ADDDATASET: " + id);
                                 self.datasetController.addDataset(id, [].concat.apply([], allData), kind);
                                 return resolve(self.datasetController.getAllDataKeys());
-                                // return resolve({code: 200, body:
-                                //         {result: self.datasetController.getAllDataKeys()}}); // TODO
                             } else {
-                                // return reject({code: 400, body: {error: "Rejected dataset: " + id}});
                             return reject(new InsightError ("REJECTED addDataset, allData insignificant: " + id));
                             }}));
         });
     }
 
     public removeDataset(id: string): Promise<string> {
-    // public removeDataset(id: string): Promise<InsightResponse> {
         let self: InsightFacade = this;
         return new Promise(async function (resolve, reject) {
                 if (id === "" || id == null) {
                     return reject (new InsightError ("invalid id"));
-                    // return reject({code: 400, body: {error: "Insight error."}});
                 }
                 if (self.datasetController.containsDataset(id)) {
                     self.datasetController.removeDataset(id);
                     return resolve(id);
-                    // return resolve({code: 200, body: {result: id}});
                 }
                 return reject (new NotFoundError (id));
-                // return reject({code: 404, body: {error: "Not found error."}});
         });
     }
 
     public performQuery(query: any): Promise<any[]> {
-    // public performQuery(query: any): Promise<InsightResponse> {
         let self: InsightFacade = this;
         return new Promise(function (resolve, reject) {
             try {
                 if (!self.queryController.isValidQuery(query)) {
                     return reject (new InsightError ("invalid query"));
-                    // return reject({code: 400, body: {error: "Insight error: invalid query"}});
                 }
                 if (!self.datasetController.containsDataset(self.queryController.getQueryID())) {
                     return reject (new InsightError ("dataset has not been added"));
-                    // return reject({code: 400, body: {error: "Insight error."}});
                 }
                 let results: any[] = self.queryController.parseQuery(query);
                 if (results.length > 5000) {
-                    reject (new ResultTooLargeError());
-                    // return reject({code: 400, body: {error: "Result Too Large Error"}});
+                    reject (new ResultTooLargeError("Results too large."));
                 }
                 return resolve(results);
-                // return resolve({code: 200, body: {result: results}});
             } catch (error) {
                 if (error.message === "RTL") {
-                    reject (new ResultTooLargeError());
-                    // return reject({code: 400, body: {error: "Result Too Large Error"}});
+                    reject (new ResultTooLargeError("Results too large."));
                 } else {
                     reject (new InsightError ("performQuery error: " + error.message));
-                    // return reject({code: 400, body: {error: "Insight error: " + error.message}});
                 }
             }
         });
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
-    // public listDatasets(): Promise<InsightResponse> {
         const self = this;
         return new Promise(function (resolve) {
             resolve(self.datasetController.listDatasets());
-            // return resolve({code: 200, body: {result: self.datasetController.listDatasets()}});
         });
     }
 
