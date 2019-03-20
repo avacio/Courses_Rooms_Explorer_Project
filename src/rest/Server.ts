@@ -5,6 +5,9 @@
 import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
+import ServerController from "./ServerController";
+import {InsightDatasetKind, NotFoundError} from "../controller/IInsightFacade";
+import InsightFacade from "../controller/InsightFacade";
 
 /**
  * This configures the REST endpoints for the server.
@@ -13,10 +16,17 @@ export default class Server {
 
     private port: number;
     private rest: restify.Server;
+    // private inf: InsightFacade;
+    // private static inf: InsightFacade;
 
     constructor(port: number) {
         Log.info("Server::<init>( " + port + " )");
         this.port = port;
+        // this.inf = new InsightFacade();
+    }
+
+    public static initData(): Promise<any> {
+        return ServerController.initData();
     }
 
     /**
@@ -63,7 +73,15 @@ export default class Server {
                 // http://localhost:4321/echo/hello
                 that.rest.get("/echo/:msg", Server.echo);
 
-                // NOTE: your endpoints should go here
+                // NOTE: your endpoints should go here TODO
+                // that.rest.get("/public/.*", restify)
+                // that.rest.get("/public/.*", restify.serveStatic({
+                //     directory: __dirname
+                // }));
+                that.rest.put("/dataset/:id/:kind", ServerController.putDataset);
+                that.rest.del("/dataset/:id", ServerController.deleteDataset);
+                that.rest.post("/query", ServerController.postQuery);
+                that.rest.get("/datasets", ServerController.getDatasets);
 
                 // This must be the last endpoint!
                 that.rest.get("/.*", Server.getStatic);
@@ -129,5 +147,4 @@ export default class Server {
             return next();
         });
     }
-
 }
