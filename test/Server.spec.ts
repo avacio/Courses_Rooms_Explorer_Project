@@ -127,17 +127,18 @@ describe("Facade D3", function () {
     //     }
     // });
 
-    it("PUT 200: the operation was successful and the id already existed", function () {
-        this.timeout(20000);
-        return chai.request(serverURL)
-            .put("/dataset/courses/courses")
-            .attach("body", fs.readFileSync(path + "courses.zip"), "courses.zip")
-            .then((res) => {
-                expect(res.status).to.eq(200);
-            }, (err) => {
-                expect.fail(err);
-            });
-    });
+    // TODO update existing datasets okay?
+    // it("PUT 200: the operation was successful and the id already existed", function () {
+    //     this.timeout(20000);
+    //     return chai.request(serverURL)
+    //         .put("/dataset/courses/courses")
+    //         .attach("body", fs.readFileSync(path + "courses.zip"), "courses.zip")
+    //         .then((res) => {
+    //             expect(res.status).to.eq(200);
+    //         }, (err) => {
+    //             expect.fail(err);
+    //         });
+    // });
 
     // it("POST 200", function () {
     //     return chai.request(serverURL)

@@ -25,89 +25,75 @@ export default class ServerController {
 
     public static putDataset(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("in putDataset");
-        try {
-            const data = new Buffer(req.params.body).toString("base64");
-            const id = req.params.id;
-            const kind = req.params.kind;
-            let insightKind = (kind === "courses") ? InsightDatasetKind.Courses :
+        // try {
+        const data = new Buffer(req.params.body).toString("base64");
+        const id = req.params.id;
+        const kind = req.params.kind;
+        let insightKind = (kind === "courses") ? InsightDatasetKind.Courses :
             ((kind === "rooms") ? InsightDatasetKind.Rooms : kind);
-            //
-            // Log.trace("data: " + data.toString());
-            // Log.trace("data val: " + data);
-            //
-            // if (!data) { res.send(400, {error: "data is null"} );
-            // }
-            // Log.trace("id: " + id + ", kind: " + insightKind.toString());
-            ServerController.inf.addDataset(id, data, insightKind).then( (r: any) => {
+        ServerController.inf.addDataset(id, data, insightKind).then( (r: any) => {
                 res.json(200, {result: r});
             }).catch( (e: any) => {
                 Log.trace("caught error in .catch");
                 // res.json(400, {error: e.message});
                 res.json(400, {error: e.message});
             });
-        } catch (error) {
-            res.send(400, {error: error.message});
-        }
+        // } catch (error) {
+        //     res.send(400, {error: error.message});
+        // }
         return next();
     }
 
     public static deleteDataset(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("in deleteDataset");
-        try {
-            const id = req.params.id;
-            Log.trace("id: " + id);
-            ServerController.inf.removeDataset(id).then((r: any) => {
+        // try {
+        const id = req.params.id;
+        Log.trace("id: " + id);
+        ServerController.inf.removeDataset(id).then((r: any) => {
                 // res.send(200, {result: r});
-                res.json(200, {result: r});
-            }).catch((error: any) => {
-                if (error instanceof NotFoundError) {
-                    Log.trace("NotFoundError.");
-                    res.json(404, {error: error.message});
-                } else {
-                    Log.trace("InsightError / General.");
-                    res.json(400, {error: error.message});
-                }
-            });
-        } catch (error) {
+            res.json(200, {result: r});
+        }).catch((error: any) => {
             if (error instanceof NotFoundError) {
-                res.send(404, {error: error.message});
+                Log.trace("NotFoundError.");
+                res.json(404, {error: error.message});
             } else {
-                res.send(400, {error: error.message});
+                Log.trace("InsightError / General.");
+                res.json(400, {error: error.message});
             }
-        }
+        });
+        // } catch (error) {
+        //     if (error instanceof NotFoundError) {
+        //         res.send(404, {error: error.message});
+        //     } else {
+        //         res.send(400, {error: error.message});
+        //     }
+        // }
         return next();
     }
 
     public static postQuery(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("in postQuery");
-        try {
+        // try {
             // const query: any = req.body; // TODO
-            const query: any = req.params; // TODO
-            ServerController.inf.performQuery(query).then((r: any) => {
+        const query: any = req.params;
+        ServerController.inf.performQuery(query).then((r: any) => {
                 // res.send(200, {result: r});
-                res.json(200, {result: r});
-            }).catch((error: any) => {
-                Log.trace("caught error in .catch");
-                res.json(400, {error: error.message});
-            });
-        } catch (error) {
-            res.send(400, {error: error.message});
-        }
+            res.json(200, {result: r});
+        }).catch((error: any) => {
+            Log.trace("caught error in .catch");
+            res.json(400, {error: error.message});
+        });
+        // } catch (error) {
+        //     res.send(400, {error: error.message});
+        // }
         return next();
     }
 
     public static getDatasets(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("in getDatasets");
-        // try {
         ServerController.inf.listDatasets().then((r: any) => {
-            // res.json(r.code, r.body);
-            //     res.send(200, {result: r});
             res.json(200, {result: r});
         });
-        // } catch (error) {
-        //     res.send(400, {error: error.message});
-        // }
-        // next();
         return next();
     }
 }
