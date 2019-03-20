@@ -80,7 +80,7 @@ CampusExplorer.buildQuery = function() {
     function buildOrder() {
         let isDescending = activeTab.getElementsByClassName("control descending");
         let oFields = activeTab.getElementsByClassName("control order fields")[0].querySelectorAll("option[selected]");
-        if (oFields.length < 1) { return null; } // TODO CAN IT STILL BE DESCENDING WITHOUT COLUMNS?
+        if (oFields.length === 0) { return null; } // TODO CAN IT STILL BE DESCENDING WITHOUT COLUMNS?
 
         let order = {};
         let selectedOrders = [];
@@ -88,8 +88,10 @@ CampusExplorer.buildQuery = function() {
             let f = insightKind + "_" + oFields[i].value;
             selectedOrders.push(f);
         }
-        order["keys"] = selectedOrders;
-        order["dir"] = (isDescending) ? "DOWN" : "UP"; // TODO
+        if (oFields.length > 1) {
+            order["keys"] = selectedOrders;
+            order["dir"] = (isDescending) ? "DOWN" : "UP"; // TODO
+        } else { order = selectedOrders[0]; }
         return order;
     }
 
