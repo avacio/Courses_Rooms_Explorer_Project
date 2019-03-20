@@ -9,7 +9,9 @@ export class App {
         Log.info("App::initServer( " + port + " ) - start");
 
         const server = new Server(port);
-        server.start().then(function (val: boolean) {
+        // server.start().then(function (val: boolean) {
+        Server.initData().then(() => server.start())
+        .then(function (val: boolean) {
             Log.info("App::initServer() - started: " + val);
         }).catch(function (err: Error) {
             Log.error("App::initServer() - ERROR: " + err.message);

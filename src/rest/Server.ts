@@ -6,6 +6,8 @@ import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
 import ServerController from "./ServerController";
+import {InsightDatasetKind, NotFoundError} from "../controller/IInsightFacade";
+import InsightFacade from "../controller/InsightFacade";
 
 /**
  * This configures the REST endpoints for the server.
@@ -14,10 +16,24 @@ export default class Server {
 
     private port: number;
     private rest: restify.Server;
+    // private inf: InsightFacade;
+    // private static inf: InsightFacade;
 
     constructor(port: number) {
         Log.info("Server::<init>( " + port + " )");
         this.port = port;
+        // this.inf = new InsightFacade();
+    }
+
+    public static initData(): Promise<any> {
+        return ServerController.initData();
+        // const courses = fs.readFileSync(__dirname + "/../../test/data/courses.zip").toString("base64");
+        // const rooms = fs.readFileSync(__dirname + "/../../test/data/rooms.zip").toString("base64");
+        //
+        // // Log.trace("initData courses: " + JSON.stringify(courses));
+        // // return this.inf.addDataset("courses", courses, InsightDatasetKind.Courses)
+        // return this.inf.addDataset("courses", courses, InsightDatasetKind.Courses)
+        //     .then(() => this.inf.addDataset("rooms", rooms, InsightDatasetKind.Rooms));
     }
 
     /**
@@ -66,10 +82,17 @@ export default class Server {
 
                 // NOTE: your endpoints should go here TODO
                 // that.rest.get("/public/.*", restify)
+                that.rest.get("/public/.*", restify.serveStatic({
+                    directory: __dirname
+                }));
                 that.rest.put("/dataset/:id/:kind", ServerController.putDataset);
                 that.rest.del("/dataset/:id", ServerController.deleteDataset);
                 that.rest.post("/query", restify.bodyParser(), ServerController.postQuery);
                 that.rest.get("/datasets", ServerController.getDatasets);
+                // that.rest.put("/dataset/:id/:kind", Server.putDataset);
+                // that.rest.del("/dataset/:id", Server.deleteDataset);
+                // that.rest.post("/query", restify.bodyParser(), Server.postQuery);
+                // that.rest.get("/datasets", Server.getDatasets);
 
                 // This must be the last endpoint!
                 that.rest.get("/.*", Server.getStatic);
@@ -136,4 +159,69 @@ export default class Server {
         });
     }
 
+    // private static putDataset(req: restify.Request, res: restify.Response, next: restify.Next) {
+    //     Log.trace("in putDataset");
+    //     const data = new Buffer(req.params.body).toString("base64");
+    //     const id = req.params.id;
+    //     const kind = req.params.kind;
+    //     let insightKind = (kind === "courses") ? InsightDatasetKind.Courses :
+    //         ((kind === "rooms") ? InsightDatasetKind.Rooms : kind);
+    //
+    //     Log.trace("insight kind for PUT: " + insightKind.toString());
+    //
+    //     this.inf.addDataset(id, data, insightKind).then (function (r: any) {
+    //         res.json(200, {result: r});
+    //     }).catch(function (e: any) {
+    //         res.json(400, {error: e.message});
+    //     });
+    //     return next();
+    // }
+    //
+    // private static deleteDataset(req: restify.Request, res: restify.Response, next: restify.Next) {
+    //     Log.trace("in deleteDataset");
+    //     try {
+    //         const id = req.params.id;
+    //         Log.trace("id: " + id);
+    //         this.inf.removeDataset(id).then((r: any) => {
+    //             // res.send(200, {result: r});
+    //             res.json(200, {result: r});
+    //         }).catch((error: any) => {
+    //             if (error instanceof NotFoundError) {
+    //                 Log.trace("NotFoundError.");
+    //                 res.send(404, {error: error.message});
+    //             } else {
+    //                 Log.trace("InsightError / General.");
+    //                 res.send(400, {error: error.message});
+    //             }
+    //         });
+    //     } catch (error) {
+    //         if (error instanceof NotFoundError) {
+    //             res.send(404, {error: error.message});
+    //         } else {
+    //             res.send(400, {error: error.message});
+    //         }
+    //     }
+    //     next();
+    // }
+    //
+    // private static postQuery(req: restify.Request, res: restify.Response, next: restify.Next) {
+    //     Log.trace("in postQuery");
+    //     try {
+    //         const query: any = req.params; // TODO
+    //         this.inf.performQuery(query).then((r: any) => {
+    //             res.json(200, {result: r});
+    //         });
+    //     } catch (error) {
+    //         res.send(400, {error: error.message});
+    //     }
+    //     return next();
+    // }
+    //
+    // private static getDatasets(req: restify.Request, res: restify.Response, next: restify.Next) {
+    //     Log.trace("in getDatasets");
+    //     this.inf.listDatasets().then((r: any) => {
+    //         res.json(200, {result: r});
+    //     });
+    //     return next();
+    // }
 }

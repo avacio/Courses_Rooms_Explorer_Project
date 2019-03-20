@@ -5,14 +5,13 @@ import chai = require("chai");
 import {expect} from "chai"; //
 // import * as fs from "fs";
 import * as fs from "fs-extra";
-
 import chaiHttp = require("chai-http");
-import Response = ChaiHttp.Response;
-import Log from "../src/Util"; //
+import Log from "../src/Util";
 
 chai.use(chaiHttp);
 const serverURL = "http://localhost:4321";
-
+const path = __dirname + "/../test/data/";
+/*
 describe("Facade D3", function () {
 
     let facade: InsightFacade = null;
@@ -30,7 +29,10 @@ describe("Facade D3", function () {
         //             .attach("body", fs.readFileSync("test/data/courses.zip"), "courses.zip");
         //     });
         // return server.start();
-        return server.start().then((status) => {
+
+        Server.initData().then(() => server.start())
+        // return server.start()
+        .then((status) => {
             if (status) {
                 Log.trace("Server start.");
             }
@@ -41,17 +43,19 @@ describe("Facade D3", function () {
 
     after(function () {
         // TODO: stop server here once!
-        // return server.stop().then((resolve) => expect(resolve));
-        return server.stop().then((status) => {
-            if (status) { Log.trace("Server stopped."); }
-        });
+        return server.stop().then((resolve) => expect(resolve));
+        // return server.stop().then((status) => {
+        //     if (status) { Log.trace("Server stopped."); }
+        // });
     });
 
     beforeEach(function () {
+        Log.test(`BeforeTest: ${this.currentTest.title}`);
         // might want to add some process logging here to keep track of what"s going on
     });
 
     afterEach(function () {
+        Log.test(`AfterTest: ${this.currentTest.title}`);
         // might want to add some process logging here to keep track of what"s going on
     });
 
@@ -63,7 +67,7 @@ describe("Facade D3", function () {
             return chai.request(serverURL)
                 .put("/dataset/courses")
                 // .attach("body", YOUR_COURSES_DATASET, COURSES_ZIP_FILENAME)
-                .attach("body", fs.readFileSync("./test/data/courses.zip"), "courses.zip")
+                .attach("body", fs.readFileSync(path + "courses.zip"), "courses.zip")
                 // .then(function (res: Response) {
                 .then(function (res: any) {
                     // some logging here please!
@@ -72,11 +76,9 @@ describe("Facade D3", function () {
                 })
                 .catch(function (err: any) {
                     Log.trace("caught err: " + err);
-                    // some logging here please!
                     expect.fail();
                 });
         } catch (err) {
-            // and some more logging here!
             expect.fail(err);
         }
     });
@@ -86,7 +88,7 @@ describe("Facade D3", function () {
             return chai.request(serverURL)
                 .put("/dataset/rooms")
                 // .attach("body", YOUR_COURSES_DATASET, COURSES_ZIP_FILENAME)
-                .attach("body", fs.readFileSync("./test/data/rooms.zip"), "rooms.zip")
+                .attach("body", fs.readFileSync(path + "rooms.zip"), "rooms.zip")
                 // .then(function (res: Response) {
                 .then(function (res: any) {
                     // some logging here please!
@@ -108,7 +110,7 @@ describe("Facade D3", function () {
         try {
             return chai.request(serverURL)
                 .put("/dataset/FAIL")
-                .attach("body", fs.readFileSync("./test/data/courses.zip"), "courses.zip")
+                .attach("body", fs.readFileSync(path + "courses.zip"), "courses.zip")
                 .then(function (res: any) {
                     Log.trace("Response: " + res.status);
                     expect(res.status).to.be.equal(400);
@@ -122,6 +124,18 @@ describe("Facade D3", function () {
             // and some more logging here!
             expect.fail(err);
         }
+    });
+
+    it("PUT 200: the operation was successful and the id already existed", function () {
+        this.timeout(20000);
+        return chai.request(serverURL)
+            .put("/dataset/courses")
+            .attach("body", fs.readFileSync(path + "courses.zip"), "courses.zip")
+            .then((res) => {
+                expect(res.status).to.eq(200);
+            }, (err) => {
+                expect.fail(err);
+            });
     });
 
     // it("POST 200", function () {
@@ -153,7 +167,7 @@ describe("Facade D3", function () {
     //             expect.fail();
     //         });
     // });
-    it("DEL 200 rooms", function () {
+    it("DEL 200 rooms -- already deleted before", function () {
         return chai.request(serverURL)
             .del("/dataset/rooms")
             .then(function (res: any) {
@@ -170,6 +184,7 @@ describe("Facade D3", function () {
         return chai.request(serverURL)
             .del("/dataset/courses")
             .then(function (res: any) {
+                Log.trace("res: " + JSON.stringify(res));
                 expect(res.status).to.equal(200);
             })
             .catch(function (err: any) {
@@ -182,7 +197,7 @@ describe("Facade D3", function () {
         return chai.request(serverURL)
             .del("/dataset/rooms")
             .then(function (res: any) {
-                Log.trace(res);
+                Log.trace("res: " + JSON.stringify(res));
                 expect(res.status).to.equal(200);
             })
             .catch(function (err: any) {
@@ -210,8 +225,103 @@ describe("Facade D3", function () {
             .get("/datasets")
             // .send({})
             .then(function (res: any) {
-                Log.trace("then: " + res);
+                Log.trace("then: " + JSON.stringify(res));
                 expect(res.status).to.equal(200);
             });
     });
+
+    it("PUT 400 Should fail with an unknown ID", function () {
+        this.timeout(20000);
+        return chai.request(serverURL)
+            .put("/dataset/fake")
+            .attach("body", fs.readFileSync(path + "rooms.zip"), "rooms.zip")
+            .then((res) => {
+                expect.fail(res);
+            }, (err) => {
+                expect(err.status).to.eq(400);
+                expect(Object.keys(err.response.body)).to.deep.eq(["error"]);
+                expect(typeof err.response.body.error).to.eq("string");
+            });
+    });
+
+    it("Should successfully delete", () => {
+        return chai.request(serverURL)
+            .del("/dataset/rooms")
+            .then((res) => {
+                expect(res).to.have.status(200);
+            })
+            .catch((err) => {
+                expect.fail(err);
+            });
+    });
+
+    it("POST Should report missing datasets", () => {
+        return chai.request(serverURL)
+            .post("/query")
+            .send({
+                WHERE: {},
+                OPTIONS: {
+                    COLUMNS: ["fake_id"]
+                }
+            })
+            .then((res) => {
+                expect.fail(res);
+            }, (err) => {
+                expect(err.status).to.eq(424);
+                expect(err.response.body).to.deep.eq({
+                    missing: ["fake"]
+                });
+            });
+    });
+
+    it("DEL 404 Should fail to remove unknown datasets", () => {
+        return chai.request(serverURL)
+            .del("/dataset/fake")
+            .then((res) => {
+                expect.fail(res);
+            }, (err) => {
+                expect(err.status).to.eq(404);
+                expect(Object.keys(err.response.body)).to.deep.eq(["error"]);
+                expect(typeof err.response.body.error).to.eq("string");
+            });
+    });
+
+    // it("Should successfully post", () => {
+    //     return chai.request(serverURL)
+    //         .post("/query")
+    //         .send({
+    //             "WHERE": {
+    //                 "AND": [
+    //                     {"IS": {"courses_id": "317"}},
+    //                     {"IS": {"courses_dept": "biol"}}
+    //                 ]
+    //             },
+    //             "OPTIONS": {
+    //                 "COLUMNS": ["courses_id", "courses_avg", "courses_dept"],
+    //                 "ORDER": {"dir": "DOWN", "keys": ["courses_avg"]},
+    //                 "FORM": "TABLE"
+    //             }
+    //         })
+    //         .then((res) => {
+    //             expect(res.status).to.eq(200);
+    //             expect(res.body).to.deep.eq({"render":"TABLE","result":[{"courses_id":"317",
+    //             courses_avg":72.73,"courses_dept":"biol"},{"courses_id":"317",
+    //             "courses_avg":72.73,"courses_dept":"biol"},{"courses_id":"317","courses_avg":72.5,
+    //             "courses_dept":"biol"},{"courses_id":"317","courses_avg":72.5,"courses_dept":"biol"},
+    //             {"courses_id":"317","courses_avg":70.83,"courses_dept":"biol"},{"courses_id":"317","courses_avg":
+    //             70.83,"courses_dept":"biol"},{"courses_id":"317","courses_avg":70.78,"courses_dept":"biol"},
+    //             {"courses_id":"317","courses_avg":70.78,"courses_dept":"biol"},{"courses_id":"317","courses_avg"
+    //             :69.57,"courses_dept":"biol"},{"courses_id":"317","courses_avg":69.57,"courses_dept":"biol"},{
+    //             "courses_id":"317","courses_avg":69.35,"courses_dept":"biol"},{"courses_id":"317","
+    //             courses_avg":69.35,"courses_dept":"biol"},{"courses_id":"317","courses_avg":69.1,"courses_dept"
+    //             :"biol"},{"courses_id":"317","courses_avg":69.1,"courses_dept":"biol"},{"courses_id":"317",
+    //             "courses_avg":65.24,"courses_dept":"biol"},{"courses_id":"317","courses_avg":65.24,
+    //             "courses_dept":"biol"}]})
+    //         }, (err) => {
+    //             // some assertions
+    //             expect.fail(err);
+    //         });
+    // });
 });
+
+*/

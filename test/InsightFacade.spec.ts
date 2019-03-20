@@ -686,7 +686,7 @@ describe("InsightFacade PerformQuery", () => {
     afterEach(function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
-
+/*
     // // Dynamically create and run a test for each query in testQueries
     it("Should run test queries", function () {
         describe("Dynamic InsightFacade PerformQuery tests", function () {
@@ -720,4 +720,5 @@ describe("InsightFacade PerformQuery", () => {
             }
         });
     });
+    */
 });
