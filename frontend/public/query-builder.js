@@ -97,13 +97,11 @@ CampusExplorer.buildQuery = function() {
 
     function buildGroups() {
         let controlGroups = activeTab.getElementsByClassName("form-group groups")[0];
+        let controlFields = controlGroups[i].querySelectorAll("input[checked]"); // TODO
         let selectedGroups = [];
         for (let i = 0; i < controlGroups.length; i++) {
-            let field = controlGroups[i].querySelector("input[checked]"); // TODO
-            if (field) {
-                field = insightKind + "_" + field.value;
+                let field = insightKind + "_" + controlFields[i];
                 selectedGroups.push(field);
-            }
         }
         return selectedGroups;
     }
