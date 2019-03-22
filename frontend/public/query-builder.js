@@ -96,23 +96,49 @@ CampusExplorer.buildQuery = function() {
     }
 
     function buildGroups() {
-        // TODO
+        let controlGroups = activeTab.getElementsByClassName("form-group groups")[0];
+        let selectedGroups = [];
+        for (let i = 0; i < controlGroups.length; i++) {
+            let field = controlGroups[i].querySelector("input[checked]"); // TODO
+            if (field) {
+                field = insightKind + "_" + field.value;
+                selectedGroups.push(field);
+            }
+        }
+        return selectedGroups;
     }
 
     function buildApply() {
-        // TODO
+        let controlApply = activeTab.getElementsByClassName("control-group transformation");
+        let apply = [];
+        for (let i = 0; i < controlApply.length; i++) {
+            let term = controlApply[i].querySelectorAll("input")[0].value; // TODO
+            let fn = controlApply[i].querySelectorAll("selected")[0].value; // TODO
+            let field = controlApply[i].querySelectorAll("selected")[1].value; // TODO
+
+            field = insightKind + "_" + field;
+            let q = {};
+            q[term] = {};
+            q[term][fn] = field;
+            apply.push(q);
+        }
+        return apply;
     }
 
     ///////////////////
-    // query["WHERE"] = {};
     query["WHERE"] = buildFilters();
     query["OPTIONS"] = {};
     query.OPTIONS["COLUMNS"] = buildColumns();
 
     let ord = buildOrder();
-    if (ord) { query.OPTIONS["ORDER"] = ord; } // TODO
+    if (ord) { query.OPTIONS["ORDER"] = ord; }
 
-    // TODO TRANSFORMATIONS
+    let g = buildGroups();
+    if (g.length > 0) {
+        query["TRANSFORMATION"] = {};
+        query["TRANSFORMATION"]["GROUP"] = g;
+        query["TRANSFORMATION"]["APPLY"] = buildApply();
+    }
 
     console.log("built query: " + JSON.stringify(query));
     return query;
