@@ -1,3 +1,6 @@
 {
-    "query1": "simple query IS comparison for department with two columns and old order syntax"
+    "query1": "simple query IS comparison for department with two columns and old order syntax",
+    "d2trans0": "d2 count, math field VALID",
+    "d2complex2": "valid query apply sum avg min 3 apply rules",
+    "d2group0": "valid query with multiple group keys",
 }

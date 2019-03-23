@@ -66,6 +66,7 @@ CampusExplorer.buildQuery = function() {
 
     function buildColumns() {
         let controlCols = activeTab.getElementsByClassName("form-group columns")[0].getElementsByClassName("control field");
+        let controlTrans = activeTab.getElementsByClassName("form-group columns")[0].getElementsByClassName("control transformation");
         let selectedCols = [];
         for (let i = 0; i < controlCols.length; i++) {
             let field = controlCols[i].querySelector("input[checked]");
@@ -74,23 +75,33 @@ CampusExplorer.buildQuery = function() {
                 selectedCols.push(field);
             }
         }
+        for (let i = 0; i < controlTrans.length; i++) {
+            let transField = controlTrans[i].querySelector("input[checked]");
+            if (transField) {
+                selectedCols.push(transField.value);
+            }
+        }
         return selectedCols;
     }
 
     function buildOrder() {
-        let isDescending = activeTab.getElementsByClassName("control descending");
+        let isDescending = activeTab.getElementsByClassName("control descending")[0].querySelector("input[checked]");
         let oFields = activeTab.getElementsByClassName("control order fields")[0].querySelectorAll("option[selected]");
         if (oFields.length === 0) { return null; } // TODO CAN IT STILL BE DESCENDING WITHOUT COLUMNS?
 
         let order = {};
         let selectedOrders = [];
         for (let i = 0; i < oFields.length; i++) {
-            let f = insightKind + "_" + oFields[i].value;
-            selectedOrders.push(f);
+            if (oFields[i].class === undefined) {
+                let f = insightKind + "_" + oFields[i].value;
+                selectedOrders.push(f);
+            } else {
+                selectedOrders.push(oFields[i].value);
+            }
         }
-        if (oFields.length > 1) {
-            order["keys"] = selectedOrders;
+        if (oFields.length > 1) { // can have dir and keys when using old order syntax
             order["dir"] = (isDescending) ? "DOWN" : "UP"; // TODO
+            order["keys"] = selectedOrders;
         } else { order = selectedOrders[0]; }
         return order;
     }
@@ -99,8 +110,10 @@ CampusExplorer.buildQuery = function() {
         let controlGroups = activeTab.getElementsByClassName("form-group groups")[0];
         let controlFields = controlGroups.querySelectorAll("input[checked]"); // TODO
         let selectedGroups = [];
-        for (let i = 0; i < controlGroups.length; i++) {
-                let field = insightKind + "_" + controlFields[i];
+        for (let i = 0; i < controlFields.length; i++) { //changed controlGroups -> controlFields
+                let field = insightKind + "_" + controlFields[i].value;
+                // let controlField = controlFields[i].querySelector("data-key");
+                // let field = insightKind + "_" + controlField;
                 selectedGroups.push(field);
         }
         return selectedGroups;
@@ -111,8 +124,8 @@ CampusExplorer.buildQuery = function() {
         let apply = [];
         for (let i = 0; i < controlApply.length; i++) {
             let term = controlApply[i].querySelectorAll("input")[0].value; // TODO
-            let fn = controlApply[i].querySelectorAll("selected")[0].value; // TODO
-            let field = controlApply[i].querySelectorAll("selected")[1].value; // TODO
+            let fn = controlApply[i].querySelectorAll("option[selected]")[0].value; // TODO
+            let field = controlApply[i].querySelectorAll("option[selected]")[1].value; // TODO
 
             field = insightKind + "_" + field;
             let q = {};
@@ -133,9 +146,9 @@ CampusExplorer.buildQuery = function() {
 
     let g = buildGroups();
     if (g.length > 0) {
-        query["TRANSFORMATION"] = {};
-        query["TRANSFORMATION"]["GROUP"] = g;
-        query["TRANSFORMATION"]["APPLY"] = buildApply();
+        query["TRANSFORMATIONS"] = {};
+        query["TRANSFORMATIONS"]["GROUP"] = g;
+        query["TRANSFORMATIONS"]["APPLY"] = buildApply();
     }
 
     console.log("built query: " + JSON.stringify(query));
