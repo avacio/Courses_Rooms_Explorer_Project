@@ -19,11 +19,6 @@ export default class ServerController {
             .then(() => ServerController.inf.addDataset("rooms", rooms, InsightDatasetKind.Rooms)));
     }
 
-    // TODO
-    public static gotoHome(req: restify.Request, res: restify.Response, next: restify.Next) {
-        // fs.readfile
-    }
-
     public static putDataset(req: restify.Request, res: restify.Response, next: restify.Next) {
         Log.trace("in putDataset");
         // try {
