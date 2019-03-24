@@ -8,15 +8,16 @@ CampusExplorer.sendQuery = function(query) {
     return new Promise(function(fulfill, reject) {
         console.log("CampusExplorer.sendQuery start.");
         const xhttp =  new XMLHttpRequest();
-        // xhttp.onreadystatechange = function() {
-        //
-        // }
         xhttp.open("POST", "/query", true);
+        xhttp.setRequestHeader("Content-Type", "application/JSON");
         xhttp.onload = function() {
             let r = JSON.parse(xhttp.responseText);
-            if (r.status === 200) { fulfill(r); }
+            // console.log("xhhtp.STATUS IN QS: " + xhttp.status);
+            if (xhttp.status === 200) {
+                fulfill(r);}
             else { reject(r); }
         };
+        xhttp.onerror = function() { reject("Failed request."); };
         xhttp.send(JSON.stringify(query));
     });
 };

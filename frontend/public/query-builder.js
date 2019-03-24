@@ -99,7 +99,7 @@ CampusExplorer.buildQuery = function() {
                 selectedOrders.push(oFields[i].value);
             }
         }
-        if (oFields.length > 1) { // can have dir and keys when using old order syntax
+        if (oFields.length > 1 || isDescending) { // can have dir and keys when using old order syntax
             order["dir"] = (isDescending) ? "DOWN" : "UP"; // TODO
             order["keys"] = selectedOrders;
         } else { order = selectedOrders[0]; }
