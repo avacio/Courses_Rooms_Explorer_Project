@@ -14,6 +14,7 @@ export default class ServerController {
         // Log.trace("initData courses: " + JSON.stringify(courses));
         // return ServerController.inf.addDataset("courses", courses, InsightDatasetKind.Courses)
         //     .then(() => ServerController.inf.addDataset("rooms", rooms, InsightDatasetKind.Rooms));
+        // console.log("init datasets: courses, rooms");
         return Promise.resolve(ServerController.inf.addDataset("courses", courses, InsightDatasetKind.Courses)
             .then(() => ServerController.inf.addDataset("rooms", rooms, InsightDatasetKind.Rooms)));
     }
@@ -80,7 +81,7 @@ export default class ServerController {
                 // res.send(200, {result: r});
             res.json(200, {result: r});
         }).catch((error: any) => {
-            Log.trace("caught error in .catch");
+            Log.trace("caught error in .catch: " + error.message);
             res.json(400, {error: error.message});
         });
         // } catch (error) {
