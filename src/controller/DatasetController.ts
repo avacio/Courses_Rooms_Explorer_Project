@@ -158,12 +158,7 @@ export function parseBuilding(id: string, b: string): Promise<any[]> {
 
         return Promise.resolve(httpGet(url)).then((geoResponse) => {
             let geo = geoResponse as IGeoResponse;
-            try {
-            // if (typeof geoResponse.error === "string") {
-            //     Log.trace("georesponse error");
-            //     throw new InsightError(geoResponse.error);
-            // }
-
+            // try {
             return getRoomEntries(doc).map((room: any) => {
                 const fields = parseElements(room, [{
                     name: "class",
@@ -173,9 +168,10 @@ export function parseBuilding(id: string, b: string): Promise<any[]> {
             }).filter((entry: any) => {
                 return Object.keys(entry).map((key) => entry[key])
                     .every((val) => val !== undefined);
-            }); } catch (error) {
-                return null;
-            }
+            });
+            // } catch (error) {
+            //     return null;
+            // }
         });
 }
 
@@ -191,17 +187,13 @@ export function httpGet(url: string): Promise<any> {
                 });
                 res.on("end", () => {
                     data = data.trim();
-                    // try {
                     resolve(JSON.parse(data));
-                    // } catch (error) {
-                    //     reject(error);
-                    // }
                 });
-            } else {
-                // const error = new InsightError("Request failed in httpGet");
-                res.resume();
-                reject(new InsightError("Request failed in httpGet"));
             }
+            // else {
+            //     res.resume();
+            //     reject(new InsightError("Request failed in httpGet"));
+            // }
         }).on("error", (error: InsightError) => {
             reject(error);
         });

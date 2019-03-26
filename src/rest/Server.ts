@@ -16,13 +16,10 @@ export default class Server {
 
     private port: number;
     private rest: restify.Server;
-    // private inf: InsightFacade;
-    // private static inf: InsightFacade;
 
     constructor(port: number) {
         Log.info("Server::<init>( " + port + " )");
         this.port = port;
-        // this.inf = new InsightFacade();
     }
 
     public static initData(): Promise<any> {
@@ -74,10 +71,6 @@ export default class Server {
                 // that.rest.get("/echo/:msg", Server.echo);
 
                 // NOTE: your endpoints should go here TODO
-                // that.rest.get("/public/.*", restify)
-                // that.rest.get("/public/.*", restify.serveStatic({
-                //     directory: __dirname
-                // }));
                 that.rest.put("/dataset/:id/:kind", ServerController.putDataset);
                 that.rest.del("/dataset/:id", ServerController.deleteDataset);
                 that.rest.post("/query", ServerController.postQuery);
@@ -94,12 +87,12 @@ export default class Server {
                 that.rest.on("error", function (err: string) {
                     // catches errors in restify start; unusual syntax due to internal
                     // node not using normal exceptions here
-                    Log.info("Server::start() - restify ERROR: " + err);
+                    // Log.info("Server::start() - restify ERROR: " + err);
                     reject(err);
                 });
 
             } catch (err) {
-                Log.error("Server::start() - ERROR: " + err);
+                // Log.error("Server::start() - ERROR: " + err);
                 reject(err);
             }
         });
