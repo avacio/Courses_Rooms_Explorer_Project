@@ -108,7 +108,7 @@ CampusExplorer.buildQuery = function() {
 
     function buildGroups() {
         let controlGroups = activeTab.getElementsByClassName("form-group groups")[0];
-        let controlFields = controlGroups.querySelectorAll("input[checked]"); // TODO
+        let controlFields = controlGroups.querySelectorAll("input[checked]");
         let selectedGroups = [];
         for (let i = 0; i < controlFields.length; i++) { //changed controlGroups -> controlFields
                 let field = insightKind + "_" + controlFields[i].value;
