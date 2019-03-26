@@ -7,11 +7,11 @@ import {expect} from "chai"; //
 import * as fs from "fs-extra";
 import chaiHttp = require("chai-http");
 import Log from "../src/Util";
+import {InsightError} from "../src/controller/IInsightFacade";
 
 chai.use(chaiHttp);
 const serverURL = "http://localhost:4321";
 const path = __dirname + "/../test/data/";
-// const path = __dirname + "/../../data/";
 
 describe("Facade D3", function () {
 
@@ -24,13 +24,6 @@ describe("Facade D3", function () {
         facade = new InsightFacade(); // TODO
         server = new Server(4321);
         // TODO: start server here once and handle errors properly
-        // return server.start().then((resolve) => expect(resolve))
-        //     .then(() => {
-        //         return chai.request(serverURL).put("/dataset/courses")
-        //             .attach("body", fs.readFileSync("test/data/courses.zip"), "courses.zip");
-        //     });
-        // return server.start();
-
         // Log.trace("path exists: " + fs.existsSync(path));
         // Log.trace("courses zip exists: " + fs.existsSync(path + "courses.zip"));
         // Server.initData().then(() => server.start())
@@ -47,11 +40,6 @@ describe("Facade D3", function () {
     after(function () {
         // TODO: stop server here once!
         return server.stop();
-        // return server.stop().then((resolve) => expect(resolve));
-        // await server.stop().then((resolve) => expect(resolve));
-        // return server.stop().then((status) => {
-        //     if (status) { Log.trace("Server stopped."); }
-        // });
     });
 
     beforeEach(function () {
@@ -74,7 +62,6 @@ describe("Facade D3", function () {
                 .put("/dataset/courses/courses")
                 // .attach("body", YOUR_COURSES_DATASET, COURSES_ZIP_FILENAME)
                 .attach("body", fs.readFileSync(path + "courses.zip"), "courses.zip")
-                // .then(function (res: Response) {
                 .then(function (res: any) {
                     // some logging here please!
                     Log.trace("Response: " + res.status);
@@ -109,6 +96,56 @@ describe("Facade D3", function () {
         }
     });
 
+    it("initData server start", function () {
+        try {
+            return Server.initData().then(() => {
+                return chai.request(serverURL)
+                    .put("/dataset/rooms/rooms")
+                    .attach("body", fs.readFileSync(path + "rooms.zip"), "rooms.zip")
+                    .then(function (res: any) {
+                        Log.trace("Response: " + res.status);
+                        expect(res.status).to.be.equal(400); // already added
+                    })
+                    .catch(function (err: any) {
+                        Log.trace("err1: " + err);
+                        expect(err.status).to.be.equal(400); // already added
+                    });
+            }
+).catch(function (err: any) {
+                Log.trace("err2: " + err);
+                expect(typeof err).to.be.equal("object");
+            });
+        } catch (err) {
+            // and some more logging here!
+            expect(err.status).to.be.equal(400); // already added
+        }
+    });
+
+    it("initData server start2", function () {
+        try {
+            return Server.initData().then(() => {
+                    return chai.request(serverURL)
+                        .put("/dataset/firstNotJSON/courses")
+                        .attach("body", fs.readFileSync(path + "firstNotJSON.zip"), "firstNotJSON.zip")
+                        .then(function (res: any) {
+                            Log.trace("Response: " + res.status);
+                            expect(res.status).to.be.equal(200);
+                        })
+                        .catch(function (err: any) {
+                            Log.trace("err1: " + err);
+                            expect(err.status).to.be.equal(400);
+                        });
+                }
+            ).catch(function (err: any) {
+                Log.trace("err2: " + err);
+                expect(typeof err).to.be.equal("object");
+            });
+        } catch (err) {
+            // and some more logging here!
+            expect(err.status).to.be.equal(400); // already added
+        }
+    });
+
     // it("PUT test: FAIL, unknown id", function () {
     //     try {
     //         return chai.request(serverURL)
@@ -127,7 +164,7 @@ describe("Facade D3", function () {
     //     }
     // });
 
-    // TODO update existing datasets okay?
+    // // TODO update existing datasets okay?
     // it("PUT 200: the operation was successful and the id already existed", function () {
     //     this.timeout(20000);
     //     return chai.request(serverURL)
@@ -136,33 +173,33 @@ describe("Facade D3", function () {
     //         .then((res) => {
     //             expect(res.status).to.eq(200);
     //         }, (err) => {
+    //             expect(err.status).to.eq(200);
     //             expect.fail(err);
     //         });
     // });
-
+    //
     // it("POST 200", function () {
     //     return chai.request(serverURL)
     //         .post("/query")
-    //         .send({
-    //             "WHERE":{
-    //                 "GT":{
-    //                     "courses_avg":97
+    //         .send(JSON.parse({
+    //             WHERE: {
+    //                 GT: {
+    //                     courses_avg: 97
     //                 }
     //             },
-    //             "OPTIONS":{
-    //                 "COLUMNS":[
+    //             OPTIONS: {
+    //                 COLUMNS: [
     //                     "courses_dept",
     //                     "courses_avg"
     //                 ],
-    //                 "ORDER":"courses_avg",
-    //                 "FORM":"TABLE"
+    //                 ORDER: "courses_avg"
     //             }
-    //         })
+    //         }))
     //         .then(function (res: any) {
     //             Log.trace(res.body);
     //             expect(res.status).to.equal(200);
     //         })
-    //         .catch(function (err:any) {
+    //         .catch(function (err: any) {
     //             Log.trace("catch:");
     //             Log.trace(err);
     //             // some assertions
@@ -194,6 +231,18 @@ describe("Facade D3", function () {
             });
     });
 
+    it("GET STATIC", function () {
+        return chai.request(serverURL)
+            .get("/.*")
+            .then(function (res: any) {
+                Log.trace("then: " + JSON.stringify(res));
+                expect(typeof res.body).to.eq("string");
+            }).catch((err) => {
+                expect(typeof err).to.eq("object");
+            }
+    );
+    });
+
     it("PUT 400 with invalid kind", function () {
         this.timeout(20000);
         return chai.request(serverURL)
@@ -221,9 +270,6 @@ describe("Facade D3", function () {
                 expect.fail(res);
             }, (err) => {
                 expect(err.status).to.eq(400);
-                // expect(err.response.body).to.deep.eq({
-                //     missing: ["fake"]
-                // });
             });
     });
 
@@ -243,7 +289,7 @@ describe("Facade D3", function () {
     //     return chai.request(serverURL)
     //         .post("/query")
     //         .send({
-    //             "WHERE": {
+    //             WHERE: {
     //                 "AND": [
     //                     {"IS": {"courses_id": "317"}},
     //                     {"IS": {"courses_dept": "biol"}}
@@ -269,7 +315,7 @@ describe("Facade D3", function () {
     //             courses_avg":69.35,"courses_dept":"biol"},{"courses_id":"317","courses_avg":69.1,"courses_dept"
     //             :"biol"},{"courses_id":"317","courses_avg":69.1,"courses_dept":"biol"},{"courses_id":"317",
     //             "courses_avg":65.24,"courses_dept":"biol"},{"courses_id":"317","courses_avg":65.24,
-    //             "courses_dept":"biol"}]})
+    //             "courses_dept":"biol"}]});
     //         }, (err) => {
     //             // some assertions
     //             expect.fail(err);
@@ -313,6 +359,19 @@ describe("Facade D3", function () {
                 Log.trace("catch:" + err);
                 expect(err.status).to.equal(404);
                 // expect.fail();
+            });
+    });
+
+    it("DEL 400 invalid id", function () {
+        return chai.request(serverURL)
+            .del("/dataset/")
+            .then(function (res: any) {
+                Log.trace(res);
+                expect(res.status).to.equal(400);
+            })
+            .catch(function (err: any) {
+                Log.trace("catch:" + err);
+                expect(err.status).to.equal(400);
             });
     });
 });
