@@ -92,7 +92,7 @@ CampusExplorer.buildQuery = function() {
         let order = {};
         let selectedOrders = [];
         for (let i = 0; i < oFields.length; i++) {
-            if (oFields[i].class === undefined) {
+            if (fields.includes(oFields[i].value)) {
                 let f = insightKind + "_" + oFields[i].value;
                 selectedOrders.push(f);
             } else {
